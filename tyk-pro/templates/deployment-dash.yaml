@@ -1,0 +1,76 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: dashboard-{{ include "tyk-pro.fullname" . }}
+  namespace: {{ .Values.nameSpace }}
+  labels:
+    app: dashboard-{{ include "tyk-pro.fullname" . }}
+    chart: {{ include "tyk-pro.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: dashboard-{{ include "tyk-pro.fullname" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: dashboard-{{ include "tyk-pro.fullname" . }}
+        release: {{ .Release.Name }}
+    spec:
+      minReadySeconds: 20
+      strategy:
+        # indicate which strategy we want for rolling update
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 2
+          maxUnavailable: 1
+      containers:
+      - image: "{{ .Values.dash.image.repository }}:{{ .Values.dash.image.tag }}"
+        imagePullPolicy: {{ .Values.dash.image.pullPolicy }}
+        name: dashboard-{{ .Chart.Name }}
+        env:
+          - name: REDIGOCLUSTER_SHARDCOUNT
+            value: "{{ .Values.redis.shardCount }}"
+          - name: TYK_DB_HOSTCONFIG_HOSTNAME
+            value: "{{ .Values.dash.hostName }}"
+          - name: TYK_DB_TYKAPI_HOST
+            value: "http://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Values.nameSpace }}"
+          - name: TYK_DB_TYKAPI_SECRET
+            value: "{{ .Values.secrets.APISecret }}"
+          - name: TYK_DB_HOSTS
+            value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"{{ if .Values.redis.pass }}
+          - name: TYK_DB_REDISPASSWORD
+            value: ".Values.redis.pass"{{end}}
+          - name: TYK_DB_REDISUSESSL
+            value: "{{ .Values.redis.useSSL }}"
+          - name: TYK_DB_REDISSSLINSECURESKIPVERIFY
+            value: "true"
+          - name: TYK_DB_MONGOURL
+            value: "{{ .Values.mongo.mongoURL }}"
+          - name: TYK_DB_MONGOUSESSL
+            value: "{{ .Values.mongo.useSSL }}"
+          - name: TYK_DB_ADMINSECRET
+            value: "{{ .Values.secrets.AdminSecret }}"
+          - name: TYK_DB_NODESECRET
+            value: "{{ .Values.secrets.APISecret }}"
+          - name: TYK_DB_LICENSEKEY
+            value: "{{ .Values.dash.license }}"
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+        command: ["/opt/tyk-dashboard/tyk-analytics", "--conf=/etc/tyk-dashboard/tyk_analytics.conf"]
+        workingDir: /opt/tyk-dashboard
+        ports:
+        - containerPort:  {{ .Values.dash.service.port }}
+        volumeMounts:
+          - name: tyk-dashboard-conf
+            mountPath: /etc/tyk-dashboard
+      volumes:
+        - name: tyk-dashboard-conf
+          configMap:
+            name: tyk-dashboard-conf
+            items:
+              - key: tyk_analytics.conf
+                path: tyk_analytics.conf

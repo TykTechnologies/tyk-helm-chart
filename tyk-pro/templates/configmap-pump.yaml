@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tyk-pump-conf
+  namespace: {{ .Values.nameSpace }}
+data:
+  {{- (.Files.Glob "configs/pump.conf").AsConfig | nindent 2 }}

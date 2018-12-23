@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-svc-{{ include "tyk-pro.fullname" . }}
+  namespace: {{ .Values.nameSpace }}
+  labels:
+    app: gateway-svc-{{ include "tyk-pro.fullname" . }}
+    chart: {{ include "tyk-pro.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.gateway.service.type }}
+  ports:
+  - port: {{ .Values.gateway.service.port }}
+    targetPort: http
+    protocol: TCP
+  selector:
+    app: gateway-{{ include "tyk-pro.fullname" . }}
+    release: {{ .Release.Name }}
+  type: LoadBalancer
+  externalTrafficPolicy: Local
