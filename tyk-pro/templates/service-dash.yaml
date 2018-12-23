@@ -13,6 +13,7 @@ spec:
   - port: {{ .Values.dash.service.port }}
     targetPort: {{ .Values.dash.service.port }}
     protocol: TCP
+  type: NodePort
   selector:
     app: dashboard-{{ include "tyk-pro.fullname" . }}
     release: {{ .Release.Name }}

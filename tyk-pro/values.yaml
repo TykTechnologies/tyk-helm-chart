@@ -8,9 +8,10 @@ fullnameOverride: ""
 replicaCount: 1
 nameSpace: tyk
 
+# Change the Admin secret in the dashboard *after* bootstrapping
 secrets:
   APISecret: "CHANGEME"
-  AdminSecret: "CHANGEMETOO"
+  AdminSecret: "12345"
 
 redis:
     shardCount: 128
@@ -34,7 +35,7 @@ dash:
     type: ClusterIP
     port: 3000
   ingress:
-    enabled: true
+    enabled: false
     annotations: {}
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"

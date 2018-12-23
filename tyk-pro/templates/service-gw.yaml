@@ -11,8 +11,8 @@ metadata:
 spec:
   type: {{ .Values.gateway.service.type }}
   ports:
-  - port: {{ .Values.gateway.service.port }}
-    targetPort: http
+  - port: 80
+    targetPort: {{ .Values.gateway.service.port }}
     protocol: TCP
   selector:
     app: gateway-{{ include "tyk-pro.fullname" . }}
