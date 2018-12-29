@@ -1,18 +1,18 @@
 1. Bootstrap the dashboard with the following command:
 
-kubectl exec --namespace={{ .Release.Namespace }} DASHBOARD-POD-NAME /opt/tyk-dashboard/install/bootstrap.sh 127.0.0.1
+kubectl exec --namespace={{ .Values.nameSpace }} DASHBOARD-POD-NAME /opt/tyk-dashboard/install/bootstrap.sh 127.0.0.1
 
 2. Log into the Dashboard using those credentials here: 
 
-export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "tyk-pro.fullname" . }})
-  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+export NODE_PORT=$(kubectl get --namespace {{ .Values.nameSpace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "tyk-pro.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Values.nameSpace }} -o jsonpath="{.items[0].status.addresses[0].address}")
   echo Dashboard URL is on: http://$NODE_IP:$NODE_PORT
 
 3. Your services will be published on the external load balancer here:
 
 NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-You can watch the status of by running 'kubectl get svc -w gateway-svc-{{ include "tyk-pro.fullname" . }} --namespace {{ .Release.Namespace }}'
+You can watch the status of by running 'kubectl get svc -w gateway-svc-{{ include "tyk-pro.fullname" . }} --namespace {{ .Values.nameSpace }}'
 
-export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} gateway-svc-{{ include "tyk-pro.fullname" . }} -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+export SERVICE_IP=$(kubectl get svc --namespace {{ .Values.nameSpace }} gateway-svc-{{ include "tyk-pro.fullname" . }} -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 
 echo Gateway URL is on: http://$SERVICE_IP:{{ .Values.gateway.service.port }}
