@@ -48,6 +48,8 @@ spec:
             value: "{{ .Values.secrets.APISecret }}"
           - name: TYK_GW_NODESECRET
             value: "{{ .Values.secrets.APISecret }}"
+          - name: TYK_GW_DBAPPCONFOPTIONS_TAGS
+            value: "{{.Values.gateway.tags }}"
         command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
         workingDir: /opt/tyk-gateway
         ports:

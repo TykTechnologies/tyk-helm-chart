@@ -65,6 +65,7 @@ gateway:
     port: 6379
     useSSL: false
     # pass: ""
+  tags: "ingress"
   image:
     repository: tykio/tyk-gateway
     tag: latest
