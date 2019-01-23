@@ -1,0 +1,94 @@
+{{ if .Values.rbac }}
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+    name: tyk-k8s
+rules:
+- apiGroups: ["extensions"]
+  resources: ["thirdpartyresources", "thirdpartyresources.extensions", "ingresses", "ingresses/status"]
+  verbs: ["*"]
+- apiGroups: [""]
+  resources: ["configmaps", "endpoints", "pods", "services"]
+  verbs: ["*"]
+- apiGroups: [""]
+  resources: ["namespaces", "configmaps", "pods", "endpoints", "services"]
+  verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: tyk-k8s
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tyk-k8s
+subjects:
+  - kind: ServiceAccount
+    name: tyk-k8s
+    namespace: {{ .Values.nameSpace }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tyk-k8s
+  namespace: {{ .Values.nameSpace }}
+---{{ end }}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: tyk-k8s
+  namespace: {{ .Values.nameSpace }}
+  labels:
+    app: tyk-k8s
+    chart: {{ include "tyk-k8s.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: tyk-k8s
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: tyk-k8s
+        release: {{ .Release.Name }}
+    spec:
+      {{ if .Values.rbac }}serviceAccountName: tyk-k8s {{ end }}
+      containers:
+      - name: tyk-k8s
+        image: "{{ .Values.tyk_k8s.image.repository }}:{{ .Values.tyk_k8s.image.tag }}"
+        imagePullPolicy: {{ .Values.tyk_k8s.image.pullPolicy }}
+        workingDir: "/opt/tyk-k8s"
+        command: ["/opt/tyk-k8s/tyk-k8s", "start"]
+        env:
+          - name: TK8S_TYK_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: tyk-k8s-controller
+                key: secret
+          - name: TK8S_TYK_ORG
+            valueFrom:
+              secretKeyRef:
+                name: tyk-k8s-controller
+                key: org
+        ports:
+        - containerPort: 443
+        volumeMounts:
+          - name: tyk-k8s-conf
+            mountPath: /etc/tyk-k8s
+          - name: webhook-certs
+            mountPath: /etc/tyk-k8s/certs
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+      volumes:
+        - name: tyk-k8s-conf
+          configMap:
+            name: tyk-k8s-conf
+            items:
+              - key: tyk_k8s.yaml
+                path: tyk-k8s.yaml
+        - name: webhook-certs
+          secret:
+            secretName: sidecar-injector-webhook-certs

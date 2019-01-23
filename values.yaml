@@ -123,3 +123,14 @@ pump:
   tolerations: []
 
   affinity: {}
+
+rbac: true 
+tyk_k8s:
+  image: 
+    repository: lonelycode/tyk-k8s
+    tag: latest
+    pullPolicy: Always
+  org_id: "DUMMY"
+  dash_key: "DUMMY"
+  service:
+    port: 443
