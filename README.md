@@ -13,6 +13,8 @@ It also means that yo can bring the full features et of the Tyk API Gateway to y
 
 To get started quickly, you can use these rather excellent Redis and MongoDB charts to get goig:
 
+	helm repo add tc http://trusted-charts.stackpoint.io
+	helm repo update
 	helm install tc/redis --name redis --namespace=redis --set usePassword=false
 	helm install tc/mongodb-replicaset --name mongodb --namespace=mongodb 
 
