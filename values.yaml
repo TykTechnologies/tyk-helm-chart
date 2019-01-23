@@ -127,8 +127,8 @@ pump:
 rbac: true 
 tyk_k8s:
   image: 
-    repository: lonelycode/tyk-k8s
-    tag: latest
+    repository: tykio/tyk-k8s
+    tag: stable
     pullPolicy: Always
   org_id: "DUMMY"
   dash_key: "DUMMY"
