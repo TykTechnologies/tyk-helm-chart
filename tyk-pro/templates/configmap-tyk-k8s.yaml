@@ -36,17 +36,17 @@ data:
               value: "{{ .Values.secrets.APISecret }}"
             - name: TYK_GW_ENABLECUSTOMDOMAINS
               value: "true"
-            - name: TYK_GW_NODEISSEGMENTED
-              value: "true"
           command: ["/opt/tyk-gateway/tyk", "--conf=/opt/tyk-gateway/tyk.conf"]
           workingDir: /opt/tyk-gateway
           ports:
             - containerPort: 8080
       initContainers:
-        - image: tykio/tyk-k8s-init
+        - image: centos
           imagePullPolicy: Always
           name: run-iptables
           securityContext:
             privileged: true
           command:
-            - "/entrypoint"
+            - "sh"
+            - "-c"
+            - 'yum -y install iptables; iptables -t nat -A OUTPUT -p tcp --dport 80 -j DNAT --to-destination 127.0.0.1:8080; iptables -t nat -A OUTPUT -p tcp --dport 6767 -j DNAT --to-destination 127.0.0.1:80'
