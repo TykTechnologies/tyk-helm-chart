@@ -22,4 +22,4 @@ helm install -f ./values.yaml ./tyk-k8s
 
 5. Register the sidecar-injector
 
-kubectl create -f ./tyk-k8s/webhook/mutatingwebhook-ca-bundle.yamn
+kubectl create -f ./tyk-k8s/webhook/mutatingwebhook-ca-bundle.yaml
