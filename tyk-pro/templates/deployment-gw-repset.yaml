@@ -53,12 +53,14 @@ spec:
         command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
         workingDir: /opt/tyk-gateway
         ports:
-        - containerPort: 8080
+        - containerPort: 443
         resources:
 {{ toYaml .Values.resources | indent 12 }}
         volumeMounts:
           - name: tyk-mgmt-gateway-conf
             mountPath: /etc/tyk-gateway
+          - name: {{ .Release.Name }}-default-cert
+            mountPath: /etc/certs
       volumes:
         - name: tyk-mgmt-gateway-conf
           configMap:
@@ -66,3 +68,6 @@ spec:
             items:
               - key: tyk_mgmt.conf
                 path: tyk.conf
+        - name: {{ .Release.Name }}-default-cert
+          secret:
+            secretName: {{ .Release.Name }}-default-cert

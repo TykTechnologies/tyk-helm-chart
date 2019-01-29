@@ -17,7 +17,7 @@ data:
       createRoutes: true
       containers:
         - name: tyk-mesh
-          image: lonelycode/tyk-micro:latest
+          image: tykio/tyk-sidecar:2.7.5
           imagePullPolicy: IfNotPresent
           env:
             - name: REDIGOCLUSTER_SHARDCOUNT
@@ -41,12 +41,10 @@ data:
           ports:
             - containerPort: 8080
       initContainers:
-        - image: centos
+        - image: tykio/tyk-k8s-init
           imagePullPolicy: Always
           name: run-iptables
           securityContext:
             privileged: true
           command:
-            - "sh"
-            - "-c"
-            - 'yum -y install iptables; iptables -t nat -A OUTPUT -p tcp --dport 80 -j DNAT --to-destination 127.0.0.1:8080; iptables -t nat -A OUTPUT -p tcp --dport 6767 -j DNAT --to-destination 127.0.0.1:80'
+            - "/entrypoint"
