@@ -30,7 +30,7 @@ dash:
   image:
     repository: tykio/tyk-dashboard
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   service:
     type: ClusterIP
     port: 3000
@@ -69,10 +69,10 @@ gateway:
   image:
     repository: tykio/tyk-gateway
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   service:
     type: ClusterIP
-    port: 8080
+    port: 443
   ingress:
     enabled: true
     annotations: {}
@@ -106,7 +106,7 @@ pump:
   image:
     repository: tykio/tyk-pump-docker-pub
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little

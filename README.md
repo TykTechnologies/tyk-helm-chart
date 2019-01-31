@@ -18,6 +18,8 @@ To get started quickly, you can use these rather excellent Redis and MongoDB cha
 	helm install tc/redis --name redis --namespace=redis --set usePassword=false
 	helm install tc/mongodb-replicaset --name mongodb --namespace=mongodb 
 
+> *Important Note regarding TLS:* This helm chart assumes TLS is being used by default, so the gateways will listen on port 443 and load up a dummy certificate. You can set your own default certificate by replacing the files in the certs/ folder.
+
 To install, *first modify the `values.yaml` file to add redis and mongo details, and add your license*:
 
 	helm install -f ./values.yaml ./tyk-pro
@@ -74,6 +76,10 @@ Here's an example:
 You can also directly modify the service in your Tyk Dasboard, though if the ingress is recreated, the changes may not be retained.
 
 When an ingress is removed, the services will be removed from the API Gateway as well.
+
+### TLS
+
+Tyk supports the TLS section for the ingress controller. If you set a TLS entry with a secret, the controller will retrieve the certificate from K8s and load it into the encrypted certificate store in Tyk and dynamically load it into the ingress. You can manage the certificate from within Tyk Dashboard.
 
 ## Using the injector
 

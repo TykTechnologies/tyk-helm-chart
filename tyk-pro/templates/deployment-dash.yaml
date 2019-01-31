@@ -37,7 +37,7 @@ spec:
           - name: TYK_DB_HOSTCONFIG_HOSTNAME
             value: "{{ .Values.dash.hostName }}"
           - name: TYK_DB_TYKAPI_HOST
-            value: "http://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Values.nameSpace }}"
+            value: "https://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Values.nameSpace }}"
           - name: TYK_DB_TYKAPI_SECRET
             value: "{{ .Values.secrets.APISecret }}"
           - name: TYK_DB_HOSTS
