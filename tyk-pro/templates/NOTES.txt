@@ -5,6 +5,13 @@ Run the following in bash to bootstrap the dashboard instance:
 export NODE_PORT=$(kubectl get --namespace {{ .Values.nameSpace }} -o jsonpath="{.spec.ports[0].nodePort}" services dashboard-svc-{{ include "tyk-pro.fullname" . }})
 export NODE_IP=$(kubectl get nodes --selector=kubernetes.io/role!=master -o jsonpath='{.items[0].status.addresses[?(@.type=="ExternalIP")].address}')
 export DASH_URL=http://$NODE_IP:$NODE_PORT
+
+1a. You may need to open up that port in your firewall so that we can access the dashboard. Example in GCloud
+
+gcloud compute firewall-rules create dashboard --allow tcp:$NODE_PORT
+
+1b. Bootstrap the dashboard
+
 ./tyk-pro/scripts/bootstrap_k8s.sh $NODE_IP:$NODE_PORT {{ .Values.secrets.AdminSecret }} {{ .Values.nameSpace }}
 
 2. Move the encoded secrets to the controller helm chart
