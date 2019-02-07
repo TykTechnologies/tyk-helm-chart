@@ -179,10 +179,12 @@ output(){
   echo "User: $2"
   echo "Pass: $3"
 
-  cp $PWD/tyk-pro/scripts/secret_tpl.yaml $PWD/tyk-pro/scripts/secrets.yaml
-  B64_ORGID=$(echo -n $ORGID | base64)
-  B64_CODE=$(echo -n $USER_AUTH_CODE | base64)
-  sed -e "s/\${namespace}/$NS/" -e "s/\${ORGID}/$B64_ORGID/" -e "s/\${USER_AUTH_CODE}/$B64_CODE/" -i $PWD/tyk-pro/scripts/secrets.yaml
+  INFILE = ${PWD}/tyk-pro/scripts/secret_tpl.yaml
+  OUTFILE = ${PWD}/tyk-pro/scripts/secrets.yaml
+  B64_ORGID = $(echo -n ${ORGID} | base64)
+  B64_CODE = $(echo -n ${USER_AUTH_CODE} | base64)
+
+  sed -e "s/\${namespace}/${NS}/" -e "s/\${ORGID}/${B64_ORGID}/" -e "s/\${USER_AUTH_CODE}/${B64_CODE}/" ${INFILE} > ${OUTFILE}
 }
 
 main $1 $2
