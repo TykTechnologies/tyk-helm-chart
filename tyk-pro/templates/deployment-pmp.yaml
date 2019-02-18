@@ -29,11 +29,11 @@ spec:
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "{{ .Values.redis.shardCount }}"
           - name: PMP_MONGO_MONGOURL
-            value: "{{ .Values.mongo.mongoURL }}"
+            value: {{ .Values.mongo.mongoURL | quote }}
           - name: PMP_MONGO_MONGOUSESSL
             value: "{{ .Values.mongo.useSSL }}"
           - name: PMP_MONGOAGG_MONGOURL
-            value:  "{{ .Values.mongo.mongoURL }}"
+            value:  {{ .Values.mongo.mongoURL | quote }}
           - name: PMP_MONGOAGG_MONGOUSESSL
             value:  "{{ .Values.mongo.useSSL }}"
           - name: TYK_PMP_REDIS_HOSTS
@@ -43,7 +43,7 @@ spec:
           - name: tyk-pump-conf
             mountPath: /etc/tyk-pump
         resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.pump.resources | indent 12 }}
       volumes:
         - name: tyk-pump-conf
           configMap:
