@@ -26,6 +26,18 @@ To install, *first modify the `values.yaml` file to add redis and mongo details,
 
 Follow the instructions in the Notes that follow the installation to install the controller.
 
+## Important things to remember: Nodes are Segmented
+
+This Helm chart installs Tyk as a *segmented* Gateway service with an external load balancer, this means that the gateways that get deployed are tagged with the `ingress` tag. Tagged gateways like this will only load APIs that have also been tagged as `ingress`.
+
+You can set this tag for your exposed services in the API Designer, under the "Advanced Options" tab, the section called `Segment Tags (Node Segmentation)` allows you to add new tags. To make an API public, simply add `ingress` to this section, click the "Add" button, and save the API.
+
+### How to disable node sharding
+
+If you do not want this behaviour, then you can disable node sharding before hand by editing the `tyk-pro/configs/tyk_mgmt.conf` file, simply set the value `db_app_conf_options.node_is_segmented` to `false`. 
+
+> *Please Note* Doing this means that the service mesh sidecar injector and it's related generated APIs will not work correctly, as those services will also be loaded by your ingress gateways".
+
 ## Using the Ingress Controller
 
 To enable the ingress controller, simply add the ingress class defintiion to your ingress annotations:
