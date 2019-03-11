@@ -8,6 +8,9 @@ fullnameOverride: ""
 replicaCount: 1
 nameSpace: tyk
 
+# Only set this to false if you are not planning on using the sidecar injector
+enableSharding: true
+
 # Change the Admin secret in the dashboard *after* bootstrapping
 secrets:
   APISecret: "CHANGEME"

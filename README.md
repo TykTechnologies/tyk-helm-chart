@@ -30,11 +30,19 @@ Follow the instructions in the Notes that follow the installation to install the
 
 This Helm chart installs Tyk as a *segmented* Gateway service with an external load balancer, this means that the gateways that get deployed are tagged with the `ingress` tag. Tagged gateways like this will only load APIs that have also been tagged as `ingress`.
 
-You can set this tag for your exposed services in the API Designer, under the "Advanced Options" tab, the section called `Segment Tags (Node Segmentation)` allows you to add new tags. To make an API public, simply add `ingress` to this section, click the "Add" button, and save the API.
+The reason gateways are sharded is so that the dashboard and the Tyk K8s controller can target different services to different gateways, i.e. services that are exposed to the internet should be routed in the `ingress` gateways, while service-mesh sidecars need to handle private service definitions which are created programatically, and should not be loaded into the public-facing gateways.
+
+### Making an API public
+
+You can set a tag for your exposed services in the API Designer, under the "Advanced Options" tab, the section called `Segment Tags (Node Segmentation)` allows you to add new tags. To make an API public, simply add `ingress` to this section, click the "Add" button, and save the API.
+
+If you are using an ingress spec, then the Tyk k8s controller will do this for you.
 
 ### How to disable node sharding
 
-If you do not want this behaviour, then you can disable node sharding before hand by editing the `tyk-pro/configs/tyk_mgmt.conf` file, simply set the value `db_app_conf_options.node_is_segmented` to `false`. 
+If you are using the latest chart, you can set the `enableSharding` value in the `values.yaml` to false.
+
+If you are running an odler chart that does not have this value, then you can disable node sharding before hand by editing the `tyk-pro/configs/tyk_mgmt.conf` file, simply set the value `db_app_conf_options.node_is_segmented` to `false`. 
 
 > *Please Note* Doing this means that the service mesh sidecar injector and it's related generated APIs will not work correctly, as those services will also be loaded by your ingress gateways".
 
