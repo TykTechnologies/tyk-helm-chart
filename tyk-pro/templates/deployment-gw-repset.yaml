@@ -41,7 +41,7 @@ spec:
           - name: TYK_GW_STORAGE_USESSL
             value: "{{ .Values.redis.useSSL }}"
           - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
-          - value: {{ .Values.enableSharding }}
+            value: "{{ .Values.enableSharding }}"
           - name: TYK_GW_DBAPPCONFOPTIONS_CONNECTIONSTRING
             value: "http://dashboard-svc-{{ include "tyk-pro.fullname" . }}.{{ .Values.nameSpace }}:{{ .Values.dash.service.port }}"
           - name: TYK_GW_POLICIES_POLICYCONNECTIONSTRING
