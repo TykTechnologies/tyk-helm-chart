@@ -4,14 +4,14 @@ This chart provides a full Tyk Installation (API Management Dashboard and API Ga
 
 This means that a single Tyk installation can be used for both "north-south" inbound traffic from the internet to protect and promote your services, as well as internal east-west traffic, enabling you to secure your services in any way you see fit, including mutual TLS. 
 
-It also means that yo can bring the full features et of the Tyk API Gateway to your internal and external services rom a single control plane.
+It also means that you can bring the full features set of the Tyk API Gateway to your internal and external services from a single control plane.
 
 **Pre-requisites**
 
 - Redis installed in the cluster or reachable from K8s
 - MongoDB installed in the cluster, or reachable from inside K8s
 
-To get started quickly, you can use these rather excellent Redis and MongoDB charts to get goig:
+To get started quickly, you can use these rather excellent Redis and MongoDB charts to get going:
 
 	helm repo add tc http://trusted-charts.stackpoint.io
 	helm repo update
@@ -42,9 +42,9 @@ If you are using an ingress spec, then the Tyk k8s controller will do this for y
 
 If you are using the latest chart, you can set the `enableSharding` value in the `values.yaml` to false.
 
-If you are running an odler chart that does not have this value, then you can disable node sharding before hand by editing the `tyk-pro/configs/tyk_mgmt.conf` file, simply set the value `db_app_conf_options.node_is_segmented` to `false`. 
+If you are running an older chart that does not have this value, then you can disable node sharding beforehand by editing the `tyk-pro/configs/tyk_mgmt.conf` file, simply set the value `db_app_conf_options.node_is_segmented` to `false`. 
 
-> *Please Note* Doing this means that the service mesh sidecar injector and it's related generated APIs will not work correctly, as those services will also be loaded by your ingress gateways".
+> *Please Note* Doing this means that the service mesh sidecar injector and its related generated APIs will not work correctly, as those services will also be loaded by your ingress gateways.
 
 ## Using the Ingress Controller
 
@@ -60,7 +60,7 @@ To enable the ingress controller, simply add the ingress class defintiion to you
 	  rules:
 	  - host: cafe.example.com
 
-By default Tyk will create an Open API (no security enabled), however you can set any property in the API Definition using the following annotations (remember that all annotations are treated as strings:
+By default Tyk will create an open API (no security enabled), however you can set any property in the API Definition using the following annotations (remember that all annotations are treated as strings):
 
 - `bool.service.tyk.io/{path}: value`: Set a value to `"true"` or `"false"` 
 - `string.service.tyk.io/{path}: value`: Set a value that is a string literal, e.g. "name"
