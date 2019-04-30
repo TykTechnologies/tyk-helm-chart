@@ -13,7 +13,7 @@ enableSharding: true
 
 # Change the Admin secret in the dashboard *after* bootstrapping
 secrets:
-  APISecret: "foobarbaz"
+  APISecret: "CHANGEME"
   OrgID: "1"
 
 redis:
