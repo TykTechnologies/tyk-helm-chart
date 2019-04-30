@@ -20,11 +20,19 @@ To get started quickly, you can use these rather excellent Redis and MongoDB cha
 
 > *Important Note regarding TLS:* This helm chart assumes TLS is being used by default, so the gateways will listen on port 443 and load up a dummy certificate. You can set your own default certificate by replacing the files in the certs/ folder.
 
+## Install Tyk Community Edition
+To install, *first modify the `values_community_edition.yaml` file to add redis and mongo details*:
+
+	helm install -f ./values_community_edition.yaml ./tyk-pro
+
+> **Warning**: Tyk Service Mesh capability is not currently supported with Tyk CE
+
+## Install Tyk Pro
 To install, *first modify the `values.yaml` file to add redis and mongo details, and add your license*:
 
 	helm install -f ./values.yaml ./tyk-pro
 
-Follow the instructions in the Notes that follow the installation to install the controller.
+Follow the instructions in the Notes that follow the installation to install the controller for Service Mesh sidecar injection.
 
 ## Important things to remember: Nodes are Segmented
 
@@ -101,7 +109,7 @@ When an ingress is removed, the services will be removed from the API Gateway as
 
 Tyk supports the TLS section for the ingress controller. If you set a TLS entry with a secret, the controller will retrieve the certificate from K8s and load it into the encrypted certificate store in Tyk and dynamically load it into the ingress. You can manage the certificate from within Tyk Dashboard.
 
-## Using the injector
+## Using the service-mesh injector
 
 The service mesh injector will create two services: 
 

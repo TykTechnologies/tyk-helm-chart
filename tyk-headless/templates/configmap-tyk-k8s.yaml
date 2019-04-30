@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tyk-k8s-conf
+  namespace: {{ .Values.nameSpace }}
+data:
+  tyk_k8s.yaml: |-
+    Server:
+      addr: ":9595"
+      certFile: ""
+      keyFile: ""
+    Tyk:
+      url: "https://localhost:9696"
+      secret: "set-by-env"
+      org: "set-by-env"
+      isGateway: true
+      insecureSkipVerify: true
+    Injector:
+      createRoutes: false

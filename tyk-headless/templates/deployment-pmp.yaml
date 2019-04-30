@@ -1,0 +1,53 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: pump-{{ include "tyk-headless.fullname" . }}
+  namespace: {{ .Values.nameSpace }}
+  labels:
+    app: pump-{{ include "tyk-headless.fullname" . }}
+    chart: {{ include "tyk-headless.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: pump-{{ include "tyk-headless.fullname" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: pump-{{ include "tyk-headless.fullname" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: pump-{{ .Chart.Name }}
+        image: "{{ .Values.pump.image.repository }}:{{ .Values.pump.image.tag }}"
+        imagePullPolicy: {{ .Values.pump.image.pullPolicy }}
+        workingDir: "/opt/tyk-pump"
+        env:
+          - name: REDIGOCLUSTER_SHARDCOUNT
+            value: "{{ .Values.redis.shardCount }}"
+          - name: PMP_MONGO_MONGOURL
+            value: "{{ .Values.mongo.mongoURL }}"
+          - name: PMP_MONGO_MONGOUSESSL
+            value: "{{ .Values.mongo.useSSL }}"
+          - name: PMP_MONGOAGG_MONGOURL
+            value:  "{{ .Values.mongo.mongoURL }}"
+          - name: PMP_MONGOAGG_MONGOUSESSL
+            value:  "{{ .Values.mongo.useSSL }}"
+          - name: TYK_PMP_REDIS_HOSTS
+            value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"
+        command: ["/opt/tyk-pump/tyk-pump", "-c", "/etc/tyk-pump/pump.conf"]
+        volumeMounts:
+          - name: tyk-pump-conf
+            mountPath: /etc/tyk-pump
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+      volumes:
+        - name: tyk-pump-conf
+          configMap:
+            name: tyk-pump-conf
+            items:
+              - key: pump.conf
+                path: pump.conf

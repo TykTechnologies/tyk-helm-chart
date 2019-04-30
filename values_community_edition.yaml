@@ -1,0 +1,105 @@
+# Default values for tyk-dashboard.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: ""
+fullnameOverride: "tyk-headless"
+
+replicaCount: 1
+nameSpace: tyk
+
+# Only set this to false if you are not planning on using the sidecar injector
+enableSharding: true
+
+# Change the Admin secret in the dashboard *after* bootstrapping
+secrets:
+  APISecret: "foobarbaz"
+  OrgID: "1"
+
+redis:
+    shardCount: 128
+    host: redis-redis.redis
+    port: 6379
+    useSSL: false
+    # pass: ""
+
+mongo:
+  mongoURL: "mongodb://mongodb-mongodb-replicaset.mongodb:27017/tyk-dashboard"
+  useSSL: false
+
+gateway:
+  redis:
+    shardCount: 128
+    host: redis.service
+    port: 6379
+    useSSL: false
+    # pass: ""
+  tags: "ingress"
+  image:
+    repository: tykio/tyk-gateway
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 443
+  ingress:
+    enabled: true
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    path: /
+    hosts:
+      - tyk-gateway.local
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+pump:
+  image:
+    repository: tykio/tyk-pump-docker-pub
+    tag: latest
+    pullPolicy: IfNotPresent
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+rbac: true 
+tyk_k8s:
+  image: 
+    repository: tykio/tyk-k8s
+    tag: headless
+    pullPolicy: Always
+  org_id: "DUMMY"
+  dash_key: "DUMMY"
+  service:
+    port: 443

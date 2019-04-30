@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tyk-mgmt-gateway-conf
+  namespace: {{ .Values.nameSpace }}
+data:
+  {{- (.Files.Glob "configs/tyk_mgmt.conf").AsConfig | nindent 2 }}
