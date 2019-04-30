@@ -57,7 +57,7 @@ spec:
         ports:
         - containerPort: 443
         resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.gateway.resources | indent 12 }}
         volumeMounts:
           - name: tyk-mgmt-gateway-conf
             mountPath: /etc/tyk-gateway

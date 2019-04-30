@@ -49,7 +49,7 @@ spec:
           - name: TYK_DB_REDISSSLINSECURESKIPVERIFY
             value: "true"
           - name: TYK_DB_MONGOURL
-            value: "{{ .Values.mongo.mongoURL }}"
+            value: {{ .Values.mongo.mongoURL | quote }}
           - name: TYK_DB_MONGOUSESSL
             value: "{{ .Values.mongo.useSSL }}"
           - name: TYK_DB_ADMINSECRET
@@ -57,9 +57,9 @@ spec:
           - name: TYK_DB_NODESECRET
             value: "{{ .Values.secrets.APISecret }}"
           - name: TYK_DB_LICENSEKEY
-            value: "{{ .Values.dash.license }}"
+            value: {{ .Values.dash.license | quote }}
         resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.dash.resources | indent 12 }}
         command: ["/opt/tyk-dashboard/tyk-analytics", "--conf=/etc/tyk-dashboard/tyk_analytics.conf"]
         workingDir: /opt/tyk-dashboard
         ports:
