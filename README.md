@@ -105,6 +105,98 @@ You can also directly modify the service in your Tyk Dasboard, though if the ing
 
 When an ingress is removed, the services will be removed from the API Gateway as well.
 
+### Templates
+
+It's quite likely that you will not want to overload your ingress specifications with annotations that set specific values in your API Definition. To make adding APIs much more flexible, you can make use of a single `template.service.tyk.io/` annotation to specify the name of a template to use when deploying your service to the gateway.
+
+This can be extremely useful if you want to standardise on certain types of service, e.g. "open-public", "closed-public" and "closed-jwt-internal", where you apply different auth scehemes, IP white lists and more complex re-usable specifications such as IDP provider details and secrets that you don;t want to re-code into each definition.
+
+To use templates, you will need to re-deploy the tyk-k8s container and add volume mounts for your templates:
+
+```
+	### --- deployment-tyk-k8s.yaml
+	### --- there's other stuff up here
+
+	spec:
+	  {{ if .Values.rbac }}serviceAccountName: tyk-k8s {{ end }}
+	  containers:
+	  - name: tyk-k8s
+	    image: "{{ .Values.tyk_k8s.image.repository }}:{{ .Values.tyk_k8s.image.tag }}"
+	    imagePullPolicy: {{ .Values.tyk_k8s.image.pullPolicy }}
+	    workingDir: "/opt/tyk-k8s"
+	    command: ["/opt/tyk-k8s/tyk-k8s", "start"]
+	    ports:
+	    - containerPort: 443
+	    volumeMounts:
+	      - name: tyk-k8s-conf
+	        mountPath: /etc/tyk-k8s
+	      - name: webhook-certs
+	        mountPath: /etc/tyk-k8s/certs
+
+	      ### Custom templates:
+	      - name: tyk-k8s-templates
+	        mountPath: /etc/tyk-k8s-templates
+	    resources:
+	{{ toYaml .Values.resources | indent 12 }}
+	  volumes:
+	    - name: tyk-k8s-conf
+	      configMap:
+	        name: tyk-k8s-conf
+	        items:
+	          - key: tyk_k8s.yaml
+	            path: tyk-k8s.yaml
+
+	    ### Custom templates:        
+	    - name: tyk-k8s-templates
+	      configMap:
+	        name: tyk-k8s-templates
+	        items:
+	          - key: template1.yaml # these should be real filenames
+	            path: template1.yaml
+```
+
+You will also need to update the config file for tyk-k8s:
+
+
+```
+	### configmap-tyk-k8s.yaml
+
+	Tyk:
+      url: "{{ .Values.tyk_k8s.dash_url }}"
+      secret: "{{ .Values.tyk_k8s.dash_key }}"
+      org_id: "{{ .Values.tyk_k8s.org_id }}"
+
+      # Add this line
+      templates: "/etc/tyk-k8s-templates" 
+```
+
+Once these template configMaps have been added, and your tyk-k8s service is running, you can set up your service definitions very easily by adding a single annotation:
+
+```
+	apiVersion: extensions/v1beta1
+	kind: Ingress
+	metadata:
+	  name: cafe-ingress
+	  annotations:
+	    kubernetes.io/ingress.class: tyk
+	    template.service.tyk.io/: tokenAuth
+	spec:
+	  rules:
+	  - host: cafe.example.com
+	    http:
+	      paths:
+	      - path: /tea
+	        backend:
+	          serviceName: tea-svc
+	          servicePort: 80
+	      - path: /coffee
+	        backend:
+	          serviceName: coffee-svc
+	          servicePort: 80
+```
+
+For a sample template, please see the [token auth template in the controller repository](https://raw.githubusercontent.com/TykTechnologies/tyk-k8s/master/templates/token-auth.json).
+
 ### TLS
 
 Tyk supports the TLS section for the ingress controller. If you set a TLS entry with a secret, the controller will retrieve the certificate from K8s and load it into the encrypted certificate store in Tyk and dynamically load it into the ingress. You can manage the certificate from within Tyk Dashboard.
