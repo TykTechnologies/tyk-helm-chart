@@ -2,7 +2,6 @@ apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
   name: dashboard-{{ include "tyk-pro.fullname" . }}
-  namespace: {{ .Values.nameSpace }}
   labels:
     app: dashboard-{{ include "tyk-pro.fullname" . }}
     chart: {{ include "tyk-pro.chart" . }}
@@ -37,7 +36,7 @@ spec:
           - name: TYK_DB_HOSTCONFIG_HOSTNAME
             value: "{{ .Values.dash.hostName }}"
           - name: TYK_DB_TYKAPI_HOST
-            value: "https://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Values.nameSpace }}"
+            value: "https://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
           - name: TYK_DB_TYKAPI_SECRET
             value: "{{ .Values.secrets.APISecret }}"
           - name: TYK_DB_HOSTS

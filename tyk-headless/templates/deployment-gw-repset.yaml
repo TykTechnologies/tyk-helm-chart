@@ -25,13 +25,12 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: tyk-k8s
-    namespace: {{ .Values.nameSpace }}
+    namespace: {{ .Release.Namespace }}
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: tyk-k8s
-  namespace: {{ .Values.nameSpace }}
 ---{{ end }}
 apiVersion: apps/v1
 kind: DaemonSet
@@ -42,7 +41,6 @@ metadata:
     chart: {{ include "tyk-headless.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  namespace: {{ .Values.nameSpace }}
 spec:
   tolerations:
     - key: node-role.kubernetes.io/master

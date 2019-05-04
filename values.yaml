@@ -6,7 +6,6 @@ nameOverride: ""
 fullnameOverride: ""
 
 replicaCount: 1
-nameSpace: tyk
 
 # Only set this to false if you are not planning on using the sidecar injector
 enableSharding: true
@@ -35,7 +34,7 @@ dash:
     tag: latest
     pullPolicy: Always
   service:
-    type: ClusterIP
+    type: NodePort
     port: 3000
   ingress:
     enabled: false
@@ -62,12 +61,6 @@ dash:
     #  memory: 128Mi
 
 gateway:
-  redis:
-    shardCount: 128
-    host: redis.service
-    port: 6379
-    useSSL: false
-    # pass: ""
   tags: "ingress"
   image:
     repository: tykio/tyk-gateway

@@ -25,19 +25,17 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: tyk-k8s
-    namespace: {{ .Values.nameSpace }}
+    namespace: {{ .Release.Namespace }}
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: tyk-k8s
-  namespace: {{ .Values.nameSpace }}
 ---{{ end }}
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: tyk-k8s
-  namespace: {{ .Values.nameSpace }}
   labels:
     app: tyk-k8s
     chart: {{ include "tyk-k8s.chart" . }}

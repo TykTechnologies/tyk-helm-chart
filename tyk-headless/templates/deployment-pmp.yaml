@@ -2,7 +2,6 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: pump-{{ include "tyk-headless.fullname" . }}
-  namespace: {{ .Values.nameSpace }}
   labels:
     app: pump-{{ include "tyk-headless.fullname" . }}
     chart: {{ include "tyk-headless.chart" . }}

@@ -6,7 +6,6 @@ nameOverride: ""
 fullnameOverride: "tyk-headless"
 
 replicaCount: 1
-nameSpace: tyk
 
 # Only set this to false if you are not planning on using the sidecar injector
 enableSharding: true
