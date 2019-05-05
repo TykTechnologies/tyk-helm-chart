@@ -11,8 +11,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
   annotations:
-    ingress.kubernetes.io/rewrite-target: /
-    kubernetes.io/ingress.class: "nginx"
+{{ toYaml .Values.dash.ingress.annotations | indent 4 }}
 spec:
 {{- if .Values.dash.ingress.tls }}
   tls:
@@ -31,7 +30,7 @@ spec:
         paths:
           - path: {{ $ingressPath }}
             backend:
-              serviceName: dashboard-{{ $fullName }}
-              servicePort: http
+              serviceName: dashboard-svc-{{ $fullName }}
+              servicePort: {{ $.Values.dash.service.port }}
   {{- end }}
 {{- end }}
