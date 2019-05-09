@@ -33,7 +33,7 @@ metadata:
   name: tyk-k8s
 ---{{ end }}
 apiVersion: apps/v1
-kind: DaemonSet
+kind: {{ .Values.gateway.kind }}
 metadata:
   name: gateway-{{ include "tyk-headless.fullname" . }}
   labels:
@@ -42,9 +42,9 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
+  replicas: {{ .Values.gateway.replicaCount }}
   tolerations:
-    - key: node-role.kubernetes.io/master
-      effect: NoSchedule
+{{ toYaml .Values.gateway.tolerations | indent 4 }}
   selector:
     matchLabels:
       app: gateway-{{ include "tyk-headless.fullname" . }}
@@ -63,6 +63,10 @@ spec:
         rollingUpdate:
           maxSurge: 2
           maxUnavailable: 1
+      nodeSelector:
+{{ toYaml .Values.gateway.nodeSelector | indent 8 }}
+      affinity:
+{{ toYaml .Values.gateway.affinity | indent 8 }}
       containers:
       - name: gateway-{{ .Chart.Name }}
         image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
@@ -72,16 +76,20 @@ spec:
             value: "{{ .Values.redis.shardCount }}"
           - name: TYK_GW_STORAGE_HOSTS
             value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"
+          - name: TYK_GW_STORAGE_PASSWORD
+            value: "{{ .Values.redis.pass }}"
           - name: TYK_GW_STORAGE_USESSL
             value: "{{ .Values.redis.useSSL }}"
           - name: TYK_GW_SECRET
             value: "{{ .Values.secrets.APISecret }}"
           - name: TYK_GW_NODESECRET
             value: "{{ .Values.secrets.APISecret }}"
+          - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
+            value: "{{ .Values.gateway.tls }}"
         command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
         workingDir: /opt/tyk-gateway
         ports:
-        - containerPort: 443
+        - containerPort: 8080
         resources:
 {{ toYaml .Values.resources | indent 12 }}
         volumeMounts:

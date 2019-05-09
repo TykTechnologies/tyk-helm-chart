@@ -5,8 +5,6 @@
 nameOverride: ""
 fullnameOverride: "tyk-headless"
 
-replicaCount: 1
-
 # Only set this to false if you are not planning on using the sidecar injector
 enableSharding: true
 
@@ -27,12 +25,15 @@ mongo:
   useSSL: false
 
 gateway:
+  kind: DaemonSet
+  replicaCount: 1
+  tls: true
   redis:
     shardCount: 128
     host: redis.service
     port: 6379
     useSSL: false
-    # pass: ""
+    pass: ""
   tags: "ingress"
   image:
     repository: tykio/tyk-gateway
@@ -54,12 +55,13 @@ gateway:
     #  cpu: 100m
     #  memory: 128Mi
   nodeSelector: {}
-
-  tolerations: []
-
+  tolerations:
+    - key: node-role.kubernetes.io/master
+      effect: NoSchedule
   affinity: {}
 
 pump:
+  replicaCount: 1
   image:
     repository: tykio/tyk-pump-docker-pub
     tag: latest
@@ -76,9 +78,7 @@ pump:
     #  cpu: 100m
     #  memory: 128Mi
   nodeSelector: {}
-
   tolerations: []
-
   affinity: {}
 
 rbac: true 

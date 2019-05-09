@@ -1,3 +1,7 @@
+{{- $gwProto := "http" }}
+{{- if .Values.gateway.tls }}
+{{- $gwProto = "https" }}
+{{- end }}
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
@@ -8,7 +12,9 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.dash.replicaCount }}
+  tolerations:
+{{ toYaml .Values.dash.tolerations | indent 4 }}
   selector:
     matchLabels:
       app: dashboard-{{ include "tyk-pro.fullname" . }}
@@ -26,6 +32,10 @@ spec:
         rollingUpdate:
           maxSurge: 2
           maxUnavailable: 1
+      nodeSelector:
+{{ toYaml .Values.dash.nodeSelector | indent 8 }}
+      affinity:
+{{ toYaml .Values.dash.affinity | indent 8 }}
       containers:
       - image: "{{ .Values.dash.image.repository }}:{{ .Values.dash.image.tag }}"
         imagePullPolicy: {{ .Values.dash.image.pullPolicy }}
@@ -36,13 +46,15 @@ spec:
           - name: TYK_DB_HOSTCONFIG_HOSTNAME
             value: "{{ .Values.dash.hostName }}"
           - name: TYK_DB_TYKAPI_HOST
-            value: "https://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
+            value: "{{ $gwProto }}://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
+          - name: TYK_DB_TYKAPI_PORT
+            value: "{{ .Values.gateway.service.port }}"
           - name: TYK_DB_TYKAPI_SECRET
             value: "{{ .Values.secrets.APISecret }}"
           - name: TYK_DB_HOSTS
-            value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"{{ if .Values.redis.pass }}
+            value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"
           - name: TYK_DB_REDISPASSWORD
-            value: ".Values.redis.pass"{{end}}
+            value: "{{ .Values.redis.pass }}"
           - name: TYK_DB_REDISUSESSL
             value: "{{ .Values.redis.useSSL }}"
           - name: TYK_DB_REDISSSLINSECURESKIPVERIFY

@@ -10,7 +10,7 @@ metadata:
 spec:
   type: {{ .Values.gateway.service.type }}
   ports:
-  - port: 443
+  - port: 8080
     targetPort: {{ .Values.gateway.service.port }}
     protocol: TCP
   selector:

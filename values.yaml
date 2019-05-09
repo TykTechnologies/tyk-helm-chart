@@ -5,8 +5,6 @@
 nameOverride: ""
 fullnameOverride: ""
 
-replicaCount: 1
-
 # Only set this to false if you are not planning on using the sidecar injector
 enableSharding: true
 
@@ -20,13 +18,14 @@ redis:
     host: redis-redis.redis
     port: 6379
     useSSL: false
-    # pass: ""
+    pass: ""
 
 mongo:
     mongoURL: "mongodb://mongodb-mongodb-replicaset.mongodb:27017/tyk-dashboard"
     useSSL: false
 
 dash:
+  replicaCount: 1
   hostName: "dashboard.tykbeta.com"
   license: "ADD-LICENSE-HERE"
   image:
@@ -59,9 +58,15 @@ dash:
     # requests:
     #  cpu: 100m
     #  memory: 128Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
 
 gateway:
+  kind: DaemonSet
+  replicaCount: 2
   tags: "ingress"
+  tls: true
   image:
     repository: tykio/tyk-gateway
     tag: latest
@@ -82,12 +87,13 @@ gateway:
     #  cpu: 100m
     #  memory: 128Mi
   nodeSelector: {}
-
-  tolerations: []
-
+  tolerations:
+    - key: node-role.kubernetes.io/master
+      effect: NoSchedule
   affinity: {}
 
 pump:
+  replicaCount: 1
   image:
     repository: tykio/tyk-pump-docker-pub
     tag: latest
@@ -104,9 +110,7 @@ pump:
     #  cpu: 100m
     #  memory: 128Mi
   nodeSelector: {}
-
   tolerations: []
-
   affinity: {}
 
 rbac: true 
