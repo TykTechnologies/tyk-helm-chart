@@ -16,5 +16,6 @@ spec:
   selector:
     app: gateway-{{ include "tyk-headless.fullname" . }}
     release: {{ .Release.Name }}
-  type: LoadBalancer
-  externalTrafficPolicy: Local
+{{- if eq .Values.gateway.service.type "LoadBalancer" }}
+  externalTrafficPolicy: {{ .Values.gateway.service.externalTrafficPolicy }}
+{{- end }}

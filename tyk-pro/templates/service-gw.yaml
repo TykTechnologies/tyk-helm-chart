@@ -17,5 +17,5 @@ spec:
     app: gateway-{{ include "tyk-pro.fullname" . }}
     release: {{ .Release.Name }}
 {{- if eq .Values.gateway.service.type "LoadBalancer" }}
-  externalTrafficPolicy: Local
+  externalTrafficPolicy: {{ .Values.gateway.service.externalTrafficPolicy }}
 {{- end }}
