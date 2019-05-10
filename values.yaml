@@ -8,7 +8,6 @@ fullnameOverride: ""
 # Only set this to false if you are not planning on using the sidecar injector
 enableSharding: true
 
-# Change the Admin secret in the dashboard *after* bootstrapping
 secrets:
   APISecret: "CHANGEME"
   AdminSecret: "12345"
