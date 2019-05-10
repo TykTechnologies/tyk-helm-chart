@@ -8,11 +8,13 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  {{- if eq .Values.gateway.kind "Deployment" }}
+{{- if eq .Values.gateway.kind "Deployment" }}
   replicas: {{ .Values.gateway.replicaCount }}
-  {{- end }}
+{{- end }}
+{{- if .Values.gateway.tolerations }}
   tolerations:
 {{ toYaml .Values.gateway.tolerations | indent 4 }}
+{{- end }}
   selector:
     matchLabels:
       app: gateway-{{ include "tyk-pro.fullname" . }}
@@ -30,10 +32,14 @@ spec:
         rollingUpdate:
           maxSurge: 2
           maxUnavailable: 1
+{{- if .Values.gateway.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.gateway.nodeSelector | indent 8 }}
+{{- end }}
+{{- if .Values.gateway.affinity }}
       affinity:
 {{ toYaml .Values.gateway.affinity | indent 8 }}
+{{- end }}
       containers:
       - name: gateway-{{ .Chart.Name }}
         image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
@@ -61,6 +67,12 @@ spec:
             value: "{{.Values.gateway.tags }}"
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.gateway.tls }}"
+        {{- if .Values.gateway.extraEnvs }}
+        {{- range $env := .Values.gateway.extraEnvs }}
+          - name: {{ $env.name }}
+            value: {{ $env.value | quote }}
+        {{- end }}
+        {{- end }}
         command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
         workingDir: /opt/tyk-gateway
         ports:

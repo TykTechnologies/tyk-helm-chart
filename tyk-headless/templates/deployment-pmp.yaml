@@ -9,8 +9,10 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.pump.replicaCount }}
+{{- if .Values.pump.tolerations }}
   tolerations:
 {{ toYaml .Values.pump.tolerations | indent 4 }}
+{{- end }}
   selector:
     matchLabels:
       app: pump-{{ include "tyk-headless.fullname" . }}
@@ -21,10 +23,14 @@ spec:
         app: pump-{{ include "tyk-headless.fullname" . }}
         release: {{ .Release.Name }}
     spec:
+{{- if .Values.pump.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.pump.nodeSelector | indent 8 }}
+{{- end }}
+{{- if .Values.pump.affinity }}
       affinity:
 {{ toYaml .Values.pump.affinity | indent 8 }}
+{{- end }}
       containers:
       - name: pump-{{ .Chart.Name }}
         image: "{{ .Values.pump.image.repository }}:{{ .Values.pump.image.tag }}"
@@ -47,6 +53,12 @@ spec:
             value: "{{ .Values.redis.pass }}"
           - name: TYK_PMP_REDIS_REDISUSESSL
             value: "{{ .Values.redis.useSSL }}"
+        {{- if .Values.pump.extraEnvs }}
+        {{- range $env := .Values.pump.extraEnvs }}
+          - name: {{ $env.name }}
+            value: {{ $env.value | quote }}
+        {{- end }}
+        {{- end }}
         command: ["/opt/tyk-pump/tyk-pump", "-c", "/etc/tyk-pump/pump.conf"]
         volumeMounts:
           - name: tyk-pump-conf

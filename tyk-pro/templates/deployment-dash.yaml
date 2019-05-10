@@ -1,7 +1,3 @@
-{{- $gwProto := "http" }}
-{{- if .Values.gateway.tls }}
-{{- $gwProto = "https" }}
-{{- end }}
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
@@ -13,8 +9,10 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.dash.replicaCount }}
+{{- if .Values.dash.tolerations }}
   tolerations:
 {{ toYaml .Values.dash.tolerations | indent 4 }}
+{{- end }}
   selector:
     matchLabels:
       app: dashboard-{{ include "tyk-pro.fullname" . }}
@@ -32,10 +30,14 @@ spec:
         rollingUpdate:
           maxSurge: 2
           maxUnavailable: 1
+{{- if .Values.dash.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.dash.nodeSelector | indent 8 }}
+{{- end }}
+{{- if .Values.dash.affinity }}
       affinity:
 {{ toYaml .Values.dash.affinity | indent 8 }}
+{{- end }}
       containers:
       - image: "{{ .Values.dash.image.repository }}:{{ .Values.dash.image.tag }}"
         imagePullPolicy: {{ .Values.dash.image.pullPolicy }}
@@ -46,7 +48,7 @@ spec:
           - name: TYK_DB_HOSTCONFIG_HOSTNAME
             value: "{{ .Values.dash.hostName }}"
           - name: TYK_DB_TYKAPI_HOST
-            value: "{{ $gwProto }}://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
+            value: "{{ include "tyk-pro.gwproto" . }}://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
           - name: TYK_DB_TYKAPI_PORT
             value: "{{ .Values.gateway.service.port }}"
           - name: TYK_DB_TYKAPI_SECRET
@@ -69,12 +71,18 @@ spec:
             value: "{{ .Values.secrets.APISecret }}"
           - name: TYK_DB_LICENSEKEY
             value: {{ .Values.dash.license | quote }}
+        {{- if .Values.dash.extraEnvs }}
+        {{- range $env := .Values.dash.extraEnvs }}
+          - name: {{ $env.name }}
+            value: {{ $env.value | quote }}
+        {{- end }}
+        {{- end }}
         resources:
 {{ toYaml .Values.dash.resources | indent 12 }}
         command: ["/opt/tyk-dashboard/tyk-analytics", "--conf=/etc/tyk-dashboard/tyk_analytics.conf"]
         workingDir: /opt/tyk-dashboard
         ports:
-        - containerPort:  {{ .Values.dash.service.port }}
+        - containerPort:  3000
         volumeMounts:
           - name: tyk-dashboard-conf
             mountPath: /etc/tyk-dashboard

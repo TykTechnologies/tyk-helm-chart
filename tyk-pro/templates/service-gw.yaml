@@ -7,11 +7,17 @@ metadata:
     chart: {{ include "tyk-pro.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+{{- if .Values.gateway.service.annotations }}
+  annotations:
+  {{- range $key, $value := .Values.gateway.service.annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}
 spec:
   type: {{ .Values.gateway.service.type }}
   ports:
-  - port: 8080
-    targetPort: {{ .Values.gateway.service.port }}
+  - port: {{ .Values.gateway.service.port }}
+    targetPort: 8080
     protocol: TCP
   selector:
     app: gateway-{{ include "tyk-pro.fullname" . }}

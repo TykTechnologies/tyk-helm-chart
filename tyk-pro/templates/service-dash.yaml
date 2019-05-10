@@ -10,7 +10,7 @@ metadata:
 spec:
   ports:
   - port: {{ .Values.dash.service.port }}
-    targetPort: {{ .Values.dash.service.port }}
+    targetPort: 3000
     protocol: TCP
   type: {{ .Values.dash.service.type }}
   selector:

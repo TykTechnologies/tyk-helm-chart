@@ -43,6 +43,7 @@ gateway:
     type: LoadBalancer
     port: 443
     externalTrafficPolicy: Local
+    annotations: {}
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
@@ -59,6 +60,7 @@ gateway:
     - key: node-role.kubernetes.io/master
       effect: NoSchedule
   affinity: {}
+  extraEnvs: []
 
 pump:
   replicaCount: 1
@@ -80,6 +82,7 @@ pump:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  extraEnvs: []
 
 rbac: true 
 tyk_k8s:
