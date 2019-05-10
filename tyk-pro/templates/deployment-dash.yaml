@@ -89,7 +89,7 @@ spec:
       volumes:
         - name: tyk-dashboard-conf
           configMap:
-            name: tyk-dashboard-conf
+            name: dashboard-conf-{{ include "tyk-pro.fullname" . }}
             items:
               - key: tyk_analytics.conf
                 path: tyk_analytics.conf

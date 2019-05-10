@@ -131,13 +131,13 @@ spec:
       volumes:
         - name: tyk-k8s-conf
           configMap:
-            name: tyk-k8s-conf
+            name: k8s-conf-{{ include "tyk-headless.fullname" . }}
             items:
               - key: tyk_k8s.yaml
                 path: tyk-k8s.yaml
         - name: tyk-mgmt-gateway-conf
           configMap:
-            name: tyk-mgmt-gateway-conf
+            name: mgmt-gateway-conf-{{ include "tyk-headless.fullname" . }}
             items:
               - key: tyk_mgmt.conf
                 path: tyk.conf

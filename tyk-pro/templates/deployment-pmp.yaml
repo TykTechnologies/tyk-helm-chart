@@ -68,7 +68,7 @@ spec:
       volumes:
         - name: tyk-pump-conf
           configMap:
-            name: tyk-pump-conf
+            name: pump-conf-{{ include "tyk-pro.fullname" . }}
             items:
               - key: pump.conf
                 path: pump.conf

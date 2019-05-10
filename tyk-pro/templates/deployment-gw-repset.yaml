@@ -87,7 +87,7 @@ spec:
       volumes:
         - name: tyk-mgmt-gateway-conf
           configMap:
-            name: tyk-mgmt-gateway-conf
+            name: mgmt-gateway-conf-{{ include "tyk-pro.fullname" . }}
             items:
               - key: tyk_mgmt.conf
                 path: tyk.conf
