@@ -1,7 +1,11 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: tyk-dashboard-conf
-  namespace: {{ .Values.nameSpace }}
+  name: dashboard-conf-{{ include "tyk-pro.fullname" . }}
+  labels:
+    app: dashboard-{{ include "tyk-pro.fullname" . }}
+    chart: {{ include "tyk-pro.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 data:
   {{- (.Files.Glob "configs/tyk_analytics.conf").AsConfig | nindent 2 }}

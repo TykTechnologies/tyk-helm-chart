@@ -5,13 +5,9 @@
 nameOverride: ""
 fullnameOverride: ""
 
-replicaCount: 1
-nameSpace: tyk
-
 # Only set this to false if you are not planning on using the sidecar injector
 enableSharding: true
 
-# Change the Admin secret in the dashboard *after* bootstrapping
 secrets:
   APISecret: "CHANGEME"
   AdminSecret: "12345"
@@ -21,13 +17,14 @@ redis:
     host: redis-redis.redis
     port: 6379
     useSSL: false
-    # pass: ""
+    pass: ""
 
 mongo:
     mongoURL: "mongodb://mongodb-mongodb-replicaset.mongodb:27017/tyk-dashboard"
     useSSL: false
 
 dash:
+  replicaCount: 1
   hostName: "dashboard.tykbeta.com"
   license: "ADD-LICENSE-HERE"
   image:
@@ -35,7 +32,7 @@ dash:
     tag: latest
     pullPolicy: Always
   service:
-    type: ClusterIP
+    type: NodePort
     port: 3000
   ingress:
     enabled: false
@@ -60,34 +57,25 @@ dash:
     # requests:
     #  cpu: 100m
     #  memory: 128Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  extraEnvs: []
 
 gateway:
-  redis:
-    shardCount: 128
-    host: redis.service
-    port: 6379
-    useSSL: false
-    # pass: ""
+  kind: DaemonSet
+  replicaCount: 2
   tags: "ingress"
+  tls: true
   image:
     repository: tykio/tyk-gateway
     tag: latest
     pullPolicy: Always
   service:
-    type: ClusterIP
-    port: 443
-  ingress:
-    enabled: true
+    type: LoadBalancer
+    port: 80
+    externalTrafficPolicy: Local
     annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
-    path: /
-    hosts:
-      - tyk-dashboard.local
-    tls: []
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
@@ -100,12 +88,14 @@ gateway:
     #  cpu: 100m
     #  memory: 128Mi
   nodeSelector: {}
-
-  tolerations: []
-
+  tolerations:
+    - key: node-role.kubernetes.io/master
+      effect: NoSchedule
   affinity: {}
+  extraEnvs: []
 
 pump:
+  replicaCount: 1
   image:
     repository: tykio/tyk-pump-docker-pub
     tag: latest
@@ -122,10 +112,9 @@ pump:
     #  cpu: 100m
     #  memory: 128Mi
   nodeSelector: {}
-
   tolerations: []
-
   affinity: {}
+  extraEnvs: []
 
 rbac: true 
 tyk_k8s:

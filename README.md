@@ -201,6 +201,8 @@ For a sample template, please see the [token auth template in the controller rep
 
 Tyk supports the TLS section for the ingress controller. If you set a TLS entry with a secret, the controller will retrieve the certificate from K8s and load it into the encrypted certificate store in Tyk and dynamically load it into the ingress. You can manage the certificate from within Tyk Dashboard.
 
+TLS can also be disabled by setting `gateway.tls` option to `false`. In this case the gateway will run with HTTP listener. This is useful, e.g. in case TLS is terminated externally (such as on a cloud provider's load balancer).
+
 ## Using the service-mesh injector
 
 The service mesh injector will create two services: 
