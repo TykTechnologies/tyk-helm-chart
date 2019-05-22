@@ -10,10 +10,12 @@ metadata:
     chart: {{ include "tyk-pro.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  namespace: {{ .Values.nameSpace }}
+{{- if .Values.dash.ingress.annotations }}
   annotations:
-    ingress.kubernetes.io/rewrite-target: /
-    kubernetes.io/ingress.class: "nginx"
+  {{- range $key, $value := .Values.dash.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}
 spec:
 {{- if .Values.dash.ingress.tls }}
   tls:
@@ -32,7 +34,7 @@ spec:
         paths:
           - path: {{ $ingressPath }}
             backend:
-              serviceName: dashboard-{{ $fullName }}
-              servicePort: http
+              serviceName: dashboard-svc-{{ $fullName }}
+              servicePort: {{ $.Values.dash.service.port }}
   {{- end }}
 {{- end }}

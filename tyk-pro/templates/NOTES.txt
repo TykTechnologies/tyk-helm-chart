@@ -2,7 +2,7 @@ Run the following in bash to bootstrap the dashboard instance:
 
 1. Bootstrap the dashboard so we can get a username and password to login, this also generates access tokens for the controller to use
 
-export NODE_PORT=$(kubectl get --namespace {{ .Values.nameSpace }} -o jsonpath="{.spec.ports[0].nodePort}" services dashboard-svc-{{ include "tyk-pro.fullname" . }})
+export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services dashboard-svc-{{ include "tyk-pro.fullname" . }})
 export NODE_IP=$(kubectl get nodes --selector=kubernetes.io/role!=master -o jsonpath='{.items[0].status.addresses[?(@.type=="ExternalIP")].address}')
 export DASH_URL=http://$NODE_IP:$NODE_PORT
 
@@ -12,7 +12,7 @@ gcloud compute firewall-rules create dashboard --allow tcp:$NODE_PORT
 
 1b. Bootstrap the dashboard
 
-./tyk-pro/scripts/bootstrap_k8s.sh $NODE_IP:$NODE_PORT {{ .Values.secrets.AdminSecret }} {{ .Values.nameSpace }}
+./tyk-pro/scripts/bootstrap_k8s.sh $NODE_IP:$NODE_PORT {{ .Values.secrets.AdminSecret }} {{ .Release.Namespace }}
 
 2. Move the encoded secrets to the controller helm chart
 
@@ -20,7 +20,7 @@ mv ./tyk-pro/scripts/secrets.yaml ./tyk-k8s/templates
 
 3. Prepare the SSL and CA bundle for webhook
 
-./tyk-k8s/webhook/create-signed-cert.sh -n {{ .Values.nameSpace }}
+./tyk-k8s/webhook/create-signed-cert.sh -n {{ .Release.Namespace }}
 cat ./tyk-k8s/webhook/mutatingwebhook.yaml | ./tyk-k8s/webhook/webhook-patch-ca-bundle.sh > ./tyk-k8s/webhook/mutatingwebhook-ca-bundle.yaml
 
 4. Install the controller

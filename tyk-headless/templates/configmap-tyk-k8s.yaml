@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: k8s-conf-{{ include "tyk-headless.fullname" . }}
+  labels:
+    app: controller-{{ include "tyk-headless.fullname" . }}
+    chart: {{ include "tyk-headless.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  tyk_k8s.yaml: |-
+    Server:
+      addr: ":9595"
+      certFile: ""
+      keyFile: ""
+    Tyk:
+      url: "https://localhost:9696"
+      secret: "set-by-env"
+      org: "set-by-env"
+      isGateway: true
+      insecureSkipVerify: true
+    Injector:
+      createRoutes: false

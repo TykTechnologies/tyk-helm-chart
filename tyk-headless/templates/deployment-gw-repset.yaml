@@ -1,10 +1,44 @@
+{{ if .Values.rbac }}
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+    name: tyk-k8s
+rules:
+- apiGroups: ["extensions"]
+  resources: ["thirdpartyresources", "thirdpartyresources.extensions", "ingresses", "ingresses/status"]
+  verbs: ["*"]
+- apiGroups: [""]
+  resources: ["configmaps", "endpoints", "pods", "services"]
+  verbs: ["*"]
+- apiGroups: [""]
+  resources: ["namespaces", "configmaps", "pods", "endpoints", "services"]
+  verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: tyk-k8s
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tyk-k8s
+subjects:
+  - kind: ServiceAccount
+    name: tyk-k8s
+    namespace: {{ .Release.Namespace }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tyk-k8s
+---{{ end }}
 apiVersion: apps/v1
 kind: {{ .Values.gateway.kind }}
 metadata:
-  name: gateway-{{ include "tyk-pro.fullname" . }}
+  name: gateway-{{ include "tyk-headless.fullname" . }}
   labels:
-    app: gateway-{{ include "tyk-pro.fullname" . }}
-    chart: {{ include "tyk-pro.chart" . }}
+    app: gateway-{{ include "tyk-headless.fullname" . }}
+    chart: {{ include "tyk-headless.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
@@ -17,14 +51,15 @@ spec:
 {{- end }}
   selector:
     matchLabels:
-      app: gateway-{{ include "tyk-pro.fullname" . }}
+      app: gateway-{{ include "tyk-headless.fullname" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: gateway-{{ include "tyk-pro.fullname" . }}
+        app: gateway-{{ include "tyk-headless.fullname" . }}
         release: {{ .Release.Name }}
     spec:
+      {{ if .Values.rbac }}serviceAccountName: tyk-k8s {{ end }}
       minReadySeconds: 20
       strategy:
         # indicate which strategy we want for rolling update
@@ -53,18 +88,10 @@ spec:
             value: "{{ .Values.redis.pass }}"
           - name: TYK_GW_STORAGE_USESSL
             value: "{{ .Values.redis.useSSL }}"
-          - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
-            value: "{{ .Values.enableSharding }}"
-          - name: TYK_GW_DBAPPCONFOPTIONS_CONNECTIONSTRING
-            value: "http://dashboard-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.dash.service.port }}"
-          - name: TYK_GW_POLICIES_POLICYCONNECTIONSTRING
-            value: "http://dashboard-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.dash.service.port }}"
           - name: TYK_GW_SECRET
             value: "{{ .Values.secrets.APISecret }}"
           - name: TYK_GW_NODESECRET
             value: "{{ .Values.secrets.APISecret }}"
-          - name: TYK_GW_DBAPPCONFOPTIONS_TAGS
-            value: "{{.Values.gateway.tags }}"
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.gateway.tls }}"
         {{- if .Values.gateway.extraEnvs }}
@@ -78,16 +105,39 @@ spec:
         ports:
         - containerPort: 8080
         resources:
-{{ toYaml .Values.gateway.resources | indent 12 }}
+{{ toYaml .Values.resources | indent 12 }}
         volumeMounts:
           - name: tyk-mgmt-gateway-conf
             mountPath: /etc/tyk-gateway
           - name: {{ .Release.Name }}-default-cert
             mountPath: /etc/certs
+
+      - name: tyk-k8s
+        image: "{{ .Values.tyk_k8s.image.repository }}:{{ .Values.tyk_k8s.image.tag }}"
+        imagePullPolicy: {{ .Values.tyk_k8s.image.pullPolicy }}
+        workingDir: "/opt/tyk-k8s"
+        command: ["/opt/tyk-k8s/tyk-k8s", "start"]
+        env:
+          - name: TK8S_TYK_SECRET
+            value: "{{ .Values.secrets.APISecret }}"
+          - name: TK8S_TYK_ORG
+            value: "{{ .Values.secrets.OrgID }}"
+        
+        volumeMounts:
+          - name: tyk-k8s-conf
+            mountPath: /etc/tyk-k8s
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
       volumes:
+        - name: tyk-k8s-conf
+          configMap:
+            name: k8s-conf-{{ include "tyk-headless.fullname" . }}
+            items:
+              - key: tyk_k8s.yaml
+                path: tyk-k8s.yaml
         - name: tyk-mgmt-gateway-conf
           configMap:
-            name: mgmt-gateway-conf-{{ include "tyk-pro.fullname" . }}
+            name: mgmt-gateway-conf-{{ include "tyk-headless.fullname" . }}
             items:
               - key: tyk_mgmt.conf
                 path: tyk.conf

@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: gateway-svc-{{ include "tyk-pro.fullname" . }}
+  name: gateway-svc-{{ include "tyk-headless.fullname" . }}
   labels:
-    app: gateway-svc-{{ include "tyk-pro.fullname" . }}
-    chart: {{ include "tyk-pro.chart" . }}
+    app: gateway-svc-{{ include "tyk-headless.fullname" . }}
+    chart: {{ include "tyk-headless.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 {{- if .Values.gateway.service.annotations }}
@@ -20,7 +20,7 @@ spec:
     targetPort: 8080
     protocol: TCP
   selector:
-    app: gateway-{{ include "tyk-pro.fullname" . }}
+    app: gateway-{{ include "tyk-headless.fullname" . }}
     release: {{ .Release.Name }}
 {{- if eq .Values.gateway.service.type "LoadBalancer" }}
   externalTrafficPolicy: {{ .Values.gateway.service.externalTrafficPolicy }}

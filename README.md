@@ -20,17 +20,31 @@ To get started quickly, you can use these rather excellent Redis and MongoDB cha
 
 > *Important Note regarding TLS:* This helm chart assumes TLS is being used by default, so the gateways will listen on port 443 and load up a dummy certificate. You can set your own default certificate by replacing the files in the certs/ folder.
 
+## Install Tyk Community Edition
+To install, *first modify the `values_community_edition.yaml` file to add redis and mongo details*:
+
+	helm install -f ./values_community_edition.yaml ./tyk-pro
+
+> **Warning**: Tyk Service Mesh capability is not currently supported with Tyk CE
+
+## Install Tyk Pro
 To install, *first modify the `values.yaml` file to add redis and mongo details, and add your license*:
 
 	helm install -f ./values.yaml ./tyk-pro
 
-Follow the instructions in the Notes that follow the installation to install the controller.
+Follow the instructions in the Notes that follow the installation to install the controller for Service Mesh sidecar injection.
 
 ## Important things to remember: Nodes are Segmented
 
 This Helm chart installs Tyk as a *segmented* Gateway service with an external load balancer, this means that the gateways that get deployed are tagged with the `ingress` tag. Tagged gateways like this will only load APIs that have also been tagged as `ingress`.
 
 The reason gateways are sharded is so that the dashboard and the Tyk K8s controller can target different services to different gateways, i.e. services that are exposed to the internet should be routed in the `ingress` gateways, while service-mesh sidecars need to handle private service definitions which are created programatically, and should not be loaded into the public-facing gateways.
+
+## Caveat: Tyk license and the number of gateway nodes
+
+While we recommend the unlimited node Tyk license for Kubernetes deployments, it's still possible to use limited licenses by changing the gateway resource kind to `Deployment` and setting the replica count to the node limit. For example, use the following options for a single node license: `--set gateway.kind=Deployment --set gateway.replicaCount=1` or similar if modifying the `values.yaml`.
+
+Note, however, there may be intermittent issues on the new pods during the rolling update process, when the total number of online gateway pods is more than the license limit.
 
 ### Making an API public
 
@@ -97,11 +111,105 @@ You can also directly modify the service in your Tyk Dasboard, though if the ing
 
 When an ingress is removed, the services will be removed from the API Gateway as well.
 
+### Templates
+
+It's quite likely that you will not want to overload your ingress specifications with annotations that set specific values in your API Definition. To make adding APIs much more flexible, you can make use of a single `template.service.tyk.io/` annotation to specify the name of a template to use when deploying your service to the gateway.
+
+This can be extremely useful if you want to standardise on certain types of service, e.g. "open-public", "closed-public" and "closed-jwt-internal", where you apply different auth scehemes, IP white lists and more complex re-usable specifications such as IDP provider details and secrets that you don;t want to re-code into each definition.
+
+To use templates, you will need to re-deploy the tyk-k8s container and add volume mounts for your templates:
+
+```
+	### --- deployment-tyk-k8s.yaml
+	### --- there's other stuff up here
+
+	spec:
+	  {{ if .Values.rbac }}serviceAccountName: tyk-k8s {{ end }}
+	  containers:
+	  - name: tyk-k8s
+	    image: "{{ .Values.tyk_k8s.image.repository }}:{{ .Values.tyk_k8s.image.tag }}"
+	    imagePullPolicy: {{ .Values.tyk_k8s.image.pullPolicy }}
+	    workingDir: "/opt/tyk-k8s"
+	    command: ["/opt/tyk-k8s/tyk-k8s", "start"]
+	    ports:
+	    - containerPort: 443
+	    volumeMounts:
+	      - name: tyk-k8s-conf
+	        mountPath: /etc/tyk-k8s
+	      - name: webhook-certs
+	        mountPath: /etc/tyk-k8s/certs
+
+	      ### Custom templates:
+	      - name: tyk-k8s-templates
+	        mountPath: /etc/tyk-k8s-templates
+	    resources:
+	{{ toYaml .Values.resources | indent 12 }}
+	  volumes:
+	    - name: tyk-k8s-conf
+	      configMap:
+	        name: tyk-k8s-conf
+	        items:
+	          - key: tyk_k8s.yaml
+	            path: tyk-k8s.yaml
+
+	    ### Custom templates:        
+	    - name: tyk-k8s-templates
+	      configMap:
+	        name: tyk-k8s-templates
+	        items:
+	          - key: template1.yaml # these should be real filenames
+	            path: template1.yaml
+```
+
+You will also need to update the config file for tyk-k8s:
+
+
+```
+	### configmap-tyk-k8s.yaml
+
+	Tyk:
+      url: "{{ .Values.tyk_k8s.dash_url }}"
+      secret: "{{ .Values.tyk_k8s.dash_key }}"
+      org_id: "{{ .Values.tyk_k8s.org_id }}"
+
+      # Add this line
+      templates: "/etc/tyk-k8s-templates" 
+```
+
+Once these template configMaps have been added, and your tyk-k8s service is running, you can set up your service definitions very easily by adding a single annotation:
+
+```
+	apiVersion: extensions/v1beta1
+	kind: Ingress
+	metadata:
+	  name: cafe-ingress
+	  annotations:
+	    kubernetes.io/ingress.class: tyk
+	    template.service.tyk.io/: tokenAuth
+	spec:
+	  rules:
+	  - host: cafe.example.com
+	    http:
+	      paths:
+	      - path: /tea
+	        backend:
+	          serviceName: tea-svc
+	          servicePort: 80
+	      - path: /coffee
+	        backend:
+	          serviceName: coffee-svc
+	          servicePort: 80
+```
+
+For a sample template, please see the [token auth template in the controller repository](https://raw.githubusercontent.com/TykTechnologies/tyk-k8s/master/templates/token-auth.json).
+
 ### TLS
 
 Tyk supports the TLS section for the ingress controller. If you set a TLS entry with a secret, the controller will retrieve the certificate from K8s and load it into the encrypted certificate store in Tyk and dynamically load it into the ingress. You can manage the certificate from within Tyk Dashboard.
 
-## Using the injector
+TLS can also be disabled by setting `gateway.tls` option to `false`. In this case the gateway will run with HTTP listener. This is useful, e.g. in case TLS is terminated externally (such as on a cloud provider's load balancer).
+
+## Using the service-mesh injector
 
 The service mesh injector will create two services: 
 

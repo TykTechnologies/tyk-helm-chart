@@ -1,15 +1,18 @@
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: dashboard-{{ include "tyk-pro.fullname" . }}
-  namespace: {{ .Values.nameSpace }}
   labels:
     app: dashboard-{{ include "tyk-pro.fullname" . }}
     chart: {{ include "tyk-pro.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.dash.replicaCount }}
+{{- if .Values.dash.tolerations }}
+  tolerations:
+{{ toYaml .Values.dash.tolerations | indent 4 }}
+{{- end }}
   selector:
     matchLabels:
       app: dashboard-{{ include "tyk-pro.fullname" . }}
@@ -27,6 +30,14 @@ spec:
         rollingUpdate:
           maxSurge: 2
           maxUnavailable: 1
+{{- if .Values.dash.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.dash.nodeSelector | indent 8 }}
+{{- end }}
+{{- if .Values.dash.affinity }}
+      affinity:
+{{ toYaml .Values.dash.affinity | indent 8 }}
+{{- end }}
       containers:
       - image: "{{ .Values.dash.image.repository }}:{{ .Values.dash.image.tag }}"
         imagePullPolicy: {{ .Values.dash.image.pullPolicy }}
@@ -37,19 +48,21 @@ spec:
           - name: TYK_DB_HOSTCONFIG_HOSTNAME
             value: "{{ .Values.dash.hostName }}"
           - name: TYK_DB_TYKAPI_HOST
-            value: "https://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Values.nameSpace }}"
+            value: "{{ include "tyk-pro.gwproto" . }}://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
+          - name: TYK_DB_TYKAPI_PORT
+            value: "{{ .Values.gateway.service.port }}"
           - name: TYK_DB_TYKAPI_SECRET
             value: "{{ .Values.secrets.APISecret }}"
           - name: TYK_DB_HOSTS
-            value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"{{ if .Values.redis.pass }}
+            value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"
           - name: TYK_DB_REDISPASSWORD
-            value: ".Values.redis.pass"{{end}}
+            value: "{{ .Values.redis.pass }}"
           - name: TYK_DB_REDISUSESSL
             value: "{{ .Values.redis.useSSL }}"
           - name: TYK_DB_REDISSSLINSECURESKIPVERIFY
             value: "true"
           - name: TYK_DB_MONGOURL
-            value: "{{ .Values.mongo.mongoURL }}"
+            value: {{ .Values.mongo.mongoURL | quote }}
           - name: TYK_DB_MONGOUSESSL
             value: "{{ .Values.mongo.useSSL }}"
           - name: TYK_DB_ADMINSECRET
@@ -57,20 +70,26 @@ spec:
           - name: TYK_DB_NODESECRET
             value: "{{ .Values.secrets.APISecret }}"
           - name: TYK_DB_LICENSEKEY
-            value: "{{ .Values.dash.license }}"
+            value: {{ .Values.dash.license | quote }}
+        {{- if .Values.dash.extraEnvs }}
+        {{- range $env := .Values.dash.extraEnvs }}
+          - name: {{ $env.name }}
+            value: {{ $env.value | quote }}
+        {{- end }}
+        {{- end }}
         resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.dash.resources | indent 12 }}
         command: ["/opt/tyk-dashboard/tyk-analytics", "--conf=/etc/tyk-dashboard/tyk_analytics.conf"]
         workingDir: /opt/tyk-dashboard
         ports:
-        - containerPort:  {{ .Values.dash.service.port }}
+        - containerPort:  3000
         volumeMounts:
           - name: tyk-dashboard-conf
             mountPath: /etc/tyk-dashboard
       volumes:
         - name: tyk-dashboard-conf
           configMap:
-            name: tyk-dashboard-conf
+            name: dashboard-conf-{{ include "tyk-pro.fullname" . }}
             items:
               - key: tyk_analytics.conf
                 path: tyk_analytics.conf

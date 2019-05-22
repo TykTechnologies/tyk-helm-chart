@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pump-{{ include "tyk-pro.fullname" . }}
+  name: pump-{{ include "tyk-headless.fullname" . }}
   labels:
-    app: pump-{{ include "tyk-pro.fullname" . }}
-    chart: {{ include "tyk-pro.chart" . }}
+    app: pump-{{ include "tyk-headless.fullname" . }}
+    chart: {{ include "tyk-headless.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
@@ -15,12 +15,12 @@ spec:
 {{- end }}
   selector:
     matchLabels:
-      app: pump-{{ include "tyk-pro.fullname" . }}
+      app: pump-{{ include "tyk-headless.fullname" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: pump-{{ include "tyk-pro.fullname" . }}
+        app: pump-{{ include "tyk-headless.fullname" . }}
         release: {{ .Release.Name }}
     spec:
 {{- if .Values.pump.nodeSelector }}
@@ -40,11 +40,11 @@ spec:
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "{{ .Values.redis.shardCount }}"
           - name: PMP_MONGO_MONGOURL
-            value: {{ .Values.mongo.mongoURL | quote }}
+            value: "{{ .Values.mongo.mongoURL }}"
           - name: PMP_MONGO_MONGOUSESSL
             value: "{{ .Values.mongo.useSSL }}"
           - name: PMP_MONGOAGG_MONGOURL
-            value:  {{ .Values.mongo.mongoURL | quote }}
+            value:  "{{ .Values.mongo.mongoURL }}"
           - name: PMP_MONGOAGG_MONGOUSESSL
             value:  "{{ .Values.mongo.useSSL }}"
           - name: TYK_PMP_REDIS_HOSTS
@@ -64,11 +64,11 @@ spec:
           - name: tyk-pump-conf
             mountPath: /etc/tyk-pump
         resources:
-{{ toYaml .Values.pump.resources | indent 12 }}
+{{ toYaml .Values.resources | indent 12 }}
       volumes:
         - name: tyk-pump-conf
           configMap:
-            name: pump-conf-{{ include "tyk-pro.fullname" . }}
+            name: pump-conf-{{ include "tyk-headless.fullname" . }}
             items:
               - key: pump.conf
                 path: pump.conf

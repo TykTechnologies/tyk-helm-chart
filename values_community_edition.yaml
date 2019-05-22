@@ -3,74 +3,41 @@
 # Declare variables to be passed into your templates.
 
 nameOverride: ""
-fullnameOverride: ""
+fullnameOverride: "tyk-headless"
 
 # Only set this to false if you are not planning on using the sidecar injector
 enableSharding: true
 
 secrets:
   APISecret: "CHANGEME"
-  AdminSecret: "12345"
+  OrgID: "1"
 
 redis:
     shardCount: 128
     host: redis-redis.redis
     port: 6379
     useSSL: false
-    pass: ""
+    # pass: ""
 
 mongo:
-    mongoURL: "mongodb://mongodb-mongodb-replicaset.mongodb:27017/tyk-dashboard"
-    useSSL: false
-
-dash:
-  replicaCount: 1
-  hostName: "dashboard.tykbeta.com"
-  license: "ADD-LICENSE-HERE"
-  image:
-    repository: tykio/tyk-dashboard
-    tag: latest
-    pullPolicy: Always
-  service:
-    type: NodePort
-    port: 3000
-  ingress:
-    enabled: false
-    annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
-    path: /
-    hosts:
-      - tyk-dashboard.local
-    tls: []
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
-  resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #  cpu: 100m
-    #  memory: 128Mi
-    # requests:
-    #  cpu: 100m
-    #  memory: 128Mi
-  nodeSelector: {}
-  tolerations: []
-  affinity: {}
-  extraEnvs: []
+  mongoURL: "mongodb://mongodb-mongodb-replicaset.mongodb:27017/tyk-dashboard"
+  useSSL: false
 
 gateway:
   kind: DaemonSet
-  replicaCount: 2
-  tags: "ingress"
+  replicaCount: 1
   tls: true
+  redis:
+    shardCount: 128
+    host: redis.service
+    port: 6379
+    useSSL: false
+    pass: ""
+  tags: "ingress"
   image:
     repository: tykio/tyk-gateway
     tag: latest
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
   service:
     type: LoadBalancer
     port: 443
@@ -99,7 +66,7 @@ pump:
   image:
     repository: tykio/tyk-pump-docker-pub
     tag: latest
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
@@ -120,7 +87,7 @@ rbac: true
 tyk_k8s:
   image: 
     repository: tykio/tyk-k8s
-    tag: stable
+    tag: headless
     pullPolicy: Always
   org_id: "DUMMY"
   dash_key: "DUMMY"
