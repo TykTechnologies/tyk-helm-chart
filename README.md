@@ -117,6 +117,8 @@ It's quite likely that you will not want to overload your ingress specifications
 
 This can be extremely useful if you want to standardise on certain types of service, e.g. "open-public", "closed-public" and "closed-jwt-internal", where you apply different auth scehemes, IP white lists and more complex re-usable specifications such as IDP provider details and secrets that you don;t want to re-code into each definition.
 
+Templates currently must have a .json filetype to be loaded into the controller and parsed.
+
 To use templates, you will need to re-deploy the tyk-k8s container and add volume mounts for your templates:
 
 ```
@@ -155,10 +157,10 @@ To use templates, you will need to re-deploy the tyk-k8s container and add volum
 	    ### Custom templates:        
 	    - name: tyk-k8s-templates
 	      configMap:
-	        name: tyk-k8s-templates
+	        name: token-auth
 	        items:
-	          - key: template1.yaml # these should be real filenames
-	            path: template1.yaml
+	          - key: token-auth.json # these should be real filenames ending .json
+	            path: token-auth.json
 ```
 
 You will also need to update the config file for tyk-k8s:
@@ -176,6 +178,23 @@ You will also need to update the config file for tyk-k8s:
       templates: "/etc/tyk-k8s-templates" 
 ```
 
+Templates are added as config maps, to convert an API definition to a template, simply encapsulate it in template tags, like this:
+
+```
+{{ define "tokenAuth"}}
+{
+  "name": "{{.Name}}{{ range $i, $e := .GatewayTags }} #{{$e}}{{ end }}",
+  ...
+}
+{{ end }}
+```
+
+Once you have created them, add the to the namespace as config maps:
+
+```
+kubectl create configmap token-auth --from-file=token-auth.json --namespace {namespace}
+```
+
 Once these template configMaps have been added, and your tyk-k8s service is running, you can set up your service definitions very easily by adding a single annotation:
 
 ```
@@ -185,7 +204,7 @@ Once these template configMaps have been added, and your tyk-k8s service is runn
 	  name: cafe-ingress
 	  annotations:
 	    kubernetes.io/ingress.class: tyk
-	    template.service.tyk.io/: tokenAuth
+	    template.service.tyk.io: tokenAuth
 	spec:
 	  rules:
 	  - host: cafe.example.com
