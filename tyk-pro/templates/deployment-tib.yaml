@@ -1,0 +1,64 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: tib-{{ include "tyk-pro.fullname" . }}
+  labels:
+    app: tib-{{ include "tyk-pro.fullname" . }}
+    chart: {{ include "tyk-pro.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+{{- if .Values.dash.tolerations }}
+  tolerations:
+{{ toYaml .Values.dash.tolerations | indent 4 }}
+{{- end }}
+  selector:
+    matchLabels:
+      app: tib-{{ include "tyk-pro.fullname" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: tib-{{ include "tyk-pro.fullname" . }}
+        release: {{ .Release.Name }}
+    spec:
+      minReadySeconds: 20
+      strategy:
+        # indicate which strategy we want for rolling update
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 2
+          maxUnavailable: 1
+{{- if .Values.dash.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.dash.nodeSelector | indent 8 }}
+{{- end }}
+{{- if .Values.dash.affinity }}
+      affinity:
+{{ toYaml .Values.dash.affinity | indent 8 }}
+{{- end }}
+      containers:
+      - image: "{{ .Values.tib.image.repository }}:{{ .Values.tib.image.tag }}"
+        imagePullPolicy: {{ .Values.tib.image.pullPolicy }}
+        name: tib-{{ .Chart.Name }}
+        resources:
+{{ toYaml .Values.tib.resources | indent 10 }}
+        ports:
+        - containerPort:  {{ .Values.tib.service.port }}
+        volumeMounts:
+          - name: tyk-tib-conf-volume
+            mountPath: /opt/tyk-identity-broker/tib.conf
+            subPath: tib.conf
+            readOnly: true
+          - name: tyk-tib-profiles-conf-volume
+            mountPath: /opt/tyk-identity-broker/profiles.json
+            subPath: profiles.json
+            readOnly: true
+      volumes:
+        - name: tyk-tib-conf-volume
+          configMap:
+            name: tyk-tib-conf
+        - name: tyk-tib-profiles-conf-volume
+          configMap:
+            name: tyk-tib-profiles-conf
