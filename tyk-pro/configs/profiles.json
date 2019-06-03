@@ -1,0 +1,54 @@
+[{
+    "ActionType": "GenerateOrLoginUserProfile",
+    "ID": "1",
+    "IdentityHandlerConfig": {},
+    "OrgID": "53ac07777cbb8c2d53000002",
+    "ProviderConfig": {
+        "CallbackBaseURL": "http://tib.domain.com:3010",
+        "FailureRedirect": "http://tib.domain.com:3000/?fail=true",
+        "UseProviders": [{
+            "Key": "GOOGLE-OAUTH-TOKEN",
+            "Name": "gplus",
+            "Secret": "GOOGLE OAUTH SECRET"
+        }]
+    },
+    "ProviderConstraints": {
+        "Domain": "tyk.io",
+        "Group": ""
+    },
+    "ProviderName": "SocialProvider",
+    "ReturnURL": "http://tyk-dashboard.domain.com:3000/tap",
+    "Type": "redirect"
+}, {
+    "ActionType": "GenerateOAuthTokenForClient",
+    "ID": "2",
+    "IdentityHandlerConfig": {
+        "DashboardCredential": "ADVANCED-API-USER-API-TOKEN",
+        "DisableOneTokenPerAPI": false,
+        "OAuth": {
+            "APIListenPath": "oauth-1",
+            "BaseAPIID": "API-To-GRANT-ACCESS-TO",
+            "ClientId": "TYK-OAUTH-CLIENT-ID",
+            "RedirectURI": "http://your-app-domain.com/target-for-fragment",
+            "ResponseType": "token",
+            "Secret": "TYK-OAUTH-CLIENT-SECRET"
+        }
+    },
+    "MatchedPolicyID": "POLICY-TO-ATTACH-TO-KEY",
+    "OrgID": "53ac07777cbb8c2d53000002",
+    "ProviderConfig": {
+        "FailureRedirect": "http://yourdomain.com/failure-url",
+        "LDAPAttributes": [],
+        "LDAPUseSsl": false,
+        "LDAPBaseDN": "cn=dashboard,ou=Group,dc=ldap,dc=tyk-test,dc=com",
+        "LDAPEmailAttribute": "mail",
+        "LDAPSearchScope": 2,
+        "LDAPFilter": "((objectCategory=person)(objectClass=user)(cn=*USERNAME*))",
+        "LDAPPort": "389",
+        "LDAPServer": "localhost",
+        "LDAPUserDN": "cn=*USERNAME*,cn=dashboard,ou=Group,dc=ldap,dc=tyk-test,dc=com"
+    },
+    "ProviderName": "ADProvider",
+    "ReturnURL": "",
+    "Type": "passthrough"
+}]

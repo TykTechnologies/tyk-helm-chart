@@ -24,6 +24,7 @@ mongo:
     useSSL: false
 
 tib:
+  enabled: false
   image:
     repository: tykio/tyk-identity-broker
     tag: latest

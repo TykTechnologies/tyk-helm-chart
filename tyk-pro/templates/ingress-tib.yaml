@@ -1,3 +1,4 @@
+{{- if .Values.tib.enabled -}}
 {{- if .Values.tib.ingress.enabled -}}
 {{- $fullName := include "tyk-pro.fullname" . -}}
 {{- $ingressPath := .Values.tib.ingress.path -}}
@@ -35,4 +36,5 @@ spec:
               serviceName: tib-svc-{{ $fullName }}
               servicePort: http
   {{- end }}
+{{- end }}
 {{- end }}
