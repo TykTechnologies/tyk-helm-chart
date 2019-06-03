@@ -23,6 +23,7 @@ mongo:
   mongoURL: "mongodb://mongodb-mongodb-replicaset.mongodb:27017/tyk-dashboard"
   useSSL: false
 tib:
+  enabled: false
   image:
     repository: tykio/tyk-identity-broker
     tag: latest
