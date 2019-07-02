@@ -34,6 +34,12 @@ To install, *first modify the `values.yaml` file to add redis and mongo details,
 
 Follow the instructions in the Notes that follow the installation to install the controller for Service Mesh sidecar injection.
 
+## Installing TIB
+The Tyk Identity Broker (TIB) is a microservice portal that provides a bridge between various Identity Management Systems such as LDAP, Social OAuth (e.g. GPlus, Twitter, GitHub), legacy Basic Authentication providers, to your Tyk installation (https://tyk.io/docs/concepts/tyk-components/identity-broker/).
+
+Once you have installed `Gateway` and `Dashboard` component you can configure `tib.conf` and `profile.json` and use helm upgrade command to install TIB.
+
+
 ## Important things to remember: Nodes are Segmented
 
 This Helm chart installs Tyk as a *segmented* Gateway service with an external load balancer, this means that the gateways that get deployed are tagged with the `ingress` tag. Tagged gateways like this will only load APIs that have also been tagged as `ingress`.
