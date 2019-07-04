@@ -99,6 +99,20 @@ dash:
   affinity: {}
   extraEnvs: []
 
+portal:
+  ingress:
+    enabled: false
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    path: /
+    hosts:
+      - tyk-portal.local
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
 gateway:
   kind: DaemonSet
   replicaCount: 2
