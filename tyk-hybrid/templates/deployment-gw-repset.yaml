@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: {{ .Values.gateway.kind }}
 metadata:
-  name: gateway-{{ include "tyk-pro.fullname" . }}
+  name: gateway-{{ include "tyk-hybrid.fullname" . }}
   labels:
-    app: gateway-{{ include "tyk-pro.fullname" . }}
-    chart: {{ include "tyk-pro.chart" . }}
+    app: gateway-{{ include "tyk-hybrid.fullname" . }}
+    chart: {{ include "tyk-hybrid.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
@@ -17,12 +17,12 @@ spec:
 {{- end }}
   selector:
     matchLabels:
-      app: gateway-{{ include "tyk-pro.fullname" . }}
+      app: gateway-{{ include "tyk-hybrid.fullname" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: gateway-{{ include "tyk-pro.fullname" . }}
+        app: gateway-{{ include "tyk-hybrid.fullname" . }}
         release: {{ .Release.Name }}
     spec:
       minReadySeconds: 20
@@ -81,7 +81,7 @@ spec:
       volumes:
         - name: hybrid-gateway-conf
           configMap:
-            name: hybrid-gateway-conf-{{ include "tyk-pro.fullname" . }}
+            name: hybrid-gateway-conf-{{ include "tyk-hybrid.fullname" . }}
             items:
               - key: tyk_hybrid.conf
                 path: tyk.conf
