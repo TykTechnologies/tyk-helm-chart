@@ -1,4 +1,4 @@
-# Default values for tyk-dashboard.
+# Default values for hybrid gateways
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -25,9 +25,9 @@ gateway:
   tags: "ingress"
   tls: true
   # RPC KEY is your Organisation ID, this can be found in the Dashboard Users -> User section in the cloud dashboard.
-  rpckey: ""
+  rpckey: "ORGID"
   # API KEY is your Tyk Cloud API credentials - these can be found in the Users section of your dashboard.
-  apikey: ""
+  apikey: "APIKEY"
   image:
     repository: tykio/tyk-gateway
     tag: latest

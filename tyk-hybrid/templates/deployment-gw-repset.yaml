@@ -74,16 +74,16 @@ spec:
         resources:
 {{ toYaml .Values.gateway.resources | indent 12 }}
         volumeMounts:
-          - name: tyk-mgmt-gateway-conf
+          - name: hybrid-gateway-conf
             mountPath: /etc/tyk-gateway
           - name: {{ .Release.Name }}-default-cert
             mountPath: /etc/certs
       volumes:
-        - name: tyk-mgmt-gateway-conf
+        - name: hybrid-gateway-conf
           configMap:
-            name: mgmt-gateway-conf-{{ include "tyk-pro.fullname" . }}
+            name: hybrid-gateway-conf-{{ include "tyk-pro.fullname" . }}
             items:
-              - key: tyk_mgmt.conf
+              - key: tyk_hybrid.conf
                 path: tyk.conf
         - name: {{ .Release.Name }}-default-cert
           secret:
