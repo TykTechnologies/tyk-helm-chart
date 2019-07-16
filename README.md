@@ -71,15 +71,17 @@ If you are running an older chart that does not have this value, then you can di
 
 To enable the ingress controller, simply add the ingress class defintiion to your ingress annotations:
 
-	apiVersion: extensions/v1beta1
-	kind: Ingress
-	metadata:
-	  name: cafe-ingress
-	  annotations:
-	    kubernetes.io/ingress.class: tyk
-	spec:
-	  rules:
-	  - host: cafe.example.com
+```yml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: cafe-ingress
+  annotations:
+    kubernetes.io/ingress.class: tyk
+spec:
+  rules:
+    - host: cafe.example.com
+```
 
 By default Tyk will create an open API (no security enabled), however you can set any property in the API Definition using the following annotations (remember that all annotations are treated as strings):
 
@@ -90,29 +92,31 @@ By default Tyk will create an open API (no security enabled), however you can se
 
 Here's an example:
 
-	apiVersion: extensions/v1beta1
-	kind: Ingress
-	metadata:
-	  name: cafe-ingress
-	  annotations:
-	    kubernetes.io/ingress.class: tyk
-	    bool.service.tyk.io/use-keyless": "false",
-		string.service.tyk.io/proxy.target-url": "http://foo.bar/bazington",
-		num.service.tyk.io/cache_options.cache-timeout": "20",
-		object.service.tyk.io/version_data.versions.Default.extended-paths": '{"hard_timeouts":[{"path":"{all}","method":"GET","timeout":60,"fromDashboard":true}]}',
-	spec:
-	  rules:
-	  - host: cafe.example.com
-	    http:
-	      paths:
-	      - path: /tea
-	        backend:
-	          serviceName: tea-svc
-	          servicePort: 80
-	      - path: /coffee
-	        backend:
-	          serviceName: coffee-svc
-	          servicePort: 80
+```yml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: cafe-ingress
+  annotations:
+    kubernetes.io/ingress.class: tyk
+    bool.service.tyk.io/use-keyless": "false"
+    string.service.tyk.io/proxy.target-url": "http://foo.bar/bazington"
+    num.service.tyk.io/cache_options.cache-timeout": "20"
+    object.service.tyk.io/version_data.versions.Default.extended-paths": '{"hard_timeouts":[{"path":"{all}","method":"GET","timeout":60,"fromDashboard":true}]}'
+spec:
+  rules:
+  - host: cafe.example.com
+    http:
+      paths:
+      - path: /tea
+        backend:
+          serviceName: tea-svc
+          servicePort: 80
+      - path: /coffee
+        backend:
+          serviceName: coffee-svc
+          servicePort: 80
+```
 
 You can also directly modify the service in your Tyk Dasboard, though if the ingress is recreated, the changes may not be retained.
 
@@ -128,61 +132,60 @@ Templates currently must have a .json filetype to be loaded into the controller 
 
 To use templates, you will need to re-deploy the tyk-k8s container and add volume mounts for your templates:
 
-```
-	### --- deployment-tyk-k8s.yaml
-	### --- there's other stuff up here
+```yml
+### --- deployment-tyk-k8s.yaml
+### --- there's other stuff up here
 
-	spec:
-	  {{ if .Values.rbac }}serviceAccountName: tyk-k8s {{ end }}
-	  containers:
-	  - name: tyk-k8s
-	    image: "{{ .Values.tyk_k8s.image.repository }}:{{ .Values.tyk_k8s.image.tag }}"
-	    imagePullPolicy: {{ .Values.tyk_k8s.image.pullPolicy }}
-	    workingDir: "/opt/tyk-k8s"
-	    command: ["/opt/tyk-k8s/tyk-k8s", "start"]
-	    ports:
-	    - containerPort: 443
-	    volumeMounts:
-	      - name: tyk-k8s-conf
-	        mountPath: /etc/tyk-k8s
-	      - name: webhook-certs
-	        mountPath: /etc/tyk-k8s/certs
+spec:
+  {{ if .Values.rbac }}serviceAccountName: tyk-k8s {{ end }}
+  containers:
+  - name: tyk-k8s
+  image: "{{ .Values.tyk_k8s.image.repository }}:{{ .Values.tyk_k8s.image.tag }}"
+  imagePullPolicy: {{ .Values.tyk_k8s.image.pullPolicy }}
+  workingDir: "/opt/tyk-k8s"
+  command: ["/opt/tyk-k8s/tyk-k8s", "start"]
+  ports:
+    - containerPort: 443
+      volumeMounts:
+        - name: tyk-k8s-conf
+          mountPath: /etc/tyk-k8s
+        - name: webhook-certs
+          mountPath: /etc/tyk-k8s/certs
 
-	      ### Custom templates:
-	      - name: tyk-k8s-templates
-	        mountPath: /etc/tyk-k8s-templates
-	    resources:
-	{{ toYaml .Values.resources | indent 12 }}
-	  volumes:
-	    - name: tyk-k8s-conf
-	      configMap:
-	        name: tyk-k8s-conf
-	        items:
-	          - key: tyk_k8s.yaml
-	            path: tyk-k8s.yaml
+        ### Custom templates:
+        - name: tyk-k8s-templates
+          mountPath: /etc/tyk-k8s-templates
+      resources:
+        {{ toYaml .Values.resources | indent 12 }}
+      volumes:
+        - name: tyk-k8s-conf
+          configMap:
+            name: tyk-k8s-conf
+            items:
+            - key: tyk_k8s.yaml
+              path: tyk-k8s.yaml
 
-	    ### Custom templates:        
-	    - name: tyk-k8s-templates
-	      configMap:
-	        name: token-auth
-	        items:
-	          - key: token-auth.json # these should be real filenames ending .json
-	            path: token-auth.json
+### Custom templates:        
+        - name: tyk-k8s-templates
+          configMap:
+            name: token-auth
+            items:
+              - key: token-auth.json # these should be real filenames ending .json
+                path: token-auth.json
 ```
 
 You will also need to update the config file for tyk-k8s:
 
+```yml
+### configmap-tyk-k8s.yaml
 
-```
-	### configmap-tyk-k8s.yaml
+Tyk:
+  url: "{{ .Values.tyk_k8s.dash_url }}"
+  secret: "{{ .Values.tyk_k8s.dash_key }}"
+  org_id: "{{ .Values.tyk_k8s.org_id }}"
 
-	Tyk:
-      url: "{{ .Values.tyk_k8s.dash_url }}"
-      secret: "{{ .Values.tyk_k8s.dash_key }}"
-      org_id: "{{ .Values.tyk_k8s.org_id }}"
-
-      # Add this line
-      templates: "/etc/tyk-k8s-templates" 
+# Add this line
+  templates: "/etc/tyk-k8s-templates" 
 ```
 
 Templates are added as config maps, to convert an API definition to a template, simply encapsulate it in template tags, like this:
@@ -204,27 +207,27 @@ kubectl create configmap token-auth --from-file=token-auth.json --namespace {nam
 
 Once these template configMaps have been added, and your tyk-k8s service is running, you can set up your service definitions very easily by adding a single annotation:
 
-```
-	apiVersion: extensions/v1beta1
-	kind: Ingress
-	metadata:
-	  name: cafe-ingress
-	  annotations:
-	    kubernetes.io/ingress.class: tyk
-	    template.service.tyk.io: tokenAuth
-	spec:
-	  rules:
-	  - host: cafe.example.com
-	    http:
-	      paths:
-	      - path: /tea
-	        backend:
-	          serviceName: tea-svc
-	          servicePort: 80
-	      - path: /coffee
-	        backend:
-	          serviceName: coffee-svc
-	          servicePort: 80
+```yml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: cafe-ingress
+  annotations:
+    kubernetes.io/ingress.class: tyk
+    template.service.tyk.io: tokenAuth
+  spec:
+    rules:
+      - host: cafe.example.com
+        http:
+          paths:
+            - path: /tea
+              backend:
+                serviceName: tea-svc
+                servicePort: 80
+            - path: /coffee
+              backend:
+                serviceName: coffee-svc
+                servicePort: 80
 ```
 
 For a sample template, please see the [token auth template in the controller repository](https://raw.githubusercontent.com/TykTechnologies/tyk-k8s/master/templates/token-auth.json).
@@ -244,25 +247,27 @@ The service mesh injector will create two services:
 
 Setting up a service to use the injector is very simple, simply add the inject annotation to your Deployment:
 
-	apiVersion: extensions/v1beta1
-	kind: Deployment
-	metadata:
-	  name: sleep
-	spec:
-	  replicas: 1
-	  template:
-	    metadata:
-	      annotations:
-	        injector.tyk.io/inject: "true"
-	        injector.tyk.io/route: "/sleep"
-	      labels:
-	        app: sleep
-	    spec:
-	      containers:
-	      - name: sleep
-	        image: tutum/curl
-	        command: ["/bin/sleep","infinity"]
-	        imagePullPolicy: IfNotPresent
+```yml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: sleep
+  spec:
+    replicas: 1
+    template:
+      metadata:
+        annotations:
+          injector.tyk.io/inject: "true"
+          injector.tyk.io/route: "/sleep"
+        labels:
+          app: sleep
+        spec:
+          containers:
+            - name: sleep
+              image: tutum/curl
+              command: ["/bin/sleep","infinity"]
+              imagePullPolicy: IfNotPresent
+```
 
 By default, the injector will create the service route on /{pod.Name}, however you can specify the route to advertise using the `injector.tyk.io/route` instruction, this will set the `proxy.listen_path` in the Tyk API Definition.
 
