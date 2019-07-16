@@ -34,6 +34,13 @@ To install, *first modify the `values.yaml` file to add redis and mongo details,
 
 Follow the instructions in the Notes that follow the installation to install the controller for Service Mesh sidecar injection.
 
+## Install Tyk Hybrid Gateways (This can be used either for Multi-Cloud Gateways or MDCB slaves)
+To install, *first modify the `values.yaml` file to add redis details, your RPC key and API key:
+
+	helm install -f ./values_hybrid.yaml ./tyk-hybrid
+
+This should be all need for you to be ready to go!
+
 ## Important things to remember: Nodes are Segmented
 
 This Helm chart installs Tyk as a *segmented* Gateway service with an external load balancer, this means that the gateways that get deployed are tagged with the `ingress` tag. Tagged gateways like this will only load APIs that have also been tagged as `ingress`.
