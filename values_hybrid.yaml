@@ -1,0 +1,58 @@
+# Default values for tyk-dashboard.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: ""
+fullnameOverride: ""
+
+# Only set this to false if you are not planning on using the sidecar injector
+enableSharding: true
+
+secrets:
+  APISecret: "CHANGEME"
+  AdminSecret: "12345"
+
+redis:
+    shardCount: 128
+    host: redis-master.redis
+    port: 6379
+    useSSL: false
+    pass: ""
+
+gateway:
+  kind: DaemonSet
+  replicaCount: 2
+  tags: "ingress"
+  tls: true
+  # RPC KEY is your Organisation ID, this can be found in the Dashboard Users -> User section in the cloud dashboard.
+  rpckey: ""
+  # API KEY is your Tyk Cloud API credentials - these can be found in the Users section of your dashboard.
+  apikey: ""
+  image:
+    repository: tykio/tyk-gateway
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: LoadBalancer
+    port: 443
+    externalTrafficPolicy: Local
+    annotations: {}
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+  nodeSelector: {}
+  tolerations:
+    - key: node-role.kubernetes.io/master
+      effect: NoSchedule
+  affinity: {}
+  extraEnvs: []
+
+rbac: true 
