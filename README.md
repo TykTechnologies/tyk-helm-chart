@@ -21,7 +21,7 @@ To get started quickly, you can use these rather excellent Redis and MongoDB cha
 > *Important Note regarding TLS:* This helm chart assumes TLS is being used by default, so the gateways will listen on port 443 and load up a dummy certificate. You can set your own default certificate by replacing the files in the certs/ folder.
 
 ## Install Tyk Community Edition
-To install, *first modify the `values_community_edition.yaml` file to add redis and mongo details*:
+To install, *first modify the `values_community_edition.yaml` file to add redis details*:
 
 	helm install -f ./values_community_edition.yaml ./tyk-pro
 
@@ -33,6 +33,13 @@ To install, *first modify the `values.yaml` file to add redis and mongo details,
 	helm install -f ./values.yaml ./tyk-pro
 
 Follow the instructions in the Notes that follow the installation to install the controller for Service Mesh sidecar injection.
+
+## Install Tyk Hybrid Gateways (This can be used either for Multi-Cloud Gateways or MDCB slaves)
+To install, *first modify the `values.yaml` file to add redis details, your RPC key and API key*:
+
+	helm install -f ./values_hybrid.yaml ./tyk-hybrid
+
+This should be all need for you to be ready to go!
 
 ## Important things to remember: Nodes are Segmented
 
