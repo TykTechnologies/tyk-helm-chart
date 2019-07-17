@@ -56,13 +56,19 @@ spec:
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.gateway.tls }}"
           - name: TYK_GW_SLAVEOPTIONS_RPCKEY
-            value: "{{.Values.gateway.rpckey }}"
+            value: "{{.Values.tyk_k8s.org_id }}"
           - name: TYK_GW_SLAVEOPTIONS_APIKEY
-            value: "{{ .Values.gateway.apikey }}"
+            value: "{{ .Values.tyk_k8s.dash_key }}"
           - name: TYK_GW_SECRET
             value: "{{ .Values.secrets.APISecret }}"
           - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
-            value: "{{ .Values.gateway.rpcConnString}}"
+            value: "{{ .Values.gateway.rpc.connString}}"
+          - name: TYK_GW_SLAVEOPTIONS_USESSL
+            value: "{{ .Values.gateway.rpc.useSSL}}"
+          - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
+            value: "{{ .Values.enableSharding }}"
+          - name: TYK_GW_DBAPPCONFOPTIONS_TAGS
+            value: "{{.Values.gateway.tags }}"
         {{- if .Values.gateway.extraEnvs }}
         {{- range $env := .Values.gateway.extraEnvs }}
           - name: {{ $env.name }}
