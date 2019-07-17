@@ -24,6 +24,8 @@ gateway:
   replicaCount: 2
   tags: "ingress"
   tls: true
+  # For MDCB setups change to connection string for your MDCB instance
+  rpcConnString: "hybrid.cloud.tyk.io:9091"
   image:
     repository: tykio/tyk-gateway
     tag: latest
