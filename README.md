@@ -6,10 +6,12 @@ This means that a single Tyk installation can be used for both "north-south" inb
 
 It also means that you can bring the full features set of the Tyk API Gateway to your internal and external services from a single control plane.
 
-**Pre-requisites**
+**Prerequisites**
 
 - Redis installed in the cluster or reachable from K8s
 - MongoDB installed in the cluster, or reachable from inside K8s
+
+> MongoDB is not required for Tyk Community Edition or Hybrid Gateways
 
 To get started quickly, you can use these rather excellent Redis and MongoDB charts to get going:
 
