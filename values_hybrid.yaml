@@ -25,9 +25,9 @@ gateway:
   tags: "ingress"
   tls: true
   # RPC KEY is your Organisation ID, this can be found in the Dashboard Users -> User section in the cloud dashboard.
-  rpckey: "5d2dc3841b47f10001b01932"
+  rpckey: "RPCKEY"
   # API KEY is your Tyk Cloud API credentials - these can be found in the Users section of your dashboard.
-  apikey: "e8e3f28ff20b4672579ea15e32ffaee3"
+  apikey: "APIKEY"
   image:
     repository: tykio/tyk-gateway
     tag: latest
