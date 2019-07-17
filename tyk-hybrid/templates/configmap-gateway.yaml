@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: hybrid-gateway-conf-{{ include "tyk-pro.fullname" . }}
+  name: hybrid-gateway-conf-{{ include "tyk-hybrid.fullname" . }}
   labels:
-    app: gateway-{{ include "tyk-pro.fullname" . }}
-    chart: {{ include "tyk-pro.chart" . }}
+    app: gateway-{{ include "tyk-hybrid.fullname" . }}
+    chart: {{ include "tyk-hybrid.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
