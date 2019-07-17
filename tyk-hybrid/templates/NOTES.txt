@@ -1,0 +1,3 @@
+To install the Tyk K8s controller:
+
+helm install -f ./values.yaml ./tyk-k8s
