@@ -14,6 +14,6 @@ data:
       certFile: "/etc/tyk-k8s/certs/cert.pem"
       keyFile: "/etc/tyk-k8s/certs/key.pem"
     Tyk:
-      url: "https://admin.cloud.tyk.io"
-      secret: "{{ .Values.gateway.apikey }}"
-      org: "{{ .Values.gateway.rpckey }}"
+      url: "{{ .Values.tyk_k8s.dash_url }}"
+      secret: "{{ .Values.tyk_k8s.dash_key }}"
+      org_id: "{{ .Values.tyk_k8s.org_id }}"
