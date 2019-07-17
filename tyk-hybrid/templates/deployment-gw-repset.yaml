@@ -62,8 +62,7 @@ spec:
           - name: TYK_GW_SECRET
             value: "{{ .Values.secrets.APISecret }}"
           - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
-            value: "{{ .Values.gateway.RPCConnString}}"
-        {{ end }}
+            value: "{{ .Values.gateway.rpcConnString}}"
         {{- if .Values.gateway.extraEnvs }}
         {{- range $env := .Values.gateway.extraEnvs }}
           - name: {{ $env.name }}
