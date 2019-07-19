@@ -7,27 +7,27 @@ fullnameOverride: ""
 
 # Only set this to false if you are not planning on using the sidecar injector
 enableSharding: true
-
-secrets:
-  APISecret: "CHANGEME"
-  AdminSecret: "12345"
+hybrid: true
 
 redis:
-    shardCount: 128
-    host: redis-master.redis
-    port: 6379
-    useSSL: false
-    pass: ""
+  shardCount: 128
+  host: redis-master.redis
+  port: 6379
+  useSSL: false
+  pass: ""
 
 gateway:
   kind: DaemonSet
-  replicaCount: 2
+  # Set replicaCount for Deployments
+  #replicaCount: 2
   tags: "ingress"
   tls: true
   # For MDCB setups change to connection string for your MDCB instance
   rpc:
     connString: "hybrid.cloud.tyk.io:9091"
     useSSL: true
+    # for hybrid, bindToSlugs: true, for MDCB, bindToSlugs: false
+    bindToSlugs: true
   image:
     repository: tykio/tyk-gateway
     tag: latest
@@ -47,7 +47,7 @@ gateway:
     #  memory: 128Mi
     # requests:
     #  cpu: 100m
-    #  memory: 128Mi
+  #  memory: 128Mi
   nodeSelector: {}
   tolerations:
     - key: node-role.kubernetes.io/master
@@ -55,10 +55,10 @@ gateway:
   affinity: {}
   extraEnvs: []
 
-rbac: true 
+rbac: true
 
 tyk_k8s:
-  image: 
+  image:
     repository: tykio/tyk-k8s
     tag: stable
     pullPolicy: Always

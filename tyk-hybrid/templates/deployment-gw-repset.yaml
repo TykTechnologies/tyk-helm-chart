@@ -65,6 +65,8 @@ spec:
             value: "{{ .Values.gateway.rpc.connString}}"
           - name: TYK_GW_SLAVEOPTIONS_USESSL
             value: "{{ .Values.gateway.rpc.useSSL}}"
+          - name: TYK_GW_SLAVEOPTIONS_BINDTOSLUGS
+            value: "{{ .Values.gateway.rpc.bindToSlugs }}"
           - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
             value: "{{ .Values.enableSharding }}"
           - name: TYK_GW_DBAPPCONFOPTIONS_TAGS

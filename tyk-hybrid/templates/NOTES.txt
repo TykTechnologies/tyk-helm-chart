@@ -1,3 +1,13 @@
-To install the Tyk K8s controller:
+1. Prepare the SSL and CA bundle for webhook
 
-helm install -f ./values.yaml ./tyk-k8s
+./tyk-k8s/webhook/create-signed-cert.sh -n {{ .Release.Namespace }}
+
+cat ./tyk-k8s/webhook/mutatingwebhook.yaml | ./tyk-k8s/webhook/webhook-patch-ca-bundle.sh > ./tyk-k8s/webhook/mutatingwebhook-ca-bundle.yaml
+
+2. Install the controller
+
+helm install -f ./values_hybrid.yaml ./tyk-k8s
+
+3. Register the sidecar-injector
+
+kubectl create -f ./tyk-k8s/webhook/mutatingwebhook-ca-bundle.yaml
