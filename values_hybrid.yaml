@@ -28,6 +28,8 @@ gateway:
   rpc:
     connString: "hybrid.cloud.tyk.io:9091"
     useSSL: true
+    # for hybrid, bindToSlugs: true, for MDCB, bindToSlugs: false
+    bindToSlugs: true
   image:
     repository: tykio/tyk-gateway
     tag: latest
