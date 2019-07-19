@@ -60,6 +60,7 @@ spec:
         imagePullPolicy: {{ .Values.tyk_k8s.image.pullPolicy }}
         workingDir: "/opt/tyk-k8s"
         command: ["/opt/tyk-k8s/tyk-k8s", "start"]
+        {{ if not .Values.hybrid }}
         env:
           - name: TK8S_TYK_SECRET
             valueFrom:
@@ -71,6 +72,7 @@ spec:
               secretKeyRef:
                 name: tyk-k8s-controller
                 key: org
+        {{ end }}
         ports:
         - containerPort: 443
         volumeMounts:

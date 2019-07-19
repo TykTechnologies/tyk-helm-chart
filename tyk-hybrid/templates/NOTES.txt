@@ -6,7 +6,7 @@ cat ./tyk-k8s/webhook/mutatingwebhook.yaml | ./tyk-k8s/webhook/webhook-patch-ca-
 
 2. Install the controller
 
-helm install -f ./values.yaml ./tyk-k8s
+helm install -f ./values_hybrid.yaml ./tyk-k8s
 
 3. Register the sidecar-injector
 
