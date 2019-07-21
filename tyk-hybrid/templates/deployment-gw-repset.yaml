@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: {{ .Values.gateway.kind }}
+metadata:
+  name: gateway-{{ include "tyk-hybrid.fullname" . }}
+  labels:
+    app: gateway-{{ include "tyk-hybrid.fullname" . }}
+    chart: {{ include "tyk-hybrid.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+{{- if eq .Values.gateway.kind "Deployment" }}
+  replicas: {{ .Values.gateway.replicaCount }}
+{{- end }}
+{{- if .Values.gateway.tolerations }}
+  tolerations:
+{{ toYaml .Values.gateway.tolerations | indent 4 }}
+{{- end }}
+  selector:
+    matchLabels:
+      app: gateway-{{ include "tyk-hybrid.fullname" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: gateway-{{ include "tyk-hybrid.fullname" . }}
+        release: {{ .Release.Name }}
+    spec:
+      minReadySeconds: 20
+      strategy:
+        # indicate which strategy we want for rolling update
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 2
+          maxUnavailable: 1
+{{- if .Values.gateway.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.gateway.nodeSelector | indent 8 }}
+{{- end }}
+{{- if .Values.gateway.affinity }}
+      affinity:
+{{ toYaml .Values.gateway.affinity | indent 8 }}
+{{- end }}
+      containers:
+      - name: gateway-{{ .Chart.Name }}
+        image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
+        imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
+        env:
+          - name: REDIGOCLUSTER_SHARDCOUNT
+            value: "{{ .Values.redis.shardCount }}"
+          - name: TYK_GW_STORAGE_HOSTS
+            value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"
+          - name: TYK_GW_STORAGE_PASSWORD
+            value: "{{ .Values.redis.pass }}"
+          - name: TYK_GW_STORAGE_USESSL
+            value: "{{ .Values.redis.useSSL }}"
+          - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
+            value: "{{ .Values.gateway.tls }}"
+          - name: TYK_GW_SLAVEOPTIONS_RPCKEY
+            value: "{{.Values.tyk_k8s.org_id }}"
+          - name: TYK_GW_SLAVEOPTIONS_APIKEY
+            value: "{{ .Values.tyk_k8s.dash_key }}"
+          - name: TYK_GW_SECRET
+            value: "{{ .Values.secrets.APISecret }}"
+          - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
+            value: "{{ .Values.gateway.rpc.connString}}"
+          - name: TYK_GW_SLAVEOPTIONS_USESSL
+            value: "{{ .Values.gateway.rpc.useSSL}}"
+          - name: TYK_GW_SLAVEOPTIONS_BINDTOSLUGS
+            value: "{{ .Values.gateway.rpc.bindToSlugs }}"
+          - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
+            value: "{{ .Values.enableSharding }}"
+          - name: TYK_GW_DBAPPCONFOPTIONS_TAGS
+            value: "{{.Values.gateway.tags }}"
+        {{- if .Values.gateway.extraEnvs }}
+        {{- range $env := .Values.gateway.extraEnvs }}
+          - name: {{ $env.name }}
+            value: {{ $env.value | quote }}
+        {{- end }}
+        {{- end }}
+        command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
+        workingDir: /opt/tyk-gateway
+        ports:
+        - containerPort: 8080
+        resources:
+{{ toYaml .Values.gateway.resources | indent 12 }}
+        volumeMounts:
+          - name: hybrid-gateway-conf
+            mountPath: /etc/tyk-gateway
+          - name: {{ .Release.Name }}-default-cert
+            mountPath: /etc/certs
+      volumes:
+        - name: hybrid-gateway-conf
+          configMap:
+            name: hybrid-gateway-conf-{{ include "tyk-hybrid.fullname" . }}
+            items:
+              - key: tyk_hybrid.conf
+                path: tyk.conf
+        - name: {{ .Release.Name }}-default-cert
+          secret:
+            secretName: {{ .Release.Name }}-default-cert

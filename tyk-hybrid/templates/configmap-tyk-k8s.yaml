@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tyk-k8s-conf
+  labels:
+    app: controller-{{ include "tyk-hybrid.fullname" . }}
+    chart: {{ include "tyk-hybrid.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  tyk_k8s.yaml: |-
+    Server:
+      addr: ":443"
+      certFile: "/etc/tyk-k8s/certs/cert.pem"
+      keyFile: "/etc/tyk-k8s/certs/key.pem"
+    Tyk:
+      url: "{{ .Values.tyk_k8s.dash_url }}"
+      secret: "{{ .Values.tyk_k8s.dash_key }}"
+      org_id: "{{ .Values.tyk_k8s.org_id }}"
