@@ -25,7 +25,7 @@ To get started quickly, you can use these rather excellent Redis and MongoDB cha
 ## Install Tyk Community Edition
 To install, *first modify the `values_community_edition.yaml` file to add redis details*:
 
-	helm install -f ./values_community_edition.yaml ./tyk-pro
+	helm install -f ./values_community_edition.yaml ./tyk-headless
 
 > **Warning**: Tyk Service Mesh capability is not currently supported with Tyk CE
 
