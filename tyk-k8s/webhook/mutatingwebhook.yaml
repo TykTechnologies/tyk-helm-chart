@@ -9,7 +9,7 @@ webhooks:
     clientConfig:
       service:
         name: tyk-k8s-svc
-        namespace: tyk
+        namespace: default
         path: "/inject"
       caBundle: ${CA_BUNDLE}
     rules:
