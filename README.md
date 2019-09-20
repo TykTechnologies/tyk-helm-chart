@@ -25,7 +25,7 @@ To get started quickly, you can use these rather excellent Redis and MongoDB cha
 ## Install Tyk Community Edition
 To install, *first modify the `values_community_edition.yaml` file to add redis details*:
 
-	helm install -f ./values_community_edition.yaml ./tyk-pro
+	helm install -f ./values_community_edition.yaml ./tyk-headless
 
 > **Warning**: Tyk Service Mesh capability is not currently supported with Tyk CE
 
@@ -43,11 +43,12 @@ Once you have installed `Gateway` and `Dashboard` component you can configure `t
 
 
 ## Install Tyk Hybrid Gateways (This can be used either for Multi-Cloud Gateways or MDCB slaves)
-To install, *first modify the `values.yaml` file to add redis details, your RPC key and API key*:
+To install, *first modify the `values_hybrid.yaml` file to add redis details, your RPC key, API key and Dashboard URL*:
 
 	helm install -f ./values_hybrid.yaml ./tyk-hybrid
 
-This should be all need for you to be ready to go!
+Follow the instructions in notes to install the ingress controller. Sidecar injection support is coming soon!
+
 
 ## Important things to remember: Nodes are Segmented
 

@@ -1,5 +1,5 @@
 {{- if .Values.tib.enabled -}}
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tib-{{ include "tyk-pro.fullname" . }}
@@ -9,11 +9,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.replicaCount }}
-{{- if .Values.dash.tolerations }}
-  tolerations:
-{{ toYaml .Values.dash.tolerations | indent 4 }}
-{{- end }}
+  replicas: {{ .Values.tib.replicaCount }}
   selector:
     matchLabels:
       app: tib-{{ include "tyk-pro.fullname" . }}
@@ -31,18 +27,45 @@ spec:
         rollingUpdate:
           maxSurge: 2
           maxUnavailable: 1
-{{- if .Values.dash.nodeSelector }}
+{{- if .Values.tib.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.dash.nodeSelector | indent 8 }}
+{{ toYaml .Values.tib.nodeSelector | indent 8 }}
 {{- end }}
-{{- if .Values.dash.affinity }}
+{{- if .Values.tib.tolerations }}
+  tolerations:
+{{ toYaml .Values.tib.tolerations | indent 8 }}
+{{- end }}
+{{- if .Values.tib.affinity }}
       affinity:
-{{ toYaml .Values.dash.affinity | indent 8 }}
+{{ toYaml .Values.tib.affinity | indent 8 }}
 {{- end }}
       containers:
       - image: "{{ .Values.tib.image.repository }}:{{ .Values.tib.image.tag }}"
         imagePullPolicy: {{ .Values.tib.image.pullPolicy }}
         name: tib-{{ .Chart.Name }}
+        env:
+          - name: TYK_IB_SECRET
+            value: "{{ .Values.tib.secret }}"
+          - name: TYK_IB_HTTPSERVEROPTIONS_USESSL
+            value: "{{ .Values.tib.useSSL }}"
+          - name: TYK_IB_TYKAPISETTINGS_DASHBOARDCONFIG_ADMINSECRET
+            value: "{{ .Values.secrets.AdminSecret }}"
+          - name: TYK_IB_TYKAPISETTINGS_GATEWAYCONFIG_ENDPOINT
+            value: "{{ include "tyk-pro.gwproto" . }}://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
+          - name: TYK_IB_TYKAPISETTINGS_GATEWAYCONFIG_PORT
+            value: "8080"
+          - name: TYK_IB_TYKAPISETTINGS_GATEWAYCONFIG_ADMINSECRET
+            value: "{{ .Values.secrets.AdminSecret }}"
+          - name: TYK_IB_TYKAPISETTINGS_DASHBOARDCONFIG_ENDPOINT
+            value: "http://dashboard-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
+          - name: TYK_IB_TYKAPISETTINGS_DASHBOARDCONFIG_PORT
+            value: "{{ .Values.dash.service.port }}"
+        {{- if .Values.tib.extraEnvs }}
+        {{- range $env := .Values.tib.extraEnvs }}
+          - name: {{ $env.name }}
+            value: {{ $env.value | quote }}
+        {{- end }}
+        {{- end }}
         resources:
 {{ toYaml .Values.tib.resources | indent 10 }}
         ports:
@@ -62,5 +85,5 @@ spec:
             name: tyk-tib-conf
         - name: tyk-tib-profiles-conf-volume
           configMap:
-            name: tyk-tib-profiles-conf
+            name: {{ .Values.tib.configMap.profiles }}
 {{- end }}

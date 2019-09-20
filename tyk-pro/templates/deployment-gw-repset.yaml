@@ -11,10 +11,6 @@ spec:
 {{- if eq .Values.gateway.kind "Deployment" }}
   replicas: {{ .Values.gateway.replicaCount }}
 {{- end }}
-{{- if .Values.gateway.tolerations }}
-  tolerations:
-{{ toYaml .Values.gateway.tolerations | indent 4 }}
-{{- end }}
   selector:
     matchLabels:
       app: gateway-{{ include "tyk-pro.fullname" . }}
@@ -35,6 +31,10 @@ spec:
 {{- if .Values.gateway.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.gateway.nodeSelector | indent 8 }}
+{{- end }}
+{{- if .Values.gateway.tolerations }}
+      tolerations:
+{{ toYaml .Values.gateway.tolerations | indent 8 }}
 {{- end }}
 {{- if .Values.gateway.affinity }}
       affinity:

@@ -9,6 +9,10 @@ fullnameOverride: ""
 enableSharding: true
 hybrid: true
 
+secrets:
+  APISecret: "CHANGEME"
+  AdminSecret: "12345"
+
 redis:
   shardCount: 128
   host: redis-master.redis

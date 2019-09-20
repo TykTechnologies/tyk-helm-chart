@@ -25,6 +25,8 @@ mongo:
 
 tib:
   enabled: false
+  useSSL: true
+  replicaCount: 1
   image:
     repository: tykio/tyk-identity-broker
     tag: latest
@@ -59,6 +61,9 @@ tib:
   tolerations: []
   affinity: {}
   extraEnvs: []
+  configMap:
+    #Create a configMap to store profiles json
+    profiles: tyk-tib-profiles-conf
 
 dash:
   replicaCount: 1
@@ -151,6 +156,7 @@ pump:
     repository: tykio/tyk-pump-docker-pub
     tag: latest
     pullPolicy: Always
+  annotations: {}
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little

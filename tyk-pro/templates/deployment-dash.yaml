@@ -9,10 +9,6 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.dash.replicaCount }}
-{{- if .Values.dash.tolerations }}
-  tolerations:
-{{ toYaml .Values.dash.tolerations | indent 4 }}
-{{- end }}
   selector:
     matchLabels:
       app: dashboard-{{ include "tyk-pro.fullname" . }}
@@ -33,6 +29,10 @@ spec:
 {{- if .Values.dash.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.dash.nodeSelector | indent 8 }}
+{{- end }}
+{{- if .Values.dash.tolerations }}
+  tolerations:
+{{ toYaml .Values.dash.tolerations | indent 8 }}
 {{- end }}
 {{- if .Values.dash.affinity }}
       affinity:
