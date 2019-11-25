@@ -23,6 +23,8 @@ To get started quickly, you can use these rather excellent Redis and MongoDB cha
 > *Important Note regarding TLS:* This helm chart assumes TLS is being used by default, so the gateways will listen on port 443 and load up a dummy certificate. You can set your own default certificate by replacing the files in the certs/ folder.
 
 ## Install Tyk Community Edition
+> **Warning**: This is highly experimental, technical support is not available.
+
 To install, *first modify the `values_community_edition.yaml` file to add redis details*:
 
 	helm install -f ./values_community_edition.yaml ./tyk-headless
