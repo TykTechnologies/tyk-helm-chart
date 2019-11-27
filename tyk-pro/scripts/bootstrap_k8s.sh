@@ -13,6 +13,12 @@ else
     NS=${3}
 fi
 
+if [ -z "${4}" ]; then 
+    SCHEMA_OPT='http'
+else 
+    SCHEMA_OPT='https'
+fi
+
 main(){
   if [[ $# -lt 1 ]]
     then
@@ -115,7 +121,7 @@ if_present_echo(){
 }
 
 create_organisation() {
-  ORGDATA=$(curl --silent --header "admin-auth: $ADMIN_TOKEN" --header "Content-Type:application/json" --data '{"owner_name": "Default Org.","owner_slug": "default", "cname_enabled": true, "cname": ""}' http://$1/admin/organisations 2>&1)
+  ORGDATA=$(curl --silent --header "admin-auth: $ADMIN_TOKEN" --header "Content-Type:application/json" --data '{"owner_name": "Default Org.","owner_slug": "default", "cname_enabled": true, "cname": ""}' ${SCHEMA_OPT}://$1/admin/organisations 2>&1)
   if_present_echo "$ORGDATA" 3
 }
 
@@ -132,7 +138,7 @@ create_user(){
 }
 
 user_data(){
-  user_curl=$(curl --silent --header "admin-auth: $ADMIN_TOKEN" --header "Content-Type:application/json" --data '{"first_name": "Joan","last_name": "Smith","email_address": "'$2'@default.com","password":"'$3'", "active": true,"org_id": "'$4'"}' http://$1/admin/users 2>&1)
+  user_curl=$(curl --silent --header "admin-auth: $ADMIN_TOKEN" --header "Content-Type:application/json" --data '{"first_name": "Joan","last_name": "Smith","email_address": "'$2'@default.com","password":"'$3'", "active": true,"org_id": "'$4'"}' ${SCHEMA_OPT}://$1/admin/users 2>&1)
   if_present_echo $user_curl 3
 }
 
@@ -143,7 +149,7 @@ get_user(){
 }
 
 get_user_list(){
-  list=$(curl --silent --header "authorization: $2" http://$1/api/users 2>&1)
+  list=$(curl --silent --header "authorization: $2" ${SCHEMA_OPT}://$1/api/users 2>&1)
   if_present_echo "$list" 3
 }
 
@@ -167,7 +173,7 @@ get_last_user(){
 setting_password(){
   USER=$(get_user $1 $2)
   USERID=$(get_user_id "$USER")
-  response=$(curl --silent --header "authorization: $2" --header "Content-Type:application/json" http://$1/api/users/$USERID/actions/reset --data '{"new_password":"'$3'"}')
+  response=$(curl --silent --header "authorization: $2" --header "Content-Type:application/json" ${SCHEMA_OPT}://$1/api/users/$USERID/actions/reset --data '{"new_password":"'$3'"}')
   if_present_echo "$response" 3
 }
 
@@ -175,7 +181,7 @@ output(){
   echo ""
   echo "DONE"
   echo "===="
-  echo "Login at http://$1/"
+  echo "Login at ${SCHEMA_OPT}://$1/"
   echo "User: $2"
   echo "Pass: $3"
 
