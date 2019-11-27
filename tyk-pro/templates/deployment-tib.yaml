@@ -32,7 +32,7 @@ spec:
 {{ toYaml .Values.tib.nodeSelector | indent 8 }}
 {{- end }}
 {{- if .Values.tib.tolerations }}
-  tolerations:
+      tolerations:
 {{ toYaml .Values.tib.tolerations | indent 8 }}
 {{- end }}
 {{- if .Values.tib.affinity }}

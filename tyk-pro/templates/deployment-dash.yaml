@@ -31,7 +31,7 @@ spec:
 {{ toYaml .Values.dash.nodeSelector | indent 8 }}
 {{- end }}
 {{- if .Values.dash.tolerations }}
-  tolerations:
+      tolerations:
 {{ toYaml .Values.dash.tolerations | indent 8 }}
 {{- end }}
 {{- if .Values.dash.affinity }}

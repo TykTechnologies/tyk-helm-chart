@@ -30,7 +30,7 @@ spec:
 {{ toYaml .Values.pump.nodeSelector | indent 8 }}
 {{- end }}
 {{- if .Values.pump.tolerations }}
-  tolerations:
+      tolerations:
 {{ toYaml .Values.pump.tolerations | indent 8 }}
 {{- end }}
 {{- if .Values.pump.affinity }}
