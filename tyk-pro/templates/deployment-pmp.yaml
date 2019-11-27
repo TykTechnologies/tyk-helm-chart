@@ -9,10 +9,6 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.pump.replicaCount }}
-{{- if .Values.pump.tolerations }}
-  tolerations:
-{{ toYaml .Values.pump.tolerations | indent 4 }}
-{{- end }}
   selector:
     matchLabels:
       app: pump-{{ include "tyk-pro.fullname" . }}
@@ -22,10 +18,20 @@ spec:
       labels:
         app: pump-{{ include "tyk-pro.fullname" . }}
         release: {{ .Release.Name }}
+    {{- if .Values.pump.annotations }}
+      annotations:
+      {{- range $key, $value := .Values.pump.annotations }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+    {{- end }}
     spec:
 {{- if .Values.pump.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.pump.nodeSelector | indent 8 }}
+{{- end }}
+{{- if .Values.pump.tolerations }}
+  tolerations:
+{{ toYaml .Values.pump.tolerations | indent 8 }}
 {{- end }}
 {{- if .Values.pump.affinity }}
       affinity:

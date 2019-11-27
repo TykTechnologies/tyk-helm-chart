@@ -19,6 +19,7 @@ spec:
   - port: {{ .Values.gateway.service.port }}
     targetPort: 8080
     protocol: TCP
+    name: http
   selector:
     app: gateway-{{ include "tyk-pro.fullname" . }}
     release: {{ .Release.Name }}
