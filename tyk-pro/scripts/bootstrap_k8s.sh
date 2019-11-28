@@ -126,14 +126,14 @@ create_organisation() {
 }
 
 org_id(){
-  ORGID=$(echo $1 | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["Meta"]')
+  ORGID=$(echo $1 | python -c 'import json,sys;obj=json.load(sys.stdin);print(obj["Meta"])')
   if_present_echo $ORGID 4
 }
 
 
 create_user(){
   USER_DATA=$(user_data $1 $2 $3 $4)
-  AUTH_CODE=$(echo $USER_DATA | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["Message"]')
+  AUTH_CODE=$(echo $USER_DATA | python -c 'import json,sys;obj=json.load(sys.stdin);print(obj["Message"])')
   if_present_echo "$AUTH_CODE" 4
 }
 
@@ -155,18 +155,18 @@ get_user_list(){
 
 get_user_id(){
   export user=$1
-  id=$(python -c "import json,os,string;user_str=os.environ['user'];print json.loads(user_str)['id']")
+  id=$(python -c "import json,os,string;user_str=os.environ['user'];print(json.loads(user_str)['id'])")
   if_present_echo "$id" 4
 }
 
 get_user_email(){
   export user=$1
-  email=$(python -c "import json,os,string;user_str=os.environ['user'];print json.loads(user_str)['email_address']")
+  email=$(python -c "import json,os,string;user_str=os.environ['user'];print(json.loads(user_str)['email_address'])")
   if_present_echo "$email" 4
 }
 
 get_last_user(){
-  user_parsed=$(echo $1 | python -c 'import json,sys;obj=json.load(sys.stdin);print json.dumps(obj["users"][0])')
+  user_parsed=$(echo $1 | python -c 'import json,sys;obj=json.load(sys.stdin);print(json.dumps(obj["users"][0]))')
   if_present_echo "$user_parsed" 4
 }
 

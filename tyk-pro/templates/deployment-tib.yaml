@@ -10,6 +10,13 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.tib.replicaCount }}
+  minReadySeconds: 10
+  strategy:
+    # indicate which strategy we want for rolling update
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: tib-{{ include "tyk-pro.fullname" . }}
@@ -20,13 +27,6 @@ spec:
         app: tib-{{ include "tyk-pro.fullname" . }}
         release: {{ .Release.Name }}
     spec:
-      minReadySeconds: 20
-      strategy:
-        # indicate which strategy we want for rolling update
-        type: RollingUpdate
-        rollingUpdate:
-          maxSurge: 2
-          maxUnavailable: 1
 {{- if .Values.tib.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.tib.nodeSelector | indent 8 }}

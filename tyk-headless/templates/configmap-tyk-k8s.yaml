@@ -9,10 +9,9 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   tyk_k8s.yaml: |-
-    Server:
-      addr: ":9595"
-      certFile: ""
-      keyFile: ""
+    Ingress:
+      watchNamespaces:
+{{ toYaml .Values.tyk_k8s.watchNamespaces | indent 8 }}
     Tyk:
       url: "https://localhost:9696"
       secret: "set-by-env"

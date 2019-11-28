@@ -1,38 +1,4 @@
-{{ if .Values.rbac }}
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: ClusterRole
-metadata:
-    name: tyk-k8s
-rules:
-- apiGroups: ["extensions"]
-  resources: ["thirdpartyresources", "thirdpartyresources.extensions", "ingresses", "ingresses/status"]
-  verbs: ["*"]
-- apiGroups: [""]
-  resources: ["configmaps", "endpoints", "pods", "services"]
-  verbs: ["*"]
-- apiGroups: [""]
-  resources: ["namespaces", "configmaps", "pods", "endpoints", "services"]
-  verbs: ["get", "list"]
----
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: ClusterRoleBinding
-metadata:
-  name: tyk-k8s
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: tyk-k8s
-subjects:
-  - kind: ServiceAccount
-    name: tyk-k8s
-    namespace: {{ .Release.Namespace }}
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: tyk-k8s
----{{ end }}
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tyk-k8s
@@ -43,6 +9,13 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  minReadySeconds: 5
+  strategy:
+    # indicate which strategy we want for rolling update
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: tyk-k8s
@@ -54,13 +27,25 @@ spec:
         release: {{ .Release.Name }}
     spec:
       {{ if .Values.rbac }}serviceAccountName: tyk-k8s {{ end }}
+{{- if .Values.tyk_k8s.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.tyk_k8s.nodeSelector | indent 8 }}
+{{- end }}
+{{- if .Values.tyk_k8s.tolerations }}
+      tolerations:
+{{ toYaml .Values.tyk_k8s.tolerations | indent 8 }}
+{{- end }}
+{{- if .Values.tyk_k8s.affinity }}
+      affinity:
+{{ toYaml .Values.tyk_k8s.affinity | indent 8 }}
+{{- end }}
       containers:
       - name: tyk-k8s
         image: "{{ .Values.tyk_k8s.image.repository }}:{{ .Values.tyk_k8s.image.tag }}"
         imagePullPolicy: {{ .Values.tyk_k8s.image.pullPolicy }}
         workingDir: "/opt/tyk-k8s"
         command: ["/opt/tyk-k8s/tyk-k8s", "start"]
-        {{ if not .Values.hybrid }}
+        {{- if not .Values.hybrid }}
         env:
           - name: TK8S_TYK_SECRET
             valueFrom:
@@ -72,16 +57,18 @@ spec:
               secretKeyRef:
                 name: tyk-k8s-controller
                 key: org
-        {{ end }}
+        {{- end }}
         ports:
         - containerPort: 443
         volumeMounts:
           - name: tyk-k8s-conf
             mountPath: /etc/tyk-k8s
+          {{- if .Values.tyk_k8s.serviceMesh.enabled }}
           - name: webhook-certs
             mountPath: /etc/tyk-k8s/certs
+          {{- end }}
         resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.tyk_k8s.resources | indent 12 }}
       volumes:
         - name: tyk-k8s-conf
           configMap:
@@ -89,6 +76,9 @@ spec:
             items:
               - key: tyk_k8s.yaml
                 path: tyk-k8s.yaml
+        {{- if .Values.tyk_k8s.serviceMesh.enabled }}
         - name: webhook-certs
           secret:
             secretName: sidecar-injector-webhook-certs
+        {{- end }}
+

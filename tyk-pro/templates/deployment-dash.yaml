@@ -9,6 +9,13 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.dash.replicaCount }}
+  minReadySeconds: 5
+  strategy:
+    # indicate which strategy we want for rolling update
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: dashboard-{{ include "tyk-pro.fullname" . }}
@@ -19,13 +26,6 @@ spec:
         app: dashboard-{{ include "tyk-pro.fullname" . }}
         release: {{ .Release.Name }}
     spec:
-      minReadySeconds: 20
-      strategy:
-        # indicate which strategy we want for rolling update
-        type: RollingUpdate
-        rollingUpdate:
-          maxSurge: 2
-          maxUnavailable: 1
 {{- if .Values.dash.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.dash.nodeSelector | indent 8 }}
