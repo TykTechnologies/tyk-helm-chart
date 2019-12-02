@@ -26,6 +26,7 @@ mongo:
 gateway:
   kind: DaemonSet
   replicaCount: 1
+  hostName: "gateway.tykbeta.com"
   tls: true
   redis:
     shardCount: 128

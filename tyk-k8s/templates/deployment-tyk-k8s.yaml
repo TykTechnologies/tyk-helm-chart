@@ -8,7 +8,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.tyk_k8s.replicaCount }}
   minReadySeconds: 5
   strategy:
     # indicate which strategy we want for rolling update

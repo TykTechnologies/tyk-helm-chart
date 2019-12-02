@@ -79,6 +79,24 @@ spec:
             mountPath: /opt/tyk-identity-broker/profiles.json
             subPath: profiles.json
             readOnly: true
+        livenessProbe:
+          httpGet:
+            scheme: "HTTP"
+            path: /health
+            port: {{ .Values.tib.service.port }}
+          initialDelaySeconds: 5
+          periodSeconds: 2
+          timeoutSeconds: 3
+          failureThreshold: 2
+        readinessProbe:
+          httpGet:
+            scheme: "HTTP"
+            path: /health
+            port: {{ .Values.tib.service.port }}
+          initialDelaySeconds: 1
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
       volumes:
         - name: tyk-tib-conf-volume
           configMap:

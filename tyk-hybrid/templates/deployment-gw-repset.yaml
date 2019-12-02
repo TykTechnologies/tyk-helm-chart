@@ -94,6 +94,24 @@ spec:
             mountPath: /etc/tyk-gateway
           - name: {{ .Release.Name }}-default-cert
             mountPath: /etc/certs
+        livenessProbe:
+          httpGet:
+            scheme: "HTTP{{ if .Values.gateway.tls }}S{{ end }}"
+            path: /hello
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 2
+          timeoutSeconds: 3
+          failureThreshold: 2
+        readinessProbe:
+          httpGet:
+            scheme: "HTTP{{ if .Values.gateway.tls }}S{{ end }}"
+            path: /hello
+            port: 8080
+          initialDelaySeconds: 1
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
       volumes:
         - name: hybrid-gateway-conf
           configMap:

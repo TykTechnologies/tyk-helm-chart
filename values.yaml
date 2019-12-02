@@ -121,6 +121,7 @@ portal:
 gateway:
   kind: DaemonSet
   replicaCount: 2
+  hostName: "gateway.tykbeta.com"
   tags: "ingress"
   tls: true
   image:
@@ -187,7 +188,8 @@ pump:
 
 rbac: true 
 tyk_k8s:
-  image: 
+  replicaCount: 1
+  image:
     repository: tykio/tyk-k8s
     tag: stable
     pullPolicy: Always

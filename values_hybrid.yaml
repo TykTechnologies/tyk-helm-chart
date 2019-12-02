@@ -23,8 +23,9 @@ redis:
 gateway:
   kind: DaemonSet
   # Set replicaCount for Deployments
-  #replicaCount: 2
+  replicaCount: 2
   tags: "ingress"
+  hostName: ""
   tls: true
   # For MDCB setups change to connection string for your MDCB instance
   rpc:
@@ -74,6 +75,7 @@ gateway:
 rbac: true
 
 tyk_k8s:
+  replicaCount: 1
   image:
     repository: tykio/tyk-k8s
     tag: stable

@@ -131,6 +131,24 @@ spec:
         volumeMounts:
           - name: tyk-k8s-conf
             mountPath: /etc/tyk-k8s
+        livenessProbe:
+          httpGet:
+            scheme: "HTTP{{ if .Values.gateway.tls }}S{{ end }}"
+            path: /hello
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 2
+          timeoutSeconds: 3
+          failureThreshold: 2
+        readinessProbe:
+          httpGet:
+            scheme: "HTTP{{ if .Values.gateway.tls }}S{{ end }}"
+            path: /hello
+            port: 8080
+          initialDelaySeconds: 1
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
         resources:
 {{ toYaml .Values.tyk_k8s.resources | indent 12 }}
       volumes:

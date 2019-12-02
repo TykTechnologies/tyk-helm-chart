@@ -47,6 +47,8 @@ spec:
             value: "{{ .Values.redis.shardCount }}"
           - name: TYK_DB_HOSTCONFIG_HOSTNAME
             value: "{{ .Values.dash.hostName }}"
+          - name: TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME
+            value: "{{ .Values.gateway.hostName }}"
           - name: TYK_DB_TYKAPI_HOST
             value: "{{ include "tyk-pro.gwproto" . }}://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
           - name: TYK_DB_TYKAPI_PORT
@@ -86,6 +88,24 @@ spec:
         volumeMounts:
           - name: tyk-dashboard-conf
             mountPath: /etc/tyk-dashboard
+        livenessProbe:
+          httpGet:
+            scheme: "HTTP"
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 2
+          timeoutSeconds: 3
+          failureThreshold: 2
+        readinessProbe:
+          httpGet:
+            scheme: "HTTP"
+            path: /
+            port: 3000
+          initialDelaySeconds: 1
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
       volumes:
         - name: tyk-dashboard-conf
           configMap:
