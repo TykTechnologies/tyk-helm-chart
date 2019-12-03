@@ -9,10 +9,9 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   tyk_k8s.yaml: |-
-    Server:
-      addr: ":443"
-      certFile: "/etc/tyk-k8s/certs/cert.pem"
-      keyFile: "/etc/tyk-k8s/certs/key.pem"
+    Ingress:
+      watchNamespaces:
+{{ toYaml .Values.tyk_k8s.watchNamespaces | indent 8 }}
     Tyk:
       url: "{{ .Values.tyk_k8s.dash_url }}"
       secret: "{{ .Values.tyk_k8s.dash_key }}"

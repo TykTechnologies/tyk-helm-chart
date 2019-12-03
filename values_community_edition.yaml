@@ -14,19 +14,21 @@ secrets:
 
 redis:
     shardCount: 128
-    host: redis-redis.redis
+    host: "tyk-redis-master.tyk-ingress.svc.cluster.local"
     port: 6379
     useSSL: false
     # pass: ""
 
 mongo:
-  mongoURL: "mongodb://mongodb-mongodb-replicaset.mongodb:27017/tyk-dashboard"
+  mongoURL: "mongodb://root:pass@tyk-mongo-mongodb.tyk-ingress.svc.cluster.local:27017/tyk-dashboard?authSource=admin"
   useSSL: false
 
 gateway:
   kind: DaemonSet
   replicaCount: 1
+  hostName: "gateway.tykbeta.com"
   tls: true
+  containerPort: 8080
   redis:
     shardCount: 128
     host: redis.service
@@ -43,6 +45,18 @@ gateway:
     port: 443
     externalTrafficPolicy: Local
     annotations: {}
+  ingress:
+    enabled: false
+    annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    path: /
+    hosts:
+      - tyk-gw.local
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
@@ -90,7 +104,20 @@ tyk_k8s:
     repository: tykio/tyk-k8s
     tag: headless
     pullPolicy: Always
-  org_id: "DUMMY"
-  dash_key: "DUMMY"
-  service:
-    port: 443
+  serviceMesh:
+    enabled: false
+  watchNamespaces: []
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}

@@ -11,6 +11,19 @@ spec:
 {{- if eq .Values.gateway.kind "Deployment" }}
   replicas: {{ .Values.gateway.replicaCount }}
 {{- end }}
+  minReadySeconds: 10
+{{- if eq .Values.gateway.kind "Deployment" }}
+  strategy:
+{{- else }}
+  updateStrategy:
+{{- end }}
+    # indicate which strategy we want for rolling update
+    type: RollingUpdate
+    rollingUpdate:
+{{- if eq .Values.gateway.kind "Deployment" }}
+      maxSurge: 2
+{{- end }}
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: gateway-{{ include "tyk-pro.fullname" . }}
@@ -21,13 +34,6 @@ spec:
         app: gateway-{{ include "tyk-pro.fullname" . }}
         release: {{ .Release.Name }}
     spec:
-      minReadySeconds: 20
-      strategy:
-        # indicate which strategy we want for rolling update
-        type: RollingUpdate
-        rollingUpdate:
-          maxSurge: 2
-          maxUnavailable: 1
 {{- if .Values.gateway.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.gateway.nodeSelector | indent 8 }}
@@ -45,6 +51,8 @@ spec:
         image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
         imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
         env:
+          - name: TYK_GW_LISTENPORT
+            value: "{{ .Values.gateway.containerPort }}"
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "{{ .Values.redis.shardCount }}"
           - name: TYK_GW_STORAGE_HOSTS
@@ -64,7 +72,7 @@ spec:
           - name: TYK_GW_NODESECRET
             value: "{{ .Values.secrets.APISecret }}"
           - name: TYK_GW_DBAPPCONFOPTIONS_TAGS
-            value: "{{.Values.gateway.tags }}"
+            value: "{{ .Values.gateway.tags }}"
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.gateway.tls }}"
         {{- if .Values.gateway.extraEnvs }}
@@ -76,7 +84,7 @@ spec:
         command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
         workingDir: /opt/tyk-gateway
         ports:
-        - containerPort: 8080
+        - containerPort: {{ .Values.gateway.containerPort }}
         resources:
 {{ toYaml .Values.gateway.resources | indent 12 }}
         volumeMounts:
@@ -84,6 +92,24 @@ spec:
             mountPath: /etc/tyk-gateway
           - name: {{ .Release.Name }}-default-cert
             mountPath: /etc/certs
+        livenessProbe:
+          httpGet:
+            scheme: "HTTP{{ if .Values.gateway.tls }}S{{ end }}"
+            path: /hello
+            port: {{ .Values.gateway.containerPort }}
+          initialDelaySeconds: 5
+          periodSeconds: 2
+          timeoutSeconds: 3
+          failureThreshold: 2
+        readinessProbe:
+          httpGet:
+            scheme: "HTTP{{ if .Values.gateway.tls }}S{{ end }}"
+            path: /hello
+            port: {{ .Values.gateway.containerPort }}
+          initialDelaySeconds: 1
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
       volumes:
         - name: tyk-mgmt-gateway-conf
           configMap:

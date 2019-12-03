@@ -17,7 +17,7 @@ spec:
   type: {{ .Values.gateway.service.type }}
   ports:
   - port: {{ .Values.gateway.service.port }}
-    targetPort: 8080
+    targetPort: {{ .Values.gateway.containerPort }}
     protocol: TCP
   selector:
     app: gateway-{{ include "tyk-hybrid.fullname" . }}

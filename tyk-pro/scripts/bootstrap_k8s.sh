@@ -121,24 +121,24 @@ if_present_echo(){
 }
 
 create_organisation() {
-  ORGDATA=$(curl --silent --header "admin-auth: $ADMIN_TOKEN" --header "Content-Type:application/json" --data '{"owner_name": "Default Org.","owner_slug": "default", "cname_enabled": true, "cname": ""}' ${SCHEMA_OPT}://$1/admin/organisations 2>&1)
+  ORGDATA=$(curl -k --silent --header "admin-auth: $ADMIN_TOKEN" --header "Content-Type:application/json" --data '{"owner_name": "Default Org.","owner_slug": "default", "cname_enabled": true, "cname": ""}' ${SCHEMA_OPT}://$1/admin/organisations 2>&1)
   if_present_echo "$ORGDATA" 3
 }
 
 org_id(){
-  ORGID=$(echo $1 | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["Meta"]')
+  ORGID=$(echo $1 | python -c 'import json,sys;obj=json.load(sys.stdin);print(obj["Meta"])')
   if_present_echo $ORGID 4
 }
 
 
 create_user(){
   USER_DATA=$(user_data $1 $2 $3 $4)
-  AUTH_CODE=$(echo $USER_DATA | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["Message"]')
+  AUTH_CODE=$(echo $USER_DATA | python -c 'import json,sys;obj=json.load(sys.stdin);print(obj["Message"])')
   if_present_echo "$AUTH_CODE" 4
 }
 
 user_data(){
-  user_curl=$(curl --silent --header "admin-auth: $ADMIN_TOKEN" --header "Content-Type:application/json" --data '{"first_name": "Joan","last_name": "Smith","email_address": "'$2'@default.com","password":"'$3'", "active": true,"org_id": "'$4'"}' ${SCHEMA_OPT}://$1/admin/users 2>&1)
+  user_curl=$(curl -k --silent --header "admin-auth: $ADMIN_TOKEN" --header "Content-Type:application/json" --data '{"first_name": "Joan","last_name": "Smith","email_address": "'$2'@default.com","password":"'$3'", "active": true,"org_id": "'$4'"}' ${SCHEMA_OPT}://$1/admin/users 2>&1)
   if_present_echo $user_curl 3
 }
 
@@ -149,31 +149,31 @@ get_user(){
 }
 
 get_user_list(){
-  list=$(curl --silent --header "authorization: $2" ${SCHEMA_OPT}://$1/api/users 2>&1)
+  list=$(curl -k --silent --header "authorization: $2" ${SCHEMA_OPT}://$1/api/users 2>&1)
   if_present_echo "$list" 3
 }
 
 get_user_id(){
   export user=$1
-  id=$(python -c "import json,os,string;user_str=os.environ['user'];print json.loads(user_str)['id']")
+  id=$(python -c "import json,os,string;user_str=os.environ['user'];print(json.loads(user_str)['id'])")
   if_present_echo "$id" 4
 }
 
 get_user_email(){
   export user=$1
-  email=$(python -c "import json,os,string;user_str=os.environ['user'];print json.loads(user_str)['email_address']")
+  email=$(python -c "import json,os,string;user_str=os.environ['user'];print(json.loads(user_str)['email_address'])")
   if_present_echo "$email" 4
 }
 
 get_last_user(){
-  user_parsed=$(echo $1 | python -c 'import json,sys;obj=json.load(sys.stdin);print json.dumps(obj["users"][0])')
+  user_parsed=$(echo $1 | python -c 'import json,sys;obj=json.load(sys.stdin);print(json.dumps(obj["users"][0]))')
   if_present_echo "$user_parsed" 4
 }
 
 setting_password(){
   USER=$(get_user $1 $2)
   USERID=$(get_user_id "$USER")
-  response=$(curl --silent --header "authorization: $2" --header "Content-Type:application/json" ${SCHEMA_OPT}://$1/api/users/$USERID/actions/reset --data '{"new_password":"'$3'"}')
+  response=$(curl -k --silent --header "authorization: $2" --header "Content-Type:application/json" ${SCHEMA_OPT}://$1/api/users/$USERID/actions/reset --data '{"new_password":"'$3'"}')
   if_present_echo "$response" 3
 }
 

@@ -9,14 +9,20 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   tyk_k8s.yaml: |-
+    {{- if .Values.tyk_k8s.serviceMesh.enabled }}
     Server:
       addr: ":443"
       certFile: "/etc/tyk-k8s/certs/cert.pem"
       keyFile: "/etc/tyk-k8s/certs/key.pem"
+    {{- end }}
+    Ingress:
+      watchNamespaces:
+{{ toYaml .Values.tyk_k8s.watchNamespaces | indent 8 }}
     Tyk:
       url: "http://dashboard-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.dash.service.port }}"
       secret: "set-by-env"
       org: "set-by-env"
+    {{- if .Values.tyk_k8s.serviceMesh.enabled }}
     Injector:
       createRoutes: true
       containers:
@@ -52,3 +58,4 @@ data:
             privileged: true
           command:
             - "/entrypoint"
+    {{- end }}

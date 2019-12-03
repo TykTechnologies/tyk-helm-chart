@@ -53,11 +53,11 @@ spec:
             value:  {{ .Values.mongo.mongoURL | quote }}
           - name: PMP_MONGOAGG_MONGOUSESSL
             value:  "{{ .Values.mongo.useSSL }}"
-          - name: TYK_PMP_REDIS_HOSTS
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_HOSTS
             value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"
-          - name: TYK_PMP_REDIS_PASSWORD
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_PASSWORD
             value: "{{ .Values.redis.pass }}"
-          - name: TYK_PMP_REDIS_REDISUSESSL
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISUSESSL
             value: "{{ .Values.redis.useSSL }}"
         {{- if .Values.pump.extraEnvs }}
         {{- range $env := .Values.pump.extraEnvs }}

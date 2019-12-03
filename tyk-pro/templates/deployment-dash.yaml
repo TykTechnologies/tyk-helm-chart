@@ -9,6 +9,13 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.dash.replicaCount }}
+  minReadySeconds: 5
+  strategy:
+    # indicate which strategy we want for rolling update
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: dashboard-{{ include "tyk-pro.fullname" . }}
@@ -19,13 +26,6 @@ spec:
         app: dashboard-{{ include "tyk-pro.fullname" . }}
         release: {{ .Release.Name }}
     spec:
-      minReadySeconds: 20
-      strategy:
-        # indicate which strategy we want for rolling update
-        type: RollingUpdate
-        rollingUpdate:
-          maxSurge: 2
-          maxUnavailable: 1
 {{- if .Values.dash.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.dash.nodeSelector | indent 8 }}
@@ -43,10 +43,14 @@ spec:
         imagePullPolicy: {{ .Values.dash.image.pullPolicy }}
         name: dashboard-{{ .Chart.Name }}
         env:
+          - name: TYK_DB_LISTENPORT
+            value: "{{ .Values.dash.containerPort }}"
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "{{ .Values.redis.shardCount }}"
           - name: TYK_DB_HOSTCONFIG_HOSTNAME
             value: "{{ .Values.dash.hostName }}"
+          - name: TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME
+            value: "{{ .Values.gateway.hostName }}"
           - name: TYK_DB_TYKAPI_HOST
             value: "{{ include "tyk-pro.gwproto" . }}://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
           - name: TYK_DB_TYKAPI_PORT
@@ -82,10 +86,28 @@ spec:
         command: ["/opt/tyk-dashboard/tyk-analytics", "--conf=/etc/tyk-dashboard/tyk_analytics.conf"]
         workingDir: /opt/tyk-dashboard
         ports:
-        - containerPort:  3000
+        - containerPort: {{ .Values.dash.containerPort }}
         volumeMounts:
           - name: tyk-dashboard-conf
             mountPath: /etc/tyk-dashboard
+        livenessProbe:
+          httpGet:
+            scheme: "HTTP"
+            path: /
+            port: {{ .Values.dash.containerPort }}
+          initialDelaySeconds: 5
+          periodSeconds: 2
+          timeoutSeconds: 3
+          failureThreshold: 2
+        readinessProbe:
+          httpGet:
+            scheme: "HTTP"
+            path: /
+            port: {{ .Values.dash.containerPort }}
+          initialDelaySeconds: 1
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
       volumes:
         - name: tyk-dashboard-conf
           configMap:

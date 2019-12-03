@@ -11,7 +11,7 @@ metadata:
 spec:
   ports:
   - port: {{ .Values.tib.service.port }}
-    targetPort: {{ .Values.tib.service.port }}
+    targetPort: {{ .Values.tib.containerPort }}
     protocol: TCP
     name: http
   type: {{ .Values.tib.service.type }}

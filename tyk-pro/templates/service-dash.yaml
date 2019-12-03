@@ -10,8 +10,9 @@ metadata:
 spec:
   ports:
   - port: {{ .Values.dash.service.port }}
-    targetPort: 3000
+    targetPort: {{ .Values.dash.containerPort }}
     protocol: TCP
+    name: http
   type: {{ .Values.dash.service.type }}
   selector:
     app: dashboard-{{ include "tyk-pro.fullname" . }}

@@ -35,6 +35,6 @@ spec:
           - path: {{ $ingressPath }}
             backend:
               serviceName: dashboard-svc-{{ $fullName }}
-              servicePort: {{ $.Values.dash.service.port }}
+              servicePort: http
   {{- end }}
 {{- end }}

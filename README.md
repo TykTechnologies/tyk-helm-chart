@@ -15,10 +15,13 @@ It also means that you can bring the full features set of the Tyk API Gateway to
 
 To get started quickly, you can use these rather excellent Redis and MongoDB charts to get going:
 
-	helm repo add tc http://trusted-charts.stackpoint.io
+	helm repo add stable https://kubernetes-charts.storage.googleapis.com
 	helm repo update
-	helm install tc/redis --name redis --namespace=redis --set usePassword=false
-	helm install tc/mongodb-replicaset --name mongodb --namespace=mongodb 
+	kubectl create namespace tyk-ingress
+	helm install tyk-mongo stable/mongodb --set "replicaSet.enabled=true" -n tyk-ingress
+	(follow notes from the installation output to get connection details)
+	helm install tyk-redis stable/redis -n tyk-ingress
+	(follow notes from the installation output to get connection details)
 
 > *Important Note regarding TLS:* This helm chart assumes TLS is being used by default, so the gateways will listen on port 443 and load up a dummy certificate. You can set your own default certificate by replacing the files in the certs/ folder.
 
@@ -27,14 +30,14 @@ To get started quickly, you can use these rather excellent Redis and MongoDB cha
 
 To install, *first modify the `values_community_edition.yaml` file to add redis details*:
 
-	helm install -f ./values_community_edition.yaml ./tyk-headless
+	helm install tyk-ce -f ./values_community_edition.yaml ./tyk-headless -n tyk-ingress
 
 > **Warning**: Tyk Service Mesh capability is not currently supported with Tyk CE
 
 ## Install Tyk Pro
 To install, *first modify the `values.yaml` file to add redis and mongo details, and add your license*:
 
-	helm install -f ./values.yaml ./tyk-pro
+	helm install tyk-pro -f ./values.yaml ./tyk-pro -n tyk-ingress
 
 Follow the instructions in the Notes that follow the installation to install the controller for Service Mesh sidecar injection.
 

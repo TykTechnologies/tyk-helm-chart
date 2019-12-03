@@ -1,20 +1,20 @@
 {{ if .Values.rbac }}
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-    name: tyk-k8s
+  name: tyk-k8s
 rules:
-- apiGroups: ["extensions"]
-  resources: ["thirdpartyresources", "thirdpartyresources.extensions", "ingresses", "ingresses/status"]
-  verbs: ["*"]
-- apiGroups: [""]
-  resources: ["configmaps", "endpoints", "pods", "services"]
-  verbs: ["*"]
-- apiGroups: [""]
-  resources: ["namespaces", "configmaps", "pods", "endpoints", "services"]
-  verbs: ["get", "list"]
+  - apiGroups: ["extensions", "networking.k8s.io"]
+    resources: ["ingresses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["extensions", "networking.k8s.io"]
+    resources: ["ingresses/status"]
+    verbs: ["update"]
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets", "pods", "endpoints", "services"]
+    verbs: ["get", "list", "watch"]
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: tyk-k8s
@@ -45,6 +45,19 @@ spec:
 {{- if eq .Values.gateway.kind "Deployment" }}
   replicas: {{ .Values.gateway.replicaCount }}
 {{- end }}
+  minReadySeconds: 5
+{{- if eq .Values.gateway.kind "Deployment" }}
+  strategy:
+{{- else }}
+  updateStrategy:
+{{- end }}
+    # indicate which strategy we want for rolling update
+    type: RollingUpdate
+    rollingUpdate:
+{{- if eq .Values.gateway.kind "Deployment" }}
+      maxSurge: 2
+{{- end }}
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: gateway-{{ include "tyk-headless.fullname" . }}
@@ -56,13 +69,6 @@ spec:
         release: {{ .Release.Name }}
     spec:
       {{ if .Values.rbac }}serviceAccountName: tyk-k8s {{ end }}
-      minReadySeconds: 20
-      strategy:
-        # indicate which strategy we want for rolling update
-        type: RollingUpdate
-        rollingUpdate:
-          maxSurge: 2
-          maxUnavailable: 1
 {{- if .Values.gateway.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.gateway.nodeSelector | indent 8 }}
@@ -80,6 +86,8 @@ spec:
         image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
         imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
         env:
+          - name: TYK_GW_LISTENPORT
+            value: "{{ .Values.gateway.containerPort }}"
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "{{ .Values.redis.shardCount }}"
           - name: TYK_GW_STORAGE_HOSTS
@@ -103,14 +111,32 @@ spec:
         command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
         workingDir: /opt/tyk-gateway
         ports:
-        - containerPort: 8080
+        - containerPort: {{ .Values.gateway.containerPort }}
         resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.gateway.resources | indent 12 }}
         volumeMounts:
           - name: tyk-mgmt-gateway-conf
             mountPath: /etc/tyk-gateway
           - name: {{ .Release.Name }}-default-cert
             mountPath: /etc/certs
+        livenessProbe:
+          httpGet:
+            scheme: "HTTP{{ if .Values.gateway.tls }}S{{ end }}"
+            path: /hello
+            port: {{ .Values.gateway.containerPort }}
+          initialDelaySeconds: 5
+          periodSeconds: 2
+          timeoutSeconds: 3
+          failureThreshold: 2
+        readinessProbe:
+          httpGet:
+            scheme: "HTTP{{ if .Values.gateway.tls }}S{{ end }}"
+            path: /hello
+            port: {{ .Values.gateway.containerPort }}
+          initialDelaySeconds: 1
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
 
       - name: tyk-k8s
         image: "{{ .Values.tyk_k8s.image.repository }}:{{ .Values.tyk_k8s.image.tag }}"
@@ -122,12 +148,11 @@ spec:
             value: "{{ .Values.secrets.APISecret }}"
           - name: TK8S_TYK_ORG
             value: "{{ .Values.secrets.OrgID }}"
-        
         volumeMounts:
           - name: tyk-k8s-conf
             mountPath: /etc/tyk-k8s
         resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.tyk_k8s.resources | indent 12 }}
       volumes:
         - name: tyk-k8s-conf
           configMap:
