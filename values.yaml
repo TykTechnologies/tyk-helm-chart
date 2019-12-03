@@ -27,6 +27,7 @@ tib:
   enabled: false
   useSSL: true
   replicaCount: 1
+  containerPort: 3010
   image:
     repository: tykio/tyk-identity-broker
     tag: latest
@@ -69,6 +70,7 @@ dash:
   replicaCount: 1
   hostName: "dashboard.tykbeta.com"
   license: "ADD-LICENSE-HERE"
+  containerPort: 3000
   image:
     repository: tykio/tyk-dashboard
     tag: latest
@@ -124,6 +126,7 @@ gateway:
   hostName: "gateway.tykbeta.com"
   tags: "ingress"
   tls: true
+  containerPort: 8080
   image:
     repository: tykio/tyk-gateway
     tag: latest
@@ -196,8 +199,6 @@ tyk_k8s:
   serviceMesh:
     enabled: false
   watchNamespaces: []
-  service:
-    port: 443
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little

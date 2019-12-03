@@ -51,6 +51,8 @@ spec:
         image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
         imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
         env:
+          - name: TYK_GW_LISTENPORT
+            value: "{{ .Values.gateway.containerPort }}"
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "{{ .Values.redis.shardCount }}"
           - name: TYK_GW_STORAGE_HOSTS
@@ -86,7 +88,7 @@ spec:
         command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
         workingDir: /opt/tyk-gateway
         ports:
-        - containerPort: 8080
+        - containerPort: {{ .Values.gateway.containerPort }}
         resources:
 {{ toYaml .Values.gateway.resources | indent 12 }}
         volumeMounts:
@@ -98,7 +100,7 @@ spec:
           httpGet:
             scheme: "HTTP{{ if .Values.gateway.tls }}S{{ end }}"
             path: /hello
-            port: 8080
+            port: {{ .Values.gateway.containerPort }}
           initialDelaySeconds: 5
           periodSeconds: 2
           timeoutSeconds: 3
@@ -107,7 +109,7 @@ spec:
           httpGet:
             scheme: "HTTP{{ if .Values.gateway.tls }}S{{ end }}"
             path: /hello
-            port: 8080
+            port: {{ .Values.gateway.containerPort }}
           initialDelaySeconds: 1
           periodSeconds: 10
           timeoutSeconds: 3

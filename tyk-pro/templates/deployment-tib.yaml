@@ -44,6 +44,8 @@ spec:
         imagePullPolicy: {{ .Values.tib.image.pullPolicy }}
         name: tib-{{ .Chart.Name }}
         env:
+          - name: TYK_IB_PORT
+            value: "{{ .Values.tib.containerPort }}"
           - name: TYK_IB_SECRET
             value: "{{ .Values.tib.secret }}"
           - name: TYK_IB_HTTPSERVEROPTIONS_USESSL
@@ -53,7 +55,7 @@ spec:
           - name: TYK_IB_TYKAPISETTINGS_GATEWAYCONFIG_ENDPOINT
             value: "{{ include "tyk-pro.gwproto" . }}://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
           - name: TYK_IB_TYKAPISETTINGS_GATEWAYCONFIG_PORT
-            value: "8080"
+            value: "{{ .Values.gateway.service.port }}"
           - name: TYK_IB_TYKAPISETTINGS_GATEWAYCONFIG_ADMINSECRET
             value: "{{ .Values.secrets.AdminSecret }}"
           - name: TYK_IB_TYKAPISETTINGS_DASHBOARDCONFIG_ENDPOINT
@@ -69,7 +71,7 @@ spec:
         resources:
 {{ toYaml .Values.tib.resources | indent 10 }}
         ports:
-        - containerPort:  {{ .Values.tib.service.port }}
+        - containerPort: {{ .Values.tib.containerPort }}
         volumeMounts:
           - name: tyk-tib-conf-volume
             mountPath: /opt/tyk-identity-broker/tib.conf
@@ -83,7 +85,7 @@ spec:
           httpGet:
             scheme: "HTTP"
             path: /health
-            port: {{ .Values.tib.service.port }}
+            port: {{ .Values.tib.containerPort }}
           initialDelaySeconds: 5
           periodSeconds: 2
           timeoutSeconds: 3
@@ -92,7 +94,7 @@ spec:
           httpGet:
             scheme: "HTTP"
             path: /health
-            port: {{ .Values.tib.service.port }}
+            port: {{ .Values.tib.containerPort }}
           initialDelaySeconds: 1
           periodSeconds: 10
           timeoutSeconds: 3

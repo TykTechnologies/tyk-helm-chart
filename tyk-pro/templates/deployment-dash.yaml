@@ -43,6 +43,8 @@ spec:
         imagePullPolicy: {{ .Values.dash.image.pullPolicy }}
         name: dashboard-{{ .Chart.Name }}
         env:
+          - name: TYK_DB_LISTENPORT
+            value: "{{ .Values.dash.containerPort }}"
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "{{ .Values.redis.shardCount }}"
           - name: TYK_DB_HOSTCONFIG_HOSTNAME
@@ -84,7 +86,7 @@ spec:
         command: ["/opt/tyk-dashboard/tyk-analytics", "--conf=/etc/tyk-dashboard/tyk_analytics.conf"]
         workingDir: /opt/tyk-dashboard
         ports:
-        - containerPort:  3000
+        - containerPort: {{ .Values.dash.containerPort }}
         volumeMounts:
           - name: tyk-dashboard-conf
             mountPath: /etc/tyk-dashboard
@@ -92,7 +94,7 @@ spec:
           httpGet:
             scheme: "HTTP"
             path: /
-            port: 3000
+            port: {{ .Values.dash.containerPort }}
           initialDelaySeconds: 5
           periodSeconds: 2
           timeoutSeconds: 3
@@ -101,7 +103,7 @@ spec:
           httpGet:
             scheme: "HTTP"
             path: /
-            port: 3000
+            port: {{ .Values.dash.containerPort }}
           initialDelaySeconds: 1
           periodSeconds: 10
           timeoutSeconds: 3

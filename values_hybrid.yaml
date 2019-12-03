@@ -27,6 +27,7 @@ gateway:
   tags: "ingress"
   hostName: ""
   tls: true
+  containerPort: 8080
   # For MDCB setups change to connection string for your MDCB instance
   rpc:
     connString: "hybrid.cloud.tyk.io:9091"
@@ -89,8 +90,6 @@ tyk_k8s:
   serviceMesh:
     enabled: false
   watchNamespaces: []
-  service:
-    port: 443
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little

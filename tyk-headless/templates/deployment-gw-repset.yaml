@@ -86,6 +86,8 @@ spec:
         image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
         imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
         env:
+          - name: TYK_GW_LISTENPORT
+            value: "{{ .Values.gateway.containerPort }}"
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "{{ .Values.redis.shardCount }}"
           - name: TYK_GW_STORAGE_HOSTS
@@ -109,7 +111,7 @@ spec:
         command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
         workingDir: /opt/tyk-gateway
         ports:
-        - containerPort: 8080
+        - containerPort: {{ .Values.gateway.containerPort }}
         resources:
 {{ toYaml .Values.gateway.resources | indent 12 }}
         volumeMounts:
@@ -117,6 +119,24 @@ spec:
             mountPath: /etc/tyk-gateway
           - name: {{ .Release.Name }}-default-cert
             mountPath: /etc/certs
+        livenessProbe:
+          httpGet:
+            scheme: "HTTP{{ if .Values.gateway.tls }}S{{ end }}"
+            path: /hello
+            port: {{ .Values.gateway.containerPort }}
+          initialDelaySeconds: 5
+          periodSeconds: 2
+          timeoutSeconds: 3
+          failureThreshold: 2
+        readinessProbe:
+          httpGet:
+            scheme: "HTTP{{ if .Values.gateway.tls }}S{{ end }}"
+            path: /hello
+            port: {{ .Values.gateway.containerPort }}
+          initialDelaySeconds: 1
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
 
       - name: tyk-k8s
         image: "{{ .Values.tyk_k8s.image.repository }}:{{ .Values.tyk_k8s.image.tag }}"
@@ -131,24 +151,6 @@ spec:
         volumeMounts:
           - name: tyk-k8s-conf
             mountPath: /etc/tyk-k8s
-        livenessProbe:
-          httpGet:
-            scheme: "HTTP{{ if .Values.gateway.tls }}S{{ end }}"
-            path: /hello
-            port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 2
-          timeoutSeconds: 3
-          failureThreshold: 2
-        readinessProbe:
-          httpGet:
-            scheme: "HTTP{{ if .Values.gateway.tls }}S{{ end }}"
-            path: /hello
-            port: 8080
-          initialDelaySeconds: 1
-          periodSeconds: 10
-          timeoutSeconds: 3
-          failureThreshold: 3
         resources:
 {{ toYaml .Values.tyk_k8s.resources | indent 12 }}
       volumes:
