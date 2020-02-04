@@ -29,12 +29,6 @@ gateway:
   hostName: "gateway.tykbeta.com"
   tls: true
   containerPort: 8080
-  redis:
-    shardCount: 128
-    host: redis.service
-    port: 6379
-    useSSL: false
-    pass: ""
   tags: "ingress"
   image:
     repository: tykio/tyk-gateway
