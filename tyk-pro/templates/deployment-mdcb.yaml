@@ -41,6 +41,10 @@ spec:
 {{- end }}
       containers:
       - image: "{{ .Values.mdcb.image.repository }}:{{ .Values.mdcb.image.tag }}"
+        {{ - if .Values.mdcb.image.useRegSecret }}
+        imagePullSecrets:
+          - name: {{ .Values.mdcb.registrySecret }}
+        {{ - end }}
         imagePullPolicy: {{ .Values.mdcb.image.pullPolicy }}
         name: dashboard-{{ .Chart.Name }}
         env:
@@ -62,6 +66,8 @@ spec:
             value: {{ .Values.mongo.mongoURL | quote }}
           - name: TYK_MDCB_ANALYTICSCONFIG_MONGOUSESSL
             value: "{{ .Values.mongo.useSSL }}"
+          - name: TYK_MDCB_FORWARDANALYTICSTOPUMP
+            value: "{{ .Values.mdcb.forwardAnalyticsToPump }}"
           - name: TYK_MDCB_LICENSE
             value: {{ .Values.mdcb.license | quote }}
         {{- if .Values.mdcb.extraEnvs }}
@@ -80,14 +86,18 @@ spec:
           - name: tyk-mdcb-conf
             mountPath: /etc/tyk-sink
         livenessProbe:
-          tcpSocket:
+          httpGet:
+            scheme: "HTTP{{ if .Values.mdcb.useSSL }}S{{ end }}"
+            path: /
             port: {{ .Values.mdcb.healthcheckport }}
           initialDelaySeconds: 5
           periodSeconds: 2
           timeoutSeconds: 3
           failureThreshold: 2
         readinessProbe:
-          tcpSocket:
+          httpGet:
+            scheme: "HTTP{{ if .Values.mdcb.useSSL }}S{{ end }}"
+            path: /
             port: {{ .Values.mdcb.healthcheckport }}
           initialDelaySeconds: 1
           periodSeconds: 10
@@ -100,4 +110,8 @@ spec:
             items:
               - key: tyk_sink.conf
                 path: tyk_sink.conf
-{{- end }}
+        - name: {{ .Release.Name }}-default-cert
+                  secret:
+                    secretName: {{ .Release.Name }}-default-cert
+
+  {{- end }}

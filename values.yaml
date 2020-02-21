@@ -25,11 +25,16 @@ mongo:
 
 mdcb:
   enabled: false
+  useSSL: false
   replicaCount: 1
   containerPort: 9090
   healthcheckport: 8181
   license: ""
+  forwardAnalyticsToPump: true
   image:
+    useRegSecret: false
+    regySecret: regCred
+    # testing only - change registry
     repository: tykio/tyk-mdcb-docker
     tag: latest
     pullPolicy: Always
