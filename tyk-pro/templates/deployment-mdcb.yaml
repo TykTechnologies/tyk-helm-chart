@@ -1,0 +1,103 @@
+{{- if .Values.mdcb.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mdcb-{{ include "tyk-pro.fullname" . }}
+  labels:
+    app: mdcb-{{ include "tyk-pro.fullname" . }}
+    chart: {{ include "tyk-pro.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.mdcb.replicaCount }}
+  minReadySeconds: 5
+  strategy:
+    # indicate which strategy we want for rolling update
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: mdcb-{{ include "tyk-pro.fullname" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: mdcb-{{ include "tyk-pro.fullname" . }}
+        release: {{ .Release.Name }}
+    spec:
+{{- if .Values.mdcb.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.mdcb.nodeSelector | indent 8 }}
+{{- end }}
+{{- if .Values.mdcb.tolerations }}
+      tolerations:
+{{ toYaml .Values.mdcb.tolerations | indent 8 }}
+{{- end }}
+{{- if .Values.mdcb.affinity }}
+      affinity:
+{{ toYaml .Values.mdcb.affinity | indent 8 }}
+{{- end }}
+      containers:
+      - image: "{{ .Values.mdcb.image.repository }}:{{ .Values.mdcb.image.tag }}"
+        imagePullPolicy: {{ .Values.mdcb.image.pullPolicy }}
+        name: dashboard-{{ .Chart.Name }}
+        env:
+          - name: TYK_MDCB_LISTENPORT
+            value: "{{ .Values.mdcb.containerPort }}"
+          - name: REDIGOCLUSTER_SHARDCOUNT
+            value: "{{ .Values.redis.shardCount }}"
+          - name: TYK_MDCB_HEALTHCHECKPORT
+            value: "{{ .Values.mdcb.healthcheckport }}"
+          - name: TYK_MDCB_STORAGE_HOSTS
+            value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"
+          - name: TYK_MDCB_STORAGE_PASSWORD
+            value: "{{ .Values.redis.pass }}"
+          - name: TYK_MDCB_STORAGE_REDISUSESSL
+            value: "{{ .Values.redis.useSSL }}"
+          - name: TYK_MDCB_STORAGE_REDISSSLINSECURESKIPVERIFY
+            value: "true"
+          - name: TYK_MDCB_ANALYTICSCONFIG_MONGOURL
+            value: {{ .Values.mongo.mongoURL | quote }}
+          - name: TYK_MDCB_ANALYTICSCONFIG_MONGOUSESSL
+            value: "{{ .Values.mongo.useSSL }}"
+          - name: TYK_MDCB_LICENSE
+            value: {{ .Values.mdcb.license | quote }}
+        {{- if .Values.mdcb.extraEnvs }}
+        {{- range $env := .Values.mdcb.extraEnvs }}
+          - name: {{ $env.name }}
+            value: {{ $env.value | quote }}
+        {{- end }}
+        {{- end }}
+        resources:
+{{ toYaml .Values.mdcb.resources | indent 12 }}
+        command: ["/opt/tyk-sink/tyk-sink", "--conf=/etc/tyk-sink/tyk_sink.conf"]
+        workingDir: /opt/tyk-sink
+        ports:
+        - containerPort: {{ .Values.mdcb.containerPort }}
+        volumeMounts:
+          - name: tyk-mdcb-conf
+            mountPath: /etc/tyk-sink
+        livenessProbe:
+          tcpSocket:
+            port: {{ .Values.mdcb.healthcheckport }}
+          initialDelaySeconds: 5
+          periodSeconds: 2
+          timeoutSeconds: 3
+          failureThreshold: 2
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.mdcb.healthcheckport }}
+          initialDelaySeconds: 1
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+      volumes:
+        - name: tyk-mdcb-conf
+          configMap:
+            name: mdcb-conf-{{ include "tyk-pro.fullname" . }}
+            items:
+              - key: tyk_sink.conf
+                path: tyk_sink.conf
+{{- end }}
