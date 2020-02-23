@@ -41,13 +41,15 @@ spec:
 {{- end }}
       containers:
       - image: "{{ .Values.mdcb.image.repository }}:{{ .Values.mdcb.image.tag }}"
-        {{ - if .Values.mdcb.image.useRegSecret }}
+        {{- with .Values.mdcb.image.pullSecrets }}
         imagePullSecrets:
-          - name: {{ .Values.mdcb.registrySecret }}
-        {{ - end }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
         imagePullPolicy: {{ .Values.mdcb.image.pullPolicy }}
         name: dashboard-{{ .Chart.Name }}
         env:
+          - name: TYK_MDCB_SERVEROPTIONS_USESSL
+            value: "{{ .Values.mdcb.useSSL }}"
           - name: TYK_MDCB_LISTENPORT
             value: "{{ .Values.mdcb.containerPort }}"
           - name: REDIGOCLUSTER_SHARDCOUNT
@@ -87,8 +89,8 @@ spec:
             mountPath: /etc/tyk-sink
         livenessProbe:
           httpGet:
-            scheme: "HTTP{{ if .Values.mdcb.useSSL }}S{{ end }}"
-            path: /
+            scheme: "HTTP"
+            path: /health
             port: {{ .Values.mdcb.healthcheckport }}
           initialDelaySeconds: 5
           periodSeconds: 2
@@ -96,8 +98,8 @@ spec:
           failureThreshold: 2
         readinessProbe:
           httpGet:
-            scheme: "HTTP{{ if .Values.mdcb.useSSL }}S{{ end }}"
-            path: /
+            scheme: "HTTP"
+            path: /health
             port: {{ .Values.mdcb.healthcheckport }}
           initialDelaySeconds: 1
           periodSeconds: 10
@@ -111,7 +113,6 @@ spec:
               - key: tyk_sink.conf
                 path: tyk_sink.conf
         - name: {{ .Release.Name }}-default-cert
-                  secret:
-                    secretName: {{ .Release.Name }}-default-cert
-
-  {{- end }}
+            secret:
+                secretName: {{ .Release.Name }}-default-cert
+{{- end }}
