@@ -43,7 +43,7 @@ spec:
       - image: "{{ .Values.mdcb.image.repository }}:{{ .Values.mdcb.image.tag }}"
         {{- with .Values.mdcb.image.pullSecrets }}
         imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+        {{- toYaml . | nindent 12 }}
         {{- end }}
         imagePullPolicy: {{ .Values.mdcb.image.pullPolicy }}
         name: dashboard-{{ .Chart.Name }}
@@ -79,7 +79,7 @@ spec:
         {{- end }}
         {{- end }}
         resources:
-{{ toYaml .Values.mdcb.resources | indent 12 }}
+        {{ toYaml .Values.mdcb.resources | indent 12 }}
         command: ["/opt/tyk-sink/tyk-sink", "--conf=/etc/tyk-sink/tyk_sink.conf"]
         workingDir: /opt/tyk-sink
         ports:
@@ -113,6 +113,6 @@ spec:
               - key: tyk_sink.conf
                 path: tyk_sink.conf
         - name: {{ .Release.Name }}-default-cert
-            secret:
-                secretName: {{ .Release.Name }}-default-cert
+          secret:
+            secretName: {{ .Release.Name }}-default-cert
 {{- end }}

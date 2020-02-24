@@ -32,10 +32,7 @@ mdcb:
   license: ""
   forwardAnalyticsToPump: true
   image:
-    useRegSecret: false
-    regySecret: regCred
-    # testing only - change registry
-    repository: tykio/tyk-mdcb-docker
+    repository: tykio/tyk-mdcb-docker #requires credential
     tag: latest
     pullPolicy: Always
   service:
