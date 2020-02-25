@@ -48,6 +48,15 @@ Once you have installed `Gateway` and `Dashboard` component you can configure `t
 
 This chart implies there's a ConfigMap with a `profiles.json` definition in it. Please use `tib.configMap.profiles` value to set the name of this ConfigMap (`tyk-tib-profiles-conf` by default).
 
+## Installing MDCB
+
+If you are deploying the Master Data Centre in an MDCB deployment then you can enable to addition of that component in your installation. For more details about the MDCB component see here https://tyk.io/docs/tyk-multi-data-centre/ 
+
+This enables multicluster, multi Data-Centre API management from a single Dashboard.
+
+**Secrets**
+
+The Tyk owned MDCB registry is private and requires adding users to our organisation which you then define as a secret when pulling the MDCB image. Please contact your account manager to arrange this.
 
 ## Install Tyk Hybrid Gateways (This can be used either for Multi-Cloud Gateways or MDCB slaves)
 To install, *first modify the `values_hybrid.yaml` file to add redis details, your RPC key, API key and Dashboard URL*:
