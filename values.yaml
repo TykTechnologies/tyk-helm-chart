@@ -23,6 +23,38 @@ mongo:
     mongoURL: "mongodb://root:pass@tyk-mongo-mongodb.tyk-ingress.svc.cluster.local:27017/tyk-dashboard?authSource=admin"
     useSSL: false
 
+mdcb:
+  enabled: false
+  useSSL: false
+  replicaCount: 1
+  containerPort: 9090
+  healthcheckport: 8181
+  license: ""
+  forwardAnalyticsToPump: true
+  image:
+    repository: tykio/tyk-mdcb-docker #requires credential
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: LoadBalancer
+    port: 9090
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  extraEnvs: []
+
+
 tib:
   enabled: false
   useSSL: true
@@ -69,14 +101,14 @@ tib:
 dash:
   replicaCount: 1
   hostName: "dashboard.tykbeta.com"
-  license: "ADD-LICENSE-HERE"
+  license: ""
   containerPort: 3000
   image:
     repository: tykio/tyk-dashboard
     tag: latest
     pullPolicy: Always
   service:
-    type: NodePort
+    type: LoadBalancer
     port: 3000
   ingress:
     enabled: false
