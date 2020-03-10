@@ -80,7 +80,7 @@ spec:
         {{- end }}
         resources:
         {{ toYaml .Values.mdcb.resources | indent 12 }}
-        command: ["/opt/tyk-sink/tyk-sink", "--conf=/etc/tyk-sink/tyk_sink.conf"]
+        command: ["/opt/tyk-sink/tyk-sink", "--c=/etc/tyk-sink/tyk_sink.conf"]
         workingDir: /opt/tyk-sink
         ports:
         - containerPort: {{ .Values.mdcb.containerPort }}
