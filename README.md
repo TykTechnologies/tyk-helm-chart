@@ -59,7 +59,11 @@ This enables multicluster, multi Data-Centre API management from a single Dashbo
 The Tyk owned MDCB registry is private and requires adding users to our organisation which you then define as a secret when pulling the MDCB image. Please contact your account manager to arrange this.
 
 ## Install Tyk Hybrid Gateways (This can be used either for Multi-Cloud Gateways or MDCB slaves)
-To install, *first modify the `values_hybrid.yaml` file to add redis details, your RPC key, API key and Dashboard URL*:
+To install, first modify `values_hybrid.yaml` file as follows:
+1. Add redis passwordi in redis.pass. It's the value of $REDIS_PASSWORD (The host should be "tyk-redis-master.tyk-ingress.svc.cluster.local" if you used the tyk-ingress as the namespace.
+2. Add your RPC key (i.e. ORGID) in tyk_k8s.org_id
+3. Add your API KEY in tyk_k8s.dash_key (Could be the api key of any dashboard user but better to have a dedicated one) 
+4. Add your dashboard url in tyk_k8s.dash_url. If it's a multi cloud account the value *https://admin.cloud.tyk.io* is already set for you.
 
 	helm install -f ./values_hybrid.yaml ./tyk-hybrid
 
