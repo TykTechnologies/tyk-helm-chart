@@ -61,7 +61,13 @@ The Tyk owned MDCB registry is private and requires adding users to our organisa
 ## Install Tyk Hybrid Gateways (This can be used either for Multi-Cloud Gateways or MDCB slaves)
 To install, *first modify the `values_hybrid.yaml` file to add redis details, your RPC key, API key and Dashboard URL*:
 
-	helm install -f ./values_hybrid.yaml ./tyk-hybrid
+	helm install tyk-hybrid -f ./values_hybrid.yaml ./tyk-hybrid -n tyk-ingress
+	
+To check all the helm instalations run:
+	`kubectl get secret --all-namespaces -l "owner=helm"`
+	
+To uninstall run:
+	`helm uninstall tyk-hybrid -n=tyk-ingress`	
 
 Follow the instructions in notes to install the ingress controller. Sidecar injection support is coming soon!
 
