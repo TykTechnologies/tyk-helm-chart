@@ -63,7 +63,7 @@ To install, first modify `values_hybrid.yaml` file as follows:
 1. Add redis password in `redis.pass` value. It's the value of `$REDIS_PASSWORD` environment variable (the host should be `tyk-redis-master.tyk-ingress.svc.cluster.local` if you used the tyk-ingress as the namespace.
 2. Add your RPC key (i.e. ORGID) in tyk_k8s.org_id
 3. Add your API key in `tyk_k8s.dash_key` value (could be the API key of any dashboard user but better to have a dedicated one) 
-4. Add your dashboard url in tyk_k8s.dash_url. If it's a multi cloud account the value *https://admin.cloud.tyk.io* is already set for you.
+4. Add your dashboard URL in `tyk_k8s.dash_url` value. If it's a Tyk SaaS account the value `https://admin.cloud.tyk.io` is already set for you.
 
 	helm install -f ./values_hybrid.yaml ./tyk-hybrid
 
