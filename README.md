@@ -6,12 +6,12 @@ This means that a single Tyk installation can be used for both "north-south" inb
 
 It also means that you can bring the full features set of the Tyk API Gateway to your internal and external services from a single control plane.
 
-**Prerequisites**
 
-- Redis installed in the cluster or reachable from K8s
-- MongoDB installed in the cluster, or reachable from inside K8s
+## Prerequisites
 
-> MongoDB is not required for Tyk Community Edition or Hybrid Gateways
+### Tyk Pro (On-prem) installation
+1. Redis installed in the cluster or reachable from K8s
+2. MongoDB installed in the cluster, or reachable from inside K8s
 
 To get started quickly, you can use these rather excellent Redis and MongoDB charts to get going:
 
@@ -20,10 +20,31 @@ To get started quickly, you can use these rather excellent Redis and MongoDB cha
 	kubectl create namespace tyk-ingress
 	helm install tyk-mongo stable/mongodb --set "replicaSet.enabled=true" -n tyk-ingress
 	(follow notes from the installation output to get connection details)
+	
 	helm install tyk-redis stable/redis -n tyk-ingress
 	(follow notes from the installation output to get connection details)
 
-> *Important Note regarding TLS:* This helm chart assumes TLS is being used by default, so the gateways will listen on port 443 and load up a dummy certificate. You can set your own default certificate by replacing the files in the certs/ folder.
+
+### Community Edition
+Redis installed in the cluster or reachable from K8s (MongoDB is not required)
+       
+	helm install tyk-redis stable/redis -n tyk-ingress
+	(follow notes from the installation output to get connection details)
+
+### SaaS Also called Hybrid or Multi-Cloud)
+Redis installed in the cluster or reachable from K8s (MongoDB is not required)
+
+	helm install tyk-redis stable/redis -n tyk-ingress
+	(follow notes from the installation output to get connection details)
+	
+
+> *Important Note regarding TLS:* 
+This helm chart assumes TLS is being used by default, so the gateways will listen on port 443 and load up a dummy certificate. You can set your own default certificate by replacing the files in the certs/ folder.
+
+## Install Tyk Pro
+To install, *first modify the `values.yaml` file to add redis and mongo details, and add your license*:
+
+	helm install tyk-pro -f ./values.yaml ./tyk-pro -n tyk-ingress
 
 ## Install Tyk Community Edition
 > **Warning**: This is highly experimental, technical support is not available.
@@ -34,12 +55,24 @@ To install, *first modify the `values_community_edition.yaml` file to add redis 
 
 > **Warning**: Tyk Service Mesh capability is not currently supported with Tyk CE
 
-## Install Tyk Pro
-To install, *first modify the `values.yaml` file to add redis and mongo details, and add your license*:
-
-	helm install tyk-pro -f ./values.yaml ./tyk-pro -n tyk-ingress
-
 Follow the instructions in the Notes that follow the installation to install the controller for Service Mesh sidecar injection.
+
+## Install Tyk Hybrid Gateways (This can be used either for Multi-Cloud Gateways or MDCB slaves)
+To install, first modify `values_hybrid.yaml` file as follows:
+1. Add redis password in `redis.pass` value. It's the value of `$REDIS_PASSWORD` environment variable (the host should be `tyk-redis-master.tyk-ingress.svc.cluster.local` if you used the tyk-ingress as the namespace.
+2. Add your RPC key in `tyk_k8s.org_id` value
+3. Add your API key in `tyk_k8s.dash_key` value (could be the API key of any dashboard user but better to have a dedicated one) 
+4. Add your dashboard URL in `tyk_k8s.dash_url` value. If it's a Tyk SaaS account the value `https://admin.cloud.tyk.io` is already set for you.
+
+	helm install tyk-hybrid -f ./values_hybrid.yaml ./tyk-hybrid -n tyk-ingress
+	
+To check all the helm instalations run:
+	`kubectl get secret --all-namespaces -l "owner=helm"`
+	
+To uninstall run:
+	`helm uninstall tyk-hybrid -n=tyk-ingress`	
+
+Follow the instructions in notes to install the ingress controller. Sidecar injection support is coming soon!
 
 ## Installing TIB
 The Tyk Identity Broker (TIB) is a microservice portal that provides a bridge between various Identity Management Systems such as LDAP, Social OAuth (e.g. GPlus, Twitter, GitHub), legacy Basic Authentication providers, to your Tyk installation (https://tyk.io/docs/concepts/tyk-components/identity-broker/).
@@ -58,22 +91,6 @@ This enables multicluster, multi Data-Centre API management from a single Dashbo
 
 The Tyk owned MDCB registry is private and requires adding users to our organisation which you then define as a secret when pulling the MDCB image. Please contact your account manager to arrange this.
 
-## Install Tyk Hybrid Gateways (This can be used either for Multi-Cloud Gateways or MDCB slaves)
-To install, first modify `values_hybrid.yaml` file as follows:
-1. Add redis password in `redis.pass` value. It's the value of `$REDIS_PASSWORD` environment variable (the host should be `tyk-redis-master.tyk-ingress.svc.cluster.local` if you used the tyk-ingress as the namespace.
-2. Add your RPC key in `tyk_k8s.org_id` value
-3. Add your API key in `tyk_k8s.dash_key` value (could be the API key of any dashboard user but better to have a dedicated one) 
-4. Add your dashboard URL in `tyk_k8s.dash_url` value. If it's a Tyk SaaS account the value `https://admin.cloud.tyk.io` is already set for you.
-
-	helm install tyk-hybrid -f ./values_hybrid.yaml ./tyk-hybrid -n tyk-ingress
-	
-To check all the helm instalations run:
-	`kubectl get secret --all-namespaces -l "owner=helm"`
-	
-To uninstall run:
-	`helm uninstall tyk-hybrid -n=tyk-ingress`	
-
-Follow the instructions in notes to install the ingress controller. Sidecar injection support is coming soon!
 
 
 ## Important things to remember: Nodes are Segmented
