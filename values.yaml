@@ -100,7 +100,7 @@ tib:
 
 dash:
   replicaCount: 1
-  hostName: "dashboard.tykbeta.com"
+  hostName: "localhost"
   license: ""
   containerPort: 3000
   image:
