@@ -15,12 +15,12 @@ It also means that you can bring the full features set of the Tyk API Gateway to
 
 To get started quickly, you can use these rather excellent Redis and MongoDB charts to get going:
 
-	helm repo add stable https://kubernetes-charts.storage.googleapis.com
+	helm repo add bitnami https://charts.bitnami.com/bitnami
 	helm repo update
 	kubectl create namespace tyk-ingress
-	helm install tyk-mongo stable/mongodb --set "replicaSet.enabled=true" -n tyk-ingress
+	helm install tyk-mongo bitnami/mongodb --set "replicaSet.enabled=true" -n tyk-ingress
 	(follow notes from the installation output to get connection details)
-	helm install tyk-redis stable/redis -n tyk-ingress
+	helm install tyk-redis bitnami/redis -n tyk-ingress
 	(follow notes from the installation output to get connection details)
 
 > *Important Note regarding TLS:* This helm chart assumes TLS is being used by default, so the gateways will listen on port 443 and load up a dummy certificate. You can set your own default certificate by replacing the files in the certs/ folder.
