@@ -6,6 +6,12 @@ This means that a single Tyk installation can be used for both "north-south" inb
 
 It also means that you can bring the full features set of the Tyk API Gateway to your internal and external services from a single control plane.
 
+## Important things to remember: Nodes are Segmented
+
+This Helm chart installs Tyk as a *segmented* Gateway service with an external load balancer, this means that the gateways that get deployed are tagged with the `ingress` tag. Tagged gateways like this will only load APIs that have also been tagged as `ingress`.
+
+The reason gateways are sharded is so that the dashboard and the Tyk K8s controller can target different services to different gateways, i.e. services that are exposed to the internet should be routed in the `ingress` gateways, while service-mesh sidecars need to handle private service definitions which are created programatically, and should not be loaded into the public-facing gateways.
+
 **Prerequisites**
 
 - Redis installed in the cluster or reachable from K8s
@@ -76,11 +82,7 @@ To uninstall run:
 Follow the instructions in notes to install the ingress controller. Sidecar injection support is coming soon!
 
 
-## Important things to remember: Nodes are Segmented
 
-This Helm chart installs Tyk as a *segmented* Gateway service with an external load balancer, this means that the gateways that get deployed are tagged with the `ingress` tag. Tagged gateways like this will only load APIs that have also been tagged as `ingress`.
-
-The reason gateways are sharded is so that the dashboard and the Tyk K8s controller can target different services to different gateways, i.e. services that are exposed to the internet should be routed in the `ingress` gateways, while service-mesh sidecars need to handle private service definitions which are created programatically, and should not be loaded into the public-facing gateways.
 
 ## Caveat: Tyk license and the number of gateway nodes
 
