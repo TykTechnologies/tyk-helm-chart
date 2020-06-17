@@ -2,7 +2,7 @@
 
 This chart provides a full Tyk Installation (API Management Dashboard and API Gateways with Analytics) for Kubernetes with an ingress controller and service-mesh injector.
 
-This means that a single Tyk installation can be used for both "north-south" inbound traffic from the internet to protect and promote your services, as well as internal east-west traffic, enabling you to secure your services in any way you see fit, including mutual TLS. 
+This means that a single Tyk installation can be used for both "north-south" inbound traffic from the internet to protect and promote your services, as well as internal east-west traffic, enabling you to secure your services in any way you see fit, including mutual TLS.
 
 It also means that you can bring the full features set of the Tyk API Gateway to your internal and external services from a single control plane.
 
@@ -42,7 +42,7 @@ To install, *first modify the `values.yaml` file to add redis and mongo details,
 Follow the instructions in the Notes that follow the installation to install the controller for Service Mesh sidecar injection.
 
 ## Installing TIB
-The Tyk Identity Broker (TIB) is a microservice portal that provides a bridge between various Identity Management Systems such as LDAP, Social OAuth (e.g. GPlus, Twitter, GitHub), legacy Basic Authentication providers, to your Tyk installation (https://tyk.io/docs/concepts/tyk-components/identity-broker/).
+The Tyk Identity Broker (TIB) is a microservice portal that provides a bridge between various Identity Management Systems such as LDAP, Social OAuth (e.g. GPlus, Twitter, GitHub), legacy Basic Authentication providers, to your Tyk installation (https://tyk.io/docs/getting-started/tyk-components/identity-broker/).
 
 Once you have installed `Gateway` and `Dashboard` component you can configure `tib.conf` and `profile.json`, you can read about how to configure them here https://github.com/TykTechnologies/tyk-identity-broker#how-to-configure-tib, and use helm upgrade command to install TIB.
 
@@ -50,7 +50,7 @@ This chart implies there's a ConfigMap with a `profiles.json` definition in it. 
 
 ## Installing MDCB
 
-If you are deploying the Master Data Centre in an MDCB deployment then you can enable to addition of that component in your installation. For more details about the MDCB component see here https://tyk.io/docs/tyk-multi-data-centre/ 
+If you are deploying the Master Data Centre in an MDCB deployment then you can enable to addition of that component in your installation. For more details about the MDCB component see here https://tyk.io/docs/tyk-multi-data-centre/
 
 This enables multicluster, multi Data-Centre API management from a single Dashboard.
 
@@ -62,16 +62,16 @@ The Tyk owned MDCB registry is private and requires adding users to our organisa
 To install, first modify `values_hybrid.yaml` file as follows:
 1. Add redis password in `redis.pass` value. It's the value of `$REDIS_PASSWORD` environment variable (the host should be `tyk-redis-master.tyk-ingress.svc.cluster.local` if you used the tyk-ingress as the namespace.
 2. Add your RPC key in `tyk_k8s.org_id` value
-3. Add your API key in `tyk_k8s.dash_key` value (could be the API key of any dashboard user but better to have a dedicated one) 
+3. Add your API key in `tyk_k8s.dash_key` value (could be the API key of any dashboard user but better to have a dedicated one)
 4. Add your dashboard URL in `tyk_k8s.dash_url` value. If it's a Tyk SaaS account the value `https://admin.cloud.tyk.io` is already set for you.
 
 	helm install tyk-hybrid -f ./values_hybrid.yaml ./tyk-hybrid -n tyk-ingress
-	
+
 To check all the helm instalations run:
 	`kubectl get secret --all-namespaces -l "owner=helm"`
-	
+
 To uninstall run:
-	`helm uninstall tyk-hybrid -n=tyk-ingress`	
+	`helm uninstall tyk-hybrid -n=tyk-ingress`
 
 Follow the instructions in notes to install the ingress controller. Sidecar injection support is coming soon!
 
@@ -98,7 +98,7 @@ If you are using an ingress spec, then the Tyk k8s controller will do this for y
 
 If you are using the latest chart, you can set the `enableSharding` value in the `values.yaml` to false.
 
-If you are running an older chart that does not have this value, then you can disable node sharding beforehand by editing the `tyk-pro/configs/tyk_mgmt.conf` file, simply set the value `db_app_conf_options.node_is_segmented` to `false`. 
+If you are running an older chart that does not have this value, then you can disable node sharding beforehand by editing the `tyk-pro/configs/tyk_mgmt.conf` file, simply set the value `db_app_conf_options.node_is_segmented` to `false`.
 
 > *Please Note* Doing this means that the service mesh sidecar injector and its related generated APIs will not work correctly, as those services will also be loaded by your ingress gateways.
 
@@ -120,7 +120,7 @@ spec:
 
 By default Tyk will create an open API (no security enabled), however you can set any property in the API Definition using the following annotations (remember that all annotations are treated as strings):
 
-- `bool.service.tyk.io/{path}: value`: Set a value to `"true"` or `"false"` 
+- `bool.service.tyk.io/{path}: value`: Set a value to `"true"` or `"false"`
 - `string.service.tyk.io/{path}: value`: Set a value that is a string literal, e.g. "name"
 - `num.service.tyk.io/{path}: value`: Set a value that is a number (assumes an int)
 - `object.service.tyk.io/{path}: value`: Set a whole json object
@@ -220,7 +220,7 @@ Tyk:
   org_id: "{{ .Values.tyk_k8s.org_id }}"
 
 # Add this line
-  templates: "/etc/tyk-k8s-templates" 
+  templates: "/etc/tyk-k8s-templates"
 ```
 
 Templates are added as config maps, to convert an API definition to a template, simply encapsulate it in template tags, like this:
@@ -275,7 +275,7 @@ TLS can also be disabled by setting `gateway.tls` option to `false`. In this cas
 
 ## Using the service-mesh injector
 
-The service mesh injector will create two services: 
+The service mesh injector will create two services:
 
 1. An inbound service for the container - this is only loaded into the sidecar for the service and handles all inbound requests for the service from the mesh
 2. The mesh endpoint, this is the route that is circulated to all sidecars as the route to the service in (1)
