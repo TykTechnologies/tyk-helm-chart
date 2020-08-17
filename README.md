@@ -109,7 +109,7 @@ If you are running an older chart that does not have this value, then you can di
 To enable the ingress controller, simply add the ingress class defintiion to your ingress annotations:
 
 ```yml
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: cafe-ingress
@@ -130,7 +130,7 @@ By default Tyk will create an open API (no security enabled), however you can se
 Here's an example:
 
 ```yml
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: cafe-ingress
@@ -202,7 +202,7 @@ spec:
             - key: tyk_k8s.yaml
               path: tyk-k8s.yaml
 
-### Custom templates:        
+### Custom templates:
         - name: tyk-k8s-templates
           configMap:
             name: token-auth
@@ -245,7 +245,7 @@ kubectl create configmap token-auth --from-file=token-auth.json --namespace {nam
 Once these template configMaps have been added, and your tyk-k8s service is running, you can set up your service definitions very easily by adding a single annotation:
 
 ```yml
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: cafe-ingress
@@ -285,7 +285,7 @@ The service mesh injector will create two services:
 Setting up a service to use the injector is very simple, simply add the inject annotation to your Deployment:
 
 ```yml
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sleep
