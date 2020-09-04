@@ -57,8 +57,14 @@ spec:
             value: "{{ .Values.gateway.service.port }}"
           - name: TYK_DB_TYKAPI_SECRET
             value: "{{ .Values.secrets.APISecret }}"
-          - name: TYK_DB_HOSTS
+          - name: TYK_DB_REDISADDRS
+            {{- if and .Values.redis.host .Values.redis.port }}
             value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"
+            {{- else }}
+            value: "{{ .Values.redis.addrs }}"
+            {{- end }}
+          - name: TYK_DB_ENABLECLUSTER
+            value: {{ default "false" .Values.redis.enableCluster }}
           - name: TYK_DB_REDISPASSWORD
             value: "{{ .Values.redis.pass }}"
           - name: TYK_DB_REDISUSESSL
