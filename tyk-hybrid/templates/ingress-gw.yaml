@@ -2,7 +2,7 @@
 {{- $serviceName := include "tyk-hybrid.fullname" . -}}
 {{- $servicePort := .Values.gateway.service.port -}}
 {{- $ingressPath := .Values.gateway.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: gateway-ing-{{ include "tyk-hybrid.fullname" . }}

@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: coffee
@@ -13,10 +13,10 @@ spec:
         app: coffee
     spec:
       containers:
-      - name: coffee
-        image: nginxdemos/hello:plain-text
-        ports:
-        - containerPort: 80
+        - name: coffee
+          image: nginxdemos/hello:plain-text
+          ports:
+            - containerPort: 80
 ---
 apiVersion: v1
 kind: Service
@@ -24,14 +24,14 @@ metadata:
   name: coffee-svc
 spec:
   ports:
-  - port: 80
-    targetPort: 80
-    protocol: TCP
-    name: http
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
   selector:
     app: coffee
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tea
@@ -39,17 +39,17 @@ spec:
   replicas: 3
   selector:
     matchLabels:
-      app: tea 
+      app: tea
   template:
     metadata:
       labels:
-        app: tea 
+        app: tea
     spec:
       containers:
-      - name: tea 
-        image: nginxdemos/hello:plain-text
-        ports:
-        - containerPort: 80
+        - name: tea
+          image: nginxdemos/hello:plain-text
+          ports:
+            - containerPort: 80
 ---
 apiVersion: v1
 kind: Service
@@ -58,9 +58,9 @@ metadata:
   labels:
 spec:
   ports:
-  - port: 80
-    targetPort: 80
-    protocol: TCP
-    name: http
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
   selector:
     app: tea

@@ -226,7 +226,7 @@ tyk_k8s:
   replicaCount: 1
   image:
     repository: tykio/tyk-k8s
-    tag: stable
+    tag: latest
     pullPolicy: Always
   serviceMesh:
     enabled: false

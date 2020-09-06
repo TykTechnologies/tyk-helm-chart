@@ -79,7 +79,7 @@ tyk_k8s:
   replicaCount: 1
   image:
     repository: tykio/tyk-k8s
-    tag: stable
+    tag: latest
     pullPolicy: Always
   # RPC KEY is your Organisation ID, this can be found in the Dashboard Users -> User section in the cloud dashboard.
   org_id: "RPCKEY"

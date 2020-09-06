@@ -1,7 +1,7 @@
 {{- if and .Values.tib.enabled .Values.tib.ingress.enabled -}}
 {{- $fullName := include "tyk-pro.fullname" . -}}
 {{- $ingressPath := .Values.tib.ingress.path -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: tib-ing-{{ $fullName }}

@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: cafe-ingress
@@ -6,14 +6,14 @@ metadata:
     kubernetes.io/ingress.class: tyk
 spec:
   rules:
-  - host: cafe.example.com
-    http:
-      paths:
-      - path: /tea
-        backend:
-          serviceName: tea-svc
-          servicePort: 80
-      - path: /coffee
-        backend:
-          serviceName: coffee-svc
-          servicePort: 80
+    - host: cafe.example.com
+      http:
+        paths:
+          - path: /tea
+            backend:
+              serviceName: tea-svc
+              servicePort: 80
+          - path: /coffee
+            backend:
+              serviceName: coffee-svc
+              servicePort: 80
