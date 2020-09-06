@@ -1,13 +1,12 @@
 {{- if .Values.gateway.ingress.enabled -}}
-{{- $serviceName := include "tyk-hybrid.fullname" . -}}
-{{- $servicePort := .Values.gateway.service.port -}}
+{{- $fullName := include "tyk-hybrid.fullname" . -}}
 {{- $ingressPath := .Values.gateway.ingress.path -}}
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: gateway-ing-{{ include "tyk-hybrid.fullname" . }}
+  name: gateway-ing-{{ $fullName }}
   labels:
-    app: gateway-ing-{{ include "tyk-hybrid.fullname" . }}
+    app: gateway-ing-{{ $fullName }}
     chart: {{ include "tyk-hybrid.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -18,16 +17,22 @@ metadata:
 spec:
 {{- if .Values.gateway.ingress.tls }}
   tls:
-  {{ toYaml .Values.gateway.ingress.tls | nindent 4 }}
+  {{- range .Values.gateway.ingress.tls }}
+    - hosts:
+      {{- range .hosts }}
+        - {{ . | quote }}
+      {{- end }}
+      secretName: {{ .secretName }}
   {{- end }}
+{{- end }}
   rules:
   {{- range .Values.gateway.ingress.hosts }}
-    - host: {{ . }}
+    - host: {{ . | quote}}
       http:
         paths:
           - path: {{ $ingressPath }}
             backend:
-              serviceName: gateway-svc-{{ $serviceName }}
-              servicePort: {{ $servicePort }}
+              serviceName: gateway-svc-{{ $fullName }}
+              servicePort: http
   {{- end }}
 {{- end }}
