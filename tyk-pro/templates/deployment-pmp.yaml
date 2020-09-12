@@ -60,7 +60,7 @@ spec:
             value: "{{ .Values.redis.addrs }}"
           {{- end }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ENABLECLUSTER
-            value: {{ default "false" .Values.redis.enableCluster }}
+            value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_PASSWORD
             value: "{{ .Values.redis.pass }}"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISUSESSL

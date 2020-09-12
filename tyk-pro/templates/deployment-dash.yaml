@@ -64,7 +64,7 @@ spec:
             value: "{{ .Values.redis.addrs }}"
             {{- end }}
           - name: TYK_DB_ENABLECLUSTER
-            value: {{ default "false" .Values.redis.enableCluster }}
+            value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_DB_REDISPASSWORD
             value: "{{ .Values.redis.pass }}"
           - name: TYK_DB_REDISUSESSL
