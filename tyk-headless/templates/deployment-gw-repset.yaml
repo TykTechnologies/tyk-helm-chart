@@ -71,6 +71,8 @@ spec:
         env:
           - name: TYK_GW_LISTENPORT
             value: "{{ .Values.gateway.containerPort }}"
+          - name: TYK_GW_CONTROLAPIPORT
+            value: "{{ .Values.gateway.controlApiPort }}"
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "{{ .Values.redis.shardCount }}"
           - name: TYK_GW_STORAGE_ADDRS

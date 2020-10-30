@@ -16,8 +16,13 @@ metadata:
 spec:
   type: {{ .Values.gateway.service.type }}
   ports:
-  - port: {{ .Values.gateway.service.port }}
+  - name: gateway-port
+    port: {{ .Values.gateway.service.port }}
     targetPort: {{ .Values.gateway.containerPort }}
+    protocol: TCP
+  - name: control-api-port
+    port: {{ .Values.gateway.service.controlApiPort }}
+    targetPort: {{ .Values.gateway.controlApiPort }}
     protocol: TCP
   selector:
     app: gateway-{{ include "tyk-headless.fullname" . }}

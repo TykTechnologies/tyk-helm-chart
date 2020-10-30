@@ -34,6 +34,7 @@ gateway:
   tls: true
   containerPort: 8080
   tags: ""
+  controlApiPort: 9696
   image:
     repository: tykio/tyk-gateway
     tag: v3.1.2
@@ -41,6 +42,7 @@ gateway:
   service:
     type: NodePort
     port: 443
+    controlApiPort: 9696
     externalTrafficPolicy: Local
     annotations: {}
   ingress:
