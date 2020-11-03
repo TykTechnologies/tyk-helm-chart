@@ -13,7 +13,7 @@ data:
       watchNamespaces:
 {{ toYaml .Values.tyk_k8s.watchNamespaces | indent 8 }}
     Tyk:
-      url: "http{{- if .Values.gateway.tls }}s{{- end }}://localhost:9696"
+      url: "http{{- if .Values.gateway.tls }}s{{- end }}://localhost:{{ .Values.gateway.api.containerPort }}"
       secret: "set-by-env"
       org: "set-by-env"
       isGateway: true

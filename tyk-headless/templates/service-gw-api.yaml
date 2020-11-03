@@ -1,0 +1,20 @@
+{{- if .Values.gateway.api.service.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-api-svc-{{ include "tyk-headless.fullname" . }}
+  labels:
+    app: gateway-api-svc-{{ include "tyk-headless.fullname" . }}
+    chart: {{ include "tyk-headless.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.gateway.api.service.type }}
+  ports:
+  - port: {{ .Values.gateway.api.service.port }}
+    targetPort: {{ .Values.gateway.api.containerPort }}
+    protocol: TCP
+  selector:
+    app: gateway-{{ include "tyk-headless.fullname" . }}
+    release: {{ .Release.Name }}
+{{- end }}
