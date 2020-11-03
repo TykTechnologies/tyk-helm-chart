@@ -183,7 +183,7 @@ gateway:
     containerPort: 9696
     service:
       enabled: false
-      type: NodePort
+      type: ClusterIP
       port: 9696
   ingress:
     enabled: false
