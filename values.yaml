@@ -14,10 +14,10 @@ secrets:
 
 # bitnami redis example
 redis:
-    shardCount: 128
-    addrs: "tyk-redis-master.tyk-ingress.svc.cluster.local:6379"
-    useSSL: false
-    pass: ""
+  shardCount: 128
+  addrs: "tyk-redis-master.tyk-ingress.svc.cluster.local:6379"
+  useSSL: false
+  pass: ""
 
 # redis cluster example
 #redis:
@@ -28,8 +28,8 @@ redis:
 #  pass: ""
 
 mongo:
-    mongoURL: "mongodb://root:pass@tyk-mongo-mongodb.tyk-ingress.svc.cluster.local:27017/tyk-dashboard?authSource=admin"
-    useSSL: false
+  mongoURL: "mongodb://root:pass@tyk-mongo-mongodb.tyk-ingress.svc.cluster.local:27017/tyk-dashboard?authSource=admin"
+  useSSL: false
 
 mdcb:
   enabled: false
@@ -56,12 +56,11 @@ mdcb:
     #  memory: 128Mi
     # requests:
     #  cpu: 100m
-  #  memory: 128Mi
+    #  memory: 128Mi
   nodeSelector: { }
   tolerations: [ ]
   affinity: { }
   extraEnvs: [ ]
-
 
 tib:
   enabled: false
@@ -78,8 +77,8 @@ tib:
   ingress:
     enabled: false
     annotations: { }
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
     path: /
     hosts:
       - tib.local
@@ -97,7 +96,8 @@ tib:
     #  memory: 128Mi
     # requests:
     #  cpu: 100m
-  #  memory: 128Mi
+    #  memory: 128Mi
+
   nodeSelector: { }
   tolerations: [ ]
   affinity: { }
@@ -122,7 +122,7 @@ dash:
     enabled: false
     annotations: { }
       # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+      # kubernetes.io/tls-acme: "true"
     path: /
     hosts:
       - tyk-dashboard.local
@@ -140,7 +140,8 @@ dash:
     #  memory: 128Mi
     # requests:
     #  cpu: 100m
-  #  memory: 128Mi
+    #  memory: 128Mi
+
   nodeSelector: { }
   tolerations: [ ]
   affinity: { }
@@ -151,7 +152,7 @@ portal:
     enabled: false
     annotations: { }
       # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+      # kubernetes.io/tls-acme: "true"
     path: /
     hosts:
       - tyk-portal.local
@@ -179,7 +180,7 @@ gateway:
   ingress:
     enabled: false
     annotations: { }
-      # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
     path: /
     hosts:
@@ -198,7 +199,7 @@ gateway:
     #  memory: 128Mi
     # requests:
     #  cpu: 100m
-  #  memory: 128Mi
+    #  memory: 128Mi
   nodeSelector: { }
   tolerations:
     - key: node-role.kubernetes.io/master
@@ -223,7 +224,7 @@ pump:
     #  memory: 128Mi
     # requests:
     #  cpu: 100m
-  #  memory: 128Mi
+    #  memory: 128Mi
   nodeSelector: { }
   tolerations: [ ]
   affinity: { }
@@ -249,7 +250,8 @@ tyk_k8s:
     #  memory: 128Mi
     # requests:
     #  cpu: 100m
-  #  memory: 128Mi
+    #  memory: 128Mi
+
   nodeSelector: { }
   tolerations: [ ]
   affinity: { }
