@@ -57,8 +57,8 @@ spec:
             {{- if and .Values.redis.host .Values.redis.port }}
             value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"
             {{- else }}
-            value: "{{ .Values.redis.addrs }}"
-          {{- end }}
+            value: "{{ join "," .Values.redis.addrs }}"
+            {{- end }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ENABLECLUSTER
             value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_PASSWORD

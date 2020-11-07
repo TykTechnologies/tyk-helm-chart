@@ -79,4 +79,3 @@ spec:
           secret:
             secretName: sidecar-injector-webhook-certs
         {{- end }}
-

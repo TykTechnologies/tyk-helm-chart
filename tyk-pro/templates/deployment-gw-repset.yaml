@@ -59,7 +59,7 @@ spec:
             {{- if and .Values.redis.host .Values.redis.port }}
             value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"
             {{- else }}
-            value: "{{ .Values.redis.addrs }}"
+            value: "{{ join "," .Values.redis.addrs }}"
             {{- end }}
           - name: TYK_GW_STORAGE_ENABLECLUSTER
             value: "{{ default "false" .Values.redis.enableCluster }}"

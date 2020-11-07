@@ -15,14 +15,18 @@ secrets:
 # bitnami redis example
 redis:
   shardCount: 128
-  addrs: "tyk-redis-master.tyk-ingress.svc.cluster.local:6379"
+  addrs:
+  - "tyk-redis-master.tyk-ingress.svc.cluster.local:6379"
   useSSL: false
   pass: ""
 
 # redis cluster example
 #redis:
 #  shardCount: 128
-#  addrs: "redis-1:6379,redis-2:6379,redis-3:6379"
+#  addrs:
+#  - "redis-1:6379"
+#  - "redis-2:6379"
+#  - "redis-3:6379"
 #  enableCluster: true
 #  useSSL: false
 #  pass: ""
