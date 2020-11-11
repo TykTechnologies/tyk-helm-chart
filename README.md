@@ -31,6 +31,8 @@ To get started quickly, you can use these rather excellent Redis and MongoDB cha
 
 > *Important Note regarding TLS:* This helm chart assumes TLS is being used by default, so the gateways will listen on port 443 and load up a dummy certificate. You can set your own default certificate by replacing the files in the certs/ folder.
 
+> *Important Note regarding MongoDB:* This helm chart enables the PodDisruptionBudget for MongoDB with an arbiter replica-count of 1.  If you intend to perform system maintenance on the node where the MongoDB pod is running and this maintenance requires for the node to be drained, this action will be prevented due the replica count being 1.  Increase the replica count in the helm chart deployment to a minimum of 2 to remedy this issue.
+
 ## Install Tyk Community Edition
 > **Warning**: This is highly experimental, technical support is not available.
 
