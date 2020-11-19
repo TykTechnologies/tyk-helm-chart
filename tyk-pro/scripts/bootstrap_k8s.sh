@@ -1,21 +1,21 @@
 #!/bin/bash
 
-if [ -z "${2}" ]; then 
+if [ -z "${2}" ]; then
     ADMIN_TOKEN='12345'
-else 
+else
     ADMIN_TOKEN=${2}
 fi
 
-if [ -z "${3}" ]; then 
-   echo "namespace is required"
-   exit
-else 
-    NS=${3}
-fi
+#if [ -z "${3}" ]; then
+#   echo "namespace is required"
+#   exit
+#else
+#    NS=${3}
+#fi
 
-if [ -z "${4}" ]; then 
+if [ -z "${4}" ]; then
     SCHEMA_OPT='http'
-else 
+else
     SCHEMA_OPT='https'
 fi
 
@@ -55,7 +55,7 @@ python_message() {
 
 check_host(){
   # [[ $1 == *:* ]] && echo "" || echo $1
-  echo $1 
+  echo $1
 }
 
 generate_credentials(){
@@ -181,16 +181,20 @@ output(){
   echo ""
   echo "DONE"
   echo "===="
-  echo "Login at ${SCHEMA_OPT}://$1/"
+  echo "To find Dashboard Login URL and port please run following commands:"
+  echo "-for the URL: (kubectl get nodes --selector=kubernetes.io/role!=master -o jsonpath='{.items[0].status.addresses[?(@.type=="ExternalIP")].address}'), if you're using Minikube then: (minikube ip) would be sufficient"
+  echo "-for the port: (kubectl get --namespace tyk-ingress -o jsonpath="{.spec.ports[0].nodePort}" services dashboard-svc-tyk-pro)"
   echo "User: $2"
   echo "Pass: $3"
+  echo ""
+  echo "Please save your Dashboard Login URL, Port, User Credentials and then delete all pods related to the bootstarp process: (eg. kubectl delete pod bootstrap-post-install-tyk-pro-zgp55)"
 
-  INFILE=${PWD}/tyk-pro/scripts/secret_tpl.yaml
-  OUTFILE=${PWD}/tyk-pro/scripts/secrets.yaml
-  B64_ORGID=$(echo -n ${ORGID} | base64)
-  B64_CODE=$(echo -n ${USER_AUTH_CODE} | base64)
+  #INFILE=${PWD}/tyk-pro/scripts/secret_tpl.yaml
+  #OUTFILE=${PWD}/tyk-pro/scripts/secrets.yaml
+  #B64_ORGID=$(echo -n ${ORGID} | base64)
+  #B64_CODE=$(echo -n ${USER_AUTH_CODE} | base64)
 
-  sed -e "s/\${namespace}/${NS}/" -e "s/\${ORGID}/${B64_ORGID}/" -e "s/\${USER_AUTH_CODE}/${B64_CODE}/" ${INFILE} > ${OUTFILE}
+  #sed -e "s/\${namespace}/${NS}/" -e "s/\${ORGID}/${B64_ORGID}/" -e "s/\${USER_AUTH_CODE}/${B64_CODE}/" ${INFILE} > ${OUTFILE}
 }
 
 main $1 $2

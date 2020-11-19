@@ -1,45 +1,26 @@
-Run the following in bash to bootstrap the dashboard instance:
+- The Dashboard is bootstrapped automatically, to find Login details please locate the pod with name bootstrap-post-install-tyk-pro-* inside tyk-ingress namespace.
 
-1. Bootstrap the dashboard so we can get a username and password to login, this also generates access tokens for the controller to use
+- Then view the logs of that pod eg.(kubectl logs bootstrap-post-install-tyk-pro-zgp55), where you'll find details of your Dashboard URL and Login credentials.
 
-{{- if .Values.dash.ingress.enabled }}
-export DASH_URL="{{ .Values.dash.hostName }}"
-export DASH_HTTPS="{{ if gt (len .Values.dash.ingress.tls) 0 }}1{{ end }}"
-{{- else }}
-export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services dashboard-svc-{{ include "tyk-pro.fullname" . }})
-export NODE_IP=$(kubectl get nodes --selector=kubernetes.io/role!=master -o jsonpath='{.items[0].status.addresses[?(@.type=="ExternalIP")].address}')
 
-If you're using minikube, run this instead:
-export NODE_IP=$(minikube ip)
+At this point, Tyk Pro is fully installed and should be accessible, proceed with the steps below in case you want to install Tyk ingress controller.
 
-export DASH_URL="$NODE_IP:$NODE_PORT"
-export DASH_HTTPS=""
-{{- end }}
+----SECRETS WORK IN PROGRESS
 
-1a. You may need to open up that port in your firewall so that we can access the dashboard. Example in GCloud
-
-gcloud compute firewall-rules create dashboard --allow tcp:$NODE_PORT
-
-1b. Bootstrap the dashboard
-
-./tyk-pro/scripts/bootstrap_k8s.sh $DASH_URL {{ .Values.secrets.AdminSecret }} {{ .Release.Namespace }} $DASH_HTTPS
-
-At this point, Tyk Pro is fully installed and should be accessible, proceed in case you want to install Tyk ingress controller.
-
-2. Move the encoded secrets to the controller helm chart
+1. Move the encoded secrets to the controller helm chart
 
 mv ./tyk-pro/scripts/secrets.yaml ./tyk-k8s/templates
 
-3. Prepare the SSL and CA bundle for webhook (only necessary for Service Mesh functionality)
+2. Prepare the SSL and CA bundle for webhook (only necessary for Service Mesh functionality)
 
 ./tyk-k8s/webhook/create-signed-cert.sh -n {{ .Release.Namespace }}
 cat ./tyk-k8s/webhook/mutatingwebhook.yaml | ./tyk-k8s/webhook/webhook-patch-ca-bundle.sh > ./tyk-k8s/webhook/mutatingwebhook-ca-bundle.yaml
 
-4. Install the controller
+3. Install the controller
 
 Use your own values file and optionally release name to install the controller chart:
 helm install tyk-controller -f ./values.yaml ./tyk-k8s -n {{ .Release.Namespace }}
 
-5. Register the sidecar-injector (only necessary for Service Mesh functionality)
+4. Register the sidecar-injector (only necessary for Service Mesh functionality)
 
 kubectl create -f ./tyk-k8s/webhook/mutatingwebhook-ca-bundle.yaml
