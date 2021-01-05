@@ -10,7 +10,7 @@ It also means that you can bring the full features set of the Tyk API Gateway to
 
 This Helm chart installs Tyk as a *segmented* Gateway service with an external load balancer, this means that the gateways that get deployed are tagged with the `ingress` tag. Tagged gateways like this will only load APIs that have also been tagged as `ingress`.
 
-The reason gateways are sharded is so that the dashboard and the Tyk K8s controller can target different services to different gateways, i.e. services that are exposed to the internet should be routed in the `ingress` gateways, while service-mesh sidecars need to handle private service definitions which are created programatically, and should not be loaded into the public-facing gateways.
+The reason gateways are sharded is so that the dashboard and the Tyk K8s controller can target different services to different gateways, i.e. services that are exposed to the internet should be routed in the `ingress` gateways, while service-mesh sidecars need to handle private service definitions which are created programmatically, and should not be loaded into the public-facing gateways.
 
 **Prerequisites**
 
@@ -50,7 +50,7 @@ To install, *first modify the `values.yaml` file to add redis and mongo details,
 Follow the instructions in the Notes that follow the installation to install the controller for Service Mesh sidecar injection.
 
 ## Installing TIB
-The Tyk Identity Broker (TIB) is a microservice portal that provides a bridge between various Identity Management Systems such as LDAP, Social OAuth (e.g. GPlus, Twitter, GitHub), legacy Basic Authentication providers, to your Tyk installation (https://tyk.io/docs/getting-started/tyk-components/identity-broker/).
+The Tyk Identity Broker (TIB) is a micro-service portal that provides a bridge between various Identity Management Systems such as LDAP, Social OAuth (e.g. GPlus, Twitter, GitHub), legacy Basic Authentication providers, to your Tyk installation (https://tyk.io/docs/getting-started/tyk-components/identity-broker/).
 
 Once you have installed `Gateway` and `Dashboard` component you can configure `tib.conf` and `profile.json`, you can read about how to configure them here https://github.com/TykTechnologies/tyk-identity-broker#how-to-configure-tib, and use helm upgrade command to install TIB.
 
@@ -64,7 +64,7 @@ This enables multicluster, multi Data-Centre API management from a single Dashbo
 
 **Secrets**
 
-The Tyk owned MDCB registry is private and requires adding users to our organisation which you then define as a secret when pulling the MDCB image. Please contact your account manager to arrange this.
+The Tyk owned MDCB registry is private and requires adding users to our organization which you then define as a secret when pulling the MDCB image. Please contact your account manager to arrange this.
 
 ## Install Tyk Hybrid Gateways (This can be used either for Multi-Cloud Gateways or MDCB slaves)
 To install, first modify `values_hybrid.yaml` file as follows:
@@ -75,7 +75,7 @@ To install, first modify `values_hybrid.yaml` file as follows:
 
 	helm install tyk-hybrid -f ./values_hybrid.yaml ./tyk-hybrid -n tyk-ingress
 
-To check all the helm instalations run:
+To check all the helm installations run:
 	`kubectl get secret --all-namespaces -l "owner=helm"`
 
 To uninstall run:
@@ -108,7 +108,7 @@ If you are running an older chart that does not have this value, then you can di
 
 ## Using the Ingress Controller
 
-To enable the ingress controller, simply add the ingress class defintiion to your ingress annotations:
+To enable the ingress controller, simply add the ingress class definition to your ingress annotations:
 
 ```yml
 apiVersion: networking.k8s.io/v1beta1
@@ -157,7 +157,7 @@ spec:
           servicePort: 80
 ```
 
-You can also directly modify the service in your Tyk Dasboard, though if the ingress is recreated, the changes may not be retained.
+You can also directly modify the service in your Tyk Dashboard, though if the ingress is recreated, the changes may not be retained.
 
 When an ingress is removed, the services will be removed from the API Gateway as well.
 
@@ -165,7 +165,7 @@ When an ingress is removed, the services will be removed from the API Gateway as
 
 It's quite likely that you will not want to overload your ingress specifications with annotations that set specific values in your API Definition. To make adding APIs much more flexible, you can make use of a single `template.service.tyk.io/` annotation to specify the name of a template to use when deploying your service to the gateway.
 
-This can be extremely useful if you want to standardise on certain types of service, e.g. "open-public", "closed-public" and "closed-jwt-internal", where you apply different auth scehemes, IP white lists and more complex re-usable specifications such as IDP provider details and secrets that you don;t want to re-code into each definition.
+This can be extremely useful if you want to standardize on certain types of service, e.g. "open-public", "closed-public" and "closed-jwt-internal", where you apply different auth schemes, IP white lists and more complex re-usable specifications such as IDP provider details and secrets that you don't want to re-code into each definition.
 
 Templates currently must have a .json filetype to be loaded into the controller and parsed.
 
