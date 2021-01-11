@@ -43,6 +43,14 @@ spec:
       - image: "{{ .Values.tib.image.repository }}:{{ .Values.tib.image.tag }}"
         imagePullPolicy: {{ .Values.tib.image.pullPolicy }}
         name: tib-{{ .Chart.Name }}
+        securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - all
         env:
           - name: TYK_IB_PORT
             value: "{{ .Values.tib.containerPort }}"

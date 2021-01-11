@@ -47,6 +47,14 @@ spec:
         {{- end }}
         imagePullPolicy: {{ .Values.mdcb.image.pullPolicy }}
         name: dashboard-{{ .Chart.Name }}
+        securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - all
         env:
           - name: TYK_MDCB_SERVEROPTIONS_USESSL
             value: "{{ .Values.mdcb.useSSL }}"
