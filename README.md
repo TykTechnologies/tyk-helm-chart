@@ -64,7 +64,7 @@ This enables multicluster, multi Data-Centre API management from a single Dashbo
 
 **Secrets**
 
-The Tyk owned MDCB registry is private and requires adding users to our organization which you then define as a secret when pulling the MDCB image. Please contact your account manager to arrange this.
+The Tyk owned MDCB registry is private and requires adding users to our organisation which you then define as a secret when pulling the MDCB image. Please contact your account manager to arrange this.
 
 ## Install Tyk Hybrid Gateways (This can be used either for Multi-Cloud Gateways or MDCB slaves)
 To install, first modify `values_hybrid.yaml` file as follows:
@@ -165,7 +165,7 @@ When an ingress is removed, the services will be removed from the API Gateway as
 
 It's quite likely that you will not want to overload your ingress specifications with annotations that set specific values in your API Definition. To make adding APIs much more flexible, you can make use of a single `template.service.tyk.io/` annotation to specify the name of a template to use when deploying your service to the gateway.
 
-This can be extremely useful if you want to standardize on certain types of service, e.g. "open-public", "closed-public" and "closed-jwt-internal", where you apply different auth schemes, IP white lists and more complex re-usable specifications such as IDP provider details and secrets that you don't want to re-code into each definition.
+This can be extremely useful if you want to standardise on certain types of service, e.g. "open-public", "closed-public" and "closed-jwt-internal", where you apply different auth schemes, IP white lists and more complex re-usable specifications such as IDP provider details and secrets that you don't want to re-code into each definition.
 
 Templates currently must have a .json filetype to be loaded into the controller and parsed.
 
