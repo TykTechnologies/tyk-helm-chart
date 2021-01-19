@@ -43,13 +43,13 @@ spec:
         imagePullPolicy: {{ .Values.pump.image.pullPolicy }}
         workingDir: "/opt/tyk-pump"
         securityContext:
-            runAsNonRoot: true
-            allowPrivilegeEscalation: false
-            privileged: false
-            readOnlyRootFilesystem: true
-            capabilities:
-              drop:
-                - all
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - all
         env:
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "{{ .Values.redis.shardCount }}"
@@ -79,6 +79,9 @@ spec:
             mountPath: /etc/tyk-pump
         resources:
 {{ toYaml .Values.pump.resources | indent 12 }}
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 2000
       volumes:
         - name: tyk-pump-conf
           configMap:

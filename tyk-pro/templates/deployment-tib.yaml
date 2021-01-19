@@ -44,13 +44,13 @@ spec:
         imagePullPolicy: {{ .Values.tib.image.pullPolicy }}
         name: tib-{{ .Chart.Name }}
         securityContext:
-            runAsNonRoot: true
-            allowPrivilegeEscalation: false
-            privileged: false
-            readOnlyRootFilesystem: true
-            capabilities:
-              drop:
-                - all
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - all
         env:
           - name: TYK_IB_PORT
             value: "{{ .Values.tib.containerPort }}"
@@ -107,6 +107,9 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 2000
       volumes:
         - name: tyk-tib-conf-volume
           configMap:
