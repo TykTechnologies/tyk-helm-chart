@@ -1,6 +1,6 @@
-## Warning: This is heavily WIP
+## Warning: Tyk K8s is Deprecated
 
-Installation:
+## Installation:
 
 Create the CA certs and namespace:
 
@@ -53,4 +53,3 @@ Then (if you know the LB of your K8s cluster):
 	Request ID: f42ad0c1205be5337a3ee7d75ecc5bc0
 
 If it's all working, you will have the relevant service defintiions as well.
-
