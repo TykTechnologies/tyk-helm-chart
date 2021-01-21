@@ -24,22 +24,8 @@ gcloud compute firewall-rules create dashboard --allow tcp:$NODE_PORT
 
 ./tyk-pro/scripts/bootstrap_k8s.sh $DASH_URL {{ .Values.secrets.AdminSecret }} {{ .Release.Namespace }} $DASH_HTTPS
 
-At this point, Tyk Pro is fully installed and should be accessible, proceed in case you want to install Tyk ingress controller.
+At this point, Tyk Pro is fully installed and should be accessible.
 
-2. Move the encoded secrets to the controller helm chart
+You might want to install Tyk Operator next to manage Ingress resources or manage your APIs.
 
-mv ./tyk-pro/scripts/secrets.yaml ./tyk-k8s/templates
-
-3. Prepare the SSL and CA bundle for webhook (only necessary for Service Mesh functionality)
-
-./tyk-k8s/webhook/create-signed-cert.sh -n {{ .Release.Namespace }}
-cat ./tyk-k8s/webhook/mutatingwebhook.yaml | ./tyk-k8s/webhook/webhook-patch-ca-bundle.sh > ./tyk-k8s/webhook/mutatingwebhook-ca-bundle.yaml
-
-4. Install the controller
-
-Use your own values file and optionally release name to install the controller chart:
-helm install tyk-controller -f ./values.yaml ./tyk-k8s -n {{ .Release.Namespace }}
-
-5. Register the sidecar-injector (only necessary for Service Mesh functionality)
-
-kubectl create -f ./tyk-k8s/webhook/mutatingwebhook-ca-bundle.yaml
+[Tyk Operator](https://github.com/TykTechnologies/tyk-operator/)
