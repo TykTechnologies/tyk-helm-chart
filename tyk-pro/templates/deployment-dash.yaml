@@ -42,6 +42,14 @@ spec:
       - image: "{{ .Values.dash.image.repository }}:{{ .Values.dash.image.tag }}"
         imagePullPolicy: {{ .Values.dash.image.pullPolicy }}
         name: dashboard-{{ .Chart.Name }}
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - all
         env:
           - name: TYK_DB_LISTENPORT
             value: "{{ .Values.dash.containerPort }}"
@@ -108,6 +116,9 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 2000
       volumes:
         - name: tyk-dashboard-conf
           configMap:

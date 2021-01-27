@@ -85,6 +85,14 @@ spec:
       - name: gateway-{{ .Chart.Name }}
         image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
         imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - all
         env:
           - name: TYK_GW_LISTENPORT
             value: "{{ .Values.gateway.containerPort }}"
@@ -119,6 +127,8 @@ spec:
             mountPath: /etc/tyk-gateway
           - name: {{ .Release.Name }}-default-cert
             mountPath: /etc/certs
+          - name: tyk-scratch
+            mountPath: /mnt/tyk-gateway
         livenessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.gateway.tls }}S{{ end }}"
@@ -153,6 +163,9 @@ spec:
             mountPath: /etc/tyk-k8s
         resources:
 {{ toYaml .Values.tyk_k8s.resources | indent 12 }}
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 2000
       volumes:
         - name: tyk-k8s-conf
           configMap:
@@ -160,6 +173,8 @@ spec:
             items:
               - key: tyk_k8s.yaml
                 path: tyk-k8s.yaml
+        - name: tyk-scratch
+          emptyDir: {}
         - name: tyk-mgmt-gateway-conf
           configMap:
             name: mgmt-gateway-conf-{{ include "tyk-headless.fullname" . }}

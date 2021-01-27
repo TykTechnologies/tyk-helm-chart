@@ -50,6 +50,14 @@ spec:
       - name: gateway-{{ .Chart.Name }}
         image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
         imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - all
         env:
           - name: TYK_GW_LISTENPORT
             value: "{{ .Values.gateway.containerPort }}"
@@ -90,6 +98,8 @@ spec:
         volumeMounts:
           - name: tyk-mgmt-gateway-conf
             mountPath: /etc/tyk-gateway
+          - name: tyk-scratch
+            mountPath: /mnt/tyk-gateway
           - name: {{ .Release.Name }}-default-cert
             mountPath: /etc/certs
         livenessProbe:
@@ -110,6 +120,9 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 2000
       volumes:
         - name: tyk-mgmt-gateway-conf
           configMap:
@@ -117,6 +130,8 @@ spec:
             items:
               - key: tyk_mgmt.conf
                 path: tyk.conf
+        - name: tyk-scratch
+          emptyDir: {}
         - name: {{ .Release.Name }}-default-cert
           secret:
             secretName: {{ .Release.Name }}-default-cert
