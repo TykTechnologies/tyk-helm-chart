@@ -1,26 +1,14 @@
-- The Dashboard is bootstrapped automatically, to find Login details please locate the pod with name bootstrap-post-install-tyk-pro-* inside tyk-ingress namespace.
+- The Dashboard is bootstrapped automatically, to find Login details please run those commands inside your tyk namespace:
 
-- Then view the logs of that pod eg.(kubectl logs bootstrap-post-install-tyk-pro-zgp55), where you'll find details of your Dashboard URL and Login credentials.
+For the URL: (kubectl get nodes --selector=kubernetes.io/role!=master -o jsonpath='{.items[0].status.addresses[?(@.type=="ExternalIP")].address}'), if you're using Minikube then: (minikube ip) would be sufficient"
+For the port: (kubectl get --namespace tyk -o jsonpath="{.spec.ports[0].nodePort}" services dashboard-svc-tyk-pro)"
+For username: (kubectl get secret --namespace tyk tyk-login-details -o jsonpath="{.data.TYK_USER}" | base64 --decode)
+For password: (kubectl get secret --namespace tyk tyk-login-details -o jsonpath="{.data.TYK_PASS}" | base64 --decode)
 
+At this point, Tyk Pro is fully installed and should be accessible.
 
-At this point, Tyk Pro is fully installed and should be accessible, proceed with the steps below in case you want to install Tyk ingress controller.
+You might want to install Tyk Operator next to manage Ingress resources or manage your APIs.
 
-----SECRETS WORK IN PROGRESS
+[Tyk Operator](https://github.com/TykTechnologies/tyk-operator/)
 
-1. Move the encoded secrets to the controller helm chart
-
-mv ./tyk-pro/scripts/secrets.yaml ./tyk-k8s/templates
-
-2. Prepare the SSL and CA bundle for webhook (only necessary for Service Mesh functionality)
-
-./tyk-k8s/webhook/create-signed-cert.sh -n {{ .Release.Namespace }}
-cat ./tyk-k8s/webhook/mutatingwebhook.yaml | ./tyk-k8s/webhook/webhook-patch-ca-bundle.sh > ./tyk-k8s/webhook/mutatingwebhook-ca-bundle.yaml
-
-3. Install the controller
-
-Use your own values file and optionally release name to install the controller chart:
-helm install tyk-controller -f ./values.yaml ./tyk-k8s -n {{ .Release.Namespace }}
-
-4. Register the sidecar-injector (only necessary for Service Mesh functionality)
-
-kubectl create -f ./tyk-k8s/webhook/mutatingwebhook-ca-bundle.yaml
+Inside tyk namespace there is secret named: "tyk-operator-conf", which is automatically created and can be used with our Tyk Operator.

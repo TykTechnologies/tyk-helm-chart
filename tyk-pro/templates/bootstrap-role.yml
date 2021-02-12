@@ -1,0 +1,24 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: k8s-bootstrap-role
+  namespace: tyk
+rules:
+#
+# Give here only the privileges you need
+#
+- apiGroups: [""]
+  resources:
+  - pods
+  - jobs
+  - secrets
+  - services
+  - pods/exec
+  verbs:
+  - create
+  - update
+  - patch
+  - delete
+  - get
+  - watch
+  - list
