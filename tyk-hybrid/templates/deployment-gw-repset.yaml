@@ -71,10 +71,6 @@ spec:
             value: "{{ .Values.redis.useSSL }}"
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.gateway.tls }}"
-          - name: TYK_GW_SLAVEOPTIONS_RPCKEY
-            value: "{{.Values.tyk_k8s.org_id }}"
-          - name: TYK_GW_SLAVEOPTIONS_APIKEY
-            value: "{{ .Values.tyk_k8s.dash_key }}"
           - name: TYK_GW_SECRET
             value: "{{ .Values.secrets.APISecret }}"
           - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING

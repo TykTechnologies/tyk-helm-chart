@@ -13,7 +13,7 @@ It also means that you can bring the full features set of the Tyk API Gateway to
 
 > MongoDB is not required for Tyk Community Edition or Hybrid Gateways
 
-To get started quickly, you can use mongo.yaml and redis.yaml to install MongoDB and Redis inside your k8s cluster, but please note that we don't recommend to use DB's or Redis inside k8s, as this are external entities. We're providing this Mongo and Redis charts as an example, so you can quickly have Tyk running.
+To get started quickly, you can use mongo.yaml and redis.yaml to install MongoDB and Redis inside your kubernetes cluster, but please note that we don't recommend to use DB's or Redis inside kubernetes, as this are external entities. We're providing this Mongo and Redis charts as an example, so you can quickly have Tyk running.
 
 	kubectl create namespace tyk
 	kubectl apply -f mongo.yaml -n tyk
@@ -24,9 +24,7 @@ To get started quickly, you can use mongo.yaml and redis.yaml to install MongoDB
 > *Important Note regarding MongoDB:* This helm chart enables the PodDisruptionBudget for MongoDB with an arbiter replica-count of 1.  If you intend to perform system maintenance on the node where the MongoDB pod is running and this maintenance requires for the node to be drained, this action will be prevented due the replica count being 1.  Increase the replica count in the helm chart deployment to a minimum of 2 to remedy this issue.
 
 ## Install Tyk Community Edition
-> **Warning**: This is highly experimental, technical support is not available.
 
-To install, *first modify the `values_community_edition.yaml` file to add redis details*:
 
 	helm install tyk-ce -f ./values_community_edition.yaml ./tyk-headless -n tyk
 
