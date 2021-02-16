@@ -63,14 +63,22 @@ spec:
             value: "{{ .Values.gateway.containerPort }}"
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "{{ .Values.redis.shardCount }}"
-          - name: TYK_GW_STORAGE_HOSTS
+          - name: TYK_GW_STORAGE_ADDRS
+            {{- if and .Values.redis.host .Values.redis.port }}
             value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"
+            {{- else }}
+            value: "{{ join "," .Values.redis.addrs }}"
+            {{- end }}
           - name: TYK_GW_STORAGE_PASSWORD
             value: "{{ .Values.redis.pass }}"
           - name: TYK_GW_STORAGE_USESSL
             value: "{{ .Values.redis.useSSL }}"
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.gateway.tls }}"
+          - name: TYK_GW_SLAVEOPTIONS_RPCKEY
+            value: "{{.Values.tyk_k8s.org_id }}"
+          - name: TYK_GW_SLAVEOPTIONS_APIKEY
+            value: "{{ .Values.tyk_k8s.dash_key }}"
           - name: TYK_GW_SECRET
             value: "{{ .Values.secrets.APISecret }}"
           - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING

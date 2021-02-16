@@ -64,8 +64,12 @@ spec:
             value: "{{ .Values.redis.shardCount }}"
           - name: TYK_MDCB_HEALTHCHECKPORT
             value: "{{ .Values.mdcb.healthcheckport }}"
-          - name: TYK_MDCB_STORAGE_HOSTS
+          - name: TYK_MDCB_STORAGE_ADDRS
+            {{- if and .Values.redis.host .Values.redis.port }}
             value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"
+            {{- else }}
+            value: "{{ join "," .Values.redis.addrs }}"
+            {{- end }}
           - name: TYK_MDCB_STORAGE_PASSWORD
             value: "{{ .Values.redis.pass }}"
           - name: TYK_MDCB_STORAGE_REDISUSESSL

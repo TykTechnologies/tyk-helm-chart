@@ -14,10 +14,14 @@ secrets:
   AdminSecret: "12345"
 
 redis:
-  shardCount: 128
-  host: "redis.tyk.svc.cluster.local"
-  port: 6379
-  useSSL: false
+    shardCount: 128
+    #If you're using Bitnami Redis chart please input the correct host to your instalaltion in the field below
+    #addrs:
+    #- "tyk-redis-master.tyk.svc.cluster.local:6379"
+    addrs:
+      - "redis.tyk.svc.cluster.local:6379"
+    useSSL: false
+    #If you're using Bitnami Redis chart please input your password in the field below
 
 gateway:
   kind: DaemonSet

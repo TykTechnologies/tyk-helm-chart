@@ -5,6 +5,11 @@ For the port: (kubectl get --namespace tyk -o jsonpath="{.spec.ports[0].nodePort
 For username: (kubectl get secret --namespace tyk tyk-login-details -o jsonpath="{.data.TYK_USER}" | base64 --decode)
 For password: (kubectl get secret --namespace tyk tyk-login-details -o jsonpath="{.data.TYK_PASS}" | base64 --decode)
 
+> Please note, if you're using an ingress for the dashboard to find out your URL and port please see the steps below:
+
+> URL can be accessed here: "{{ .Values.dash.hostName }}"
+> For the port run: (kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services dashboard-svc-{{ include "tyk-pro.fullname" . }})
+
 At this point, Tyk Pro is fully installed and should be accessible.
 
 You might want to install Tyk Operator next to manage Ingress resources or manage your APIs.

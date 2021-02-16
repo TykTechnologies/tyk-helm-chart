@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: master
-          image: k8s.gcr.io/redis:e2e
+          image: redis:6.0.10
           resources:
             requests:
               cpu: 100m

@@ -9,16 +9,11 @@ rules:
 #
 - apiGroups: [""]
   resources:
-  - pods
-  - jobs
-  - secrets
   - services
+  - pods
   - pods/exec
+  - secrets
   verbs:
-  - create
-  - update
-  - patch
-  - delete
   - get
-  - watch
   - list
+  - create

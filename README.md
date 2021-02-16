@@ -13,11 +13,22 @@ It also means that you can bring the full features set of the Tyk API Gateway to
 
 > MongoDB is not required for Tyk Community Edition or Hybrid Gateways
 
-To get started quickly, you can use mongo.yaml and redis.yaml to install MongoDB and Redis inside your kubernetes cluster, but please note that we don't recommend to use DB's or Redis inside kubernetes, as this are external entities. We're providing this Mongo and Redis charts as an example, so you can quickly have Tyk running.
+To get started quickly, you can use mongo.yaml and redis.yaml manifests to install MongoDB and Redis inside your kubernetes cluster, but **please note that this must not ever be used in production and for anything but a quick start evaluation only, use external DBs or Helm charts for MongoDB and Redis in any other case.** We're providing this Mongo and Redis manifests that will loose your data on restart as an example, so you can quickly have Tyk running.
 
 	kubectl create namespace tyk
-	kubectl apply -f mongo.yaml -n tyk
-	kubectl apply -f redis.yaml -n tyk
+	kubectl apply -f deploy/dependencies/mongo.yaml -n tyk
+	kubectl apply -f deploy/dependencies/redis.yaml -n tyk
+
+	Optional: As a second option for Redis and MongoDB you can use charts provided by Bitnami to get going:
+
+	helm repo add bitnami https://charts.bitnami.com/bitnami
+	helm repo update
+	kubectl create namespace tyk
+	helm install tyk-mongo bitnami/mongodb --set "replicaSet.enabled=true" -n tyk
+	(follow notes from the installation output to get connection details and update them in `values.yaml` file)
+	helm install tyk-redis bitnami/redis -n tyk
+	(follow notes from the installation output to get connection details and update them in `values.yaml` file)
+
 
 > *Important Note regarding TLS:* This helm chart assumes TLS is being used by default, so the gateways will listen on port 443 and load up a dummy certificate. You can set your own default certificate by replacing the files in the certs/ folder.
 
@@ -33,6 +44,8 @@ To get started quickly, you can use mongo.yaml and redis.yaml to install MongoDB
 To install, *first modify the `values.yaml` file to add your license*:
 
 	helm install tyk-pro -f ./values.yaml ./tyk-pro -n tyk --wait
+
+> Please note when installing the Tyk Pro chart the --wait argument is important for successful dashboard bootstrap.
 
 Follow the instructions in the Notes that follow the installation to find your Tyk login credentials.
 
@@ -54,6 +67,11 @@ This enables multicluster, multi Data-Centre API management from a single Dashbo
 The Tyk owned MDCB registry is private and requires adding users to our organisation which you then define as a secret when pulling the MDCB image. Please contact your account manager to arrange this.
 
 ## Install Tyk Hybrid Gateways (This can be used either for Multi-Cloud Gateways or MDCB slaves)
+
+To install, first modify `values_hybrid.yaml` file as follows:
+1. Add your RPC key in `tyk_k8s.org_id` value
+2. Add your API key in `tyk_k8s.dash_key` value (could be the API key of any dashboard user but better to have a dedicated one)
+3. Add your dashboard URL in `tyk_k8s.dash_url` value. If it's a Tyk SaaS account the value `https://admin.cloud.tyk.io` is already set for you.
 
 	helm install tyk-hybrid -f ./values_hybrid.yaml ./tyk-hybrid -n tyk
 
