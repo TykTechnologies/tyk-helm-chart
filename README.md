@@ -13,13 +13,15 @@ It also means that you can bring the full features set of the Tyk API Gateway to
 
 > MongoDB is not required for Tyk Community Edition or Hybrid Gateways
 
-To get started quickly, you can use mongo.yaml and redis.yaml manifests to install MongoDB and Redis inside your kubernetes cluster, but **please note that this must not ever be used in production and for anything but a quick start evaluation only, use external DBs or Helm charts for MongoDB and Redis in any other case.** We're providing this Mongo and Redis manifests that will loose your data on restart as an example, so you can quickly have Tyk running.
+To get started quickly, you can use mongo.yaml and redis.yaml manifests to install MongoDB and Redis inside your kubernetes cluster.
+**Please note that this must not ever be used in production and for anything but a quick start evaluation only, use external DBs or Helm charts for MongoDB and Redis in any other case.**
+We're providing this Mongo and Redis manifests that will loose your data on restart as an example, so you can quickly have Tyk running.
 
 	kubectl create namespace tyk
 	kubectl apply -f deploy/dependencies/mongo.yaml -n tyk
 	kubectl apply -f deploy/dependencies/redis.yaml -n tyk
 
-	Optional: As a second option for Redis and MongoDB you can use charts provided by Bitnami to get going:
+Another option for Redis and MongoDB could be charts provided by Bitnami:
 
 	helm repo add bitnami https://charts.bitnami.com/bitnami
 	helm repo update
