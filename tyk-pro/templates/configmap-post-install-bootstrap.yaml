@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bootstrap-post-install-configmap-{{ include "tyk-pro.fullname" . }}
+data:
+  bootstrap_k8s.sh: |-
+{{ .Files.Get "scripts/bootstrap_k8s.sh" | indent 4}}

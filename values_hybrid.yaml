@@ -14,11 +14,14 @@ secrets:
   AdminSecret: "12345"
 
 redis:
-  shardCount: 128
-  host: "tyk-redis-master.tyk-ingress.svc.cluster.local"
-  port: 6379
-  useSSL: false
-  pass: ""
+    shardCount: 128
+    #If you're using Bitnami Redis chart please input the correct host to your instalaltion in the field below
+    #addrs:
+    #- "tyk-redis-master.tyk.svc.cluster.local:6379"
+    addrs:
+      - "redis.tyk.svc.cluster.local:6379"
+    useSSL: false
+    #If you're using Bitnami Redis chart please input your password in the field below
 
 gateway:
   kind: DaemonSet
@@ -36,7 +39,7 @@ gateway:
     bindToSlugs: true
   image:
     repository: tykio/tyk-gateway
-    tag: latest
+    tag: v3.1.2
     pullPolicy: Always
   service:
     type: LoadBalancer
@@ -74,33 +77,3 @@ gateway:
   extraEnvs: []
 
 rbac: true
-
-tyk_k8s:
-  replicaCount: 1
-  image:
-    repository: tykio/tyk-k8s
-    tag: latest
-    pullPolicy: Always
-  # RPC KEY is your Organisation ID, this can be found in the Dashboard Users -> User section in the cloud dashboard.
-  org_id: "RPCKEY"
-  # API KEY is your Tyk Cloud API credentials - these can be found in the Users section of your dashboard.
-  dash_key: "APIKEY"
-  # If using Multi Cloud this URL is *https://admin.cloud.tyk.io* or the URL of Master DC Dashboard in MDCB Setup
-  dash_url: "DASHBOARDURL"
-  serviceMesh:
-    enabled: false
-  watchNamespaces: []
-  resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #  cpu: 100m
-    #  memory: 128Mi
-    # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
-  nodeSelector: {}
-  tolerations: []
-  affinity: {}

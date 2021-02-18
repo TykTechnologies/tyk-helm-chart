@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: k8s-bootstrap-role
+subjects:
+- kind: ServiceAccount
+  name: k8s-bootstrap-role
+  namespace: tyk
+roleRef:
+  kind: Role
+  name: k8s-bootstrap-role
+  apiGroup: rbac.authorization.k8s.io

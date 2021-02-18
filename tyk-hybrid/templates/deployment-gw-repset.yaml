@@ -63,8 +63,14 @@ spec:
             value: "{{ .Values.gateway.containerPort }}"
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "{{ .Values.redis.shardCount }}"
-          - name: TYK_GW_STORAGE_HOSTS
+          - name: TYK_GW_STORAGE_ADDRS
+            {{- if and .Values.redis.host .Values.redis.port }}
             value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"
+            {{- else }}
+            value: "{{ join "," .Values.redis.addrs }}"
+            {{- end }}
+          - name: TYK_GW_STORAGE_ENABLECLUSTER
+            value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_GW_STORAGE_PASSWORD
             value: "{{ .Values.redis.pass }}"
           - name: TYK_GW_STORAGE_USESSL
