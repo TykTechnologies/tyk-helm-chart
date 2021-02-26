@@ -2,20 +2,18 @@
 
 This chart provides a full Tyk Installation (API Management Dashboard and API Gateways with Analytics) for Kubernetes.
 
-This means that a single Tyk installation can be used for both "north-south" inbound traffic from the internet to protect and promote your services, as well as internal east-west traffic, enabling you to secure your services in any way you see fit, including mutual TLS.
-
-It also means that you can bring the full features set of the Tyk API Gateway to your internal and external services from a single control plane.
+For further detail on how to configure Tyk as an Ingress Gateway, or how to manage APIs in Tyk using the Kubernetes API, please refer to our [Tyk Operator documentation](https://github.com/TykTechnologies/tyk-operator/). The operator can be installed along this chart and works with all installation types.
 
 **Prerequisites**
 
-- Redis installed in the cluster or reachable from K8s
+- Redis installed in the cluster or reachable from inside K8s
 - MongoDB installed in the cluster, or reachable from inside K8s
 
-> MongoDB is not required for Tyk Community Edition or Hybrid Gateways
+> MongoDB is not required for Tyk Community Edition or Hybrid Gateways installations
 
 To get started quickly, you can use mongo.yaml and redis.yaml manifests to install MongoDB and Redis inside your kubernetes cluster.
-**Please note that this must not ever be used in production and for anything but a quick start evaluation only, use external DBs or Helm charts for MongoDB and Redis in any other case.**
-We're providing this Mongo and Redis manifests that will loose your data on restart as an example, so you can quickly have Tyk running.
+**Please note that these provided manifests must not ever be used in production and for anything but a quick start evaluation only, use external DBs or Official Helm charts for MongoDB and Redis in any other case.**
+We provide these manifests so you can quickly have Tyk running however they are not meant for long term storage of data for example.
 
 	kubectl create namespace tyk
 	kubectl apply -f deploy/dependencies/mongo.yaml -n tyk
@@ -52,6 +50,9 @@ To install, *first modify the `values.yaml` file to add your license*:
 Follow the instructions in the Notes that follow the installation to find your Tyk login credentials.
 
 ## Installing TIB
+
+TIB is not necessary to install for Pro installations and it's functionality is included in the Tyk Dashboard API Manager.
+
 The Tyk Identity Broker (TIB) is a micro-service portal that provides a bridge between various Identity Management Systems such as LDAP, Social OAuth (e.g. GPlus, Twitter, GitHub), legacy Basic Authentication providers, to your Tyk installation (https://tyk.io/docs/getting-started/tyk-components/identity-broker/).
 
 Once you have installed `Gateway` and `Dashboard` component you can configure `tib.conf` and `profile.json`, you can read about how to configure them here https://github.com/TykTechnologies/tyk-identity-broker#how-to-configure-tib, and use helm upgrade command to install TIB.
@@ -68,7 +69,7 @@ This enables multicluster, multi Data-Centre API management from a single Dashbo
 
 The Tyk owned MDCB registry is private and requires adding users to our organisation which you then define as a secret when pulling the MDCB image. Please contact your account manager to arrange this.
 
-## Install Tyk Hybrid Gateways (This can be used either for Multi-Cloud Gateways or MDCB slaves)
+## Install Tyk Hybrid Gateways (This can be used either for Hybrid Gateways connected to Tyk Cloud or MDCB Hybrid Gateways)
 
 To install, first modify `values_hybrid.yaml` file as follows:
 1. Add your RPC key in `tyk_k8s.org_id` value
@@ -85,15 +86,17 @@ To uninstall run:
 
 ## Caveat: Tyk license and the number of gateway nodes
 
-While we recommend the unlimited node Tyk license for Kubernetes deployments, it's still possible to use limited licenses by changing the gateway resource kind to `Deployment` and setting the replica count to the node limit. For example, use the following options for a single node license: `--set gateway.kind=Deployment --set gateway.replicaCount=1` or similar if modifying the `values.yaml`.
+Different Tyk Pro Licenses allow for different numbers of Gateway nodes to connect to a single Dashboard instance - ensure that your Gateway pods will not scale beyond this number by setting the gateway resource kind to `Deployment` and setting the replica count to the node limit. For example, use the following options for a single node license: `--set gateway.kind=Deployment --set gateway.replicaCount=1` or similar if modifying the `values.yaml`.
 
-Note, however, there may be intermittent issues on the new pods during the rolling update process, when the total number of online gateway pods is more than the license limit.
+Note, however, there may be intermittent issues on the new pods during the rolling update process, when the total number of online gateway pods is more than the license limit with lower amounts of Licensed nodes.
 
 ### Making an API public
 
 You can set a tag for your exposed services in the API Designer, under the "Advanced Options" tab, the section called `Segment Tags (Node Segmentation)` allows you to add new tags. To make an API public, simply add `ingress` to this section, click the "Add" button, and save the API.
 
-### How to disable node sharding
+Disabling this capability is detailed in the point below.
+
+### How to disable node sharding/ segmentation
 
 If you are using the latest chart, you can set the `enableSharding` value in the `values.yaml` to false.
 
