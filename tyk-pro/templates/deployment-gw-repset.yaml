@@ -30,6 +30,14 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
+      {{- if .Values.enableIstioIngress }}
+      annotations:
+        traffic.sidecar.istio.io/excludeInboundPorts: "{{ .Values.gateway.containerPort}}"
+        traffic.sidecar.istio.io/includeInboundPorts: ""
+        traffic.sidecar.istio.io/excludeOutboundPorts: "{{ .Values.dash.containerPort }}"
+        traffic.sidecar.istio.io/includeOutboundPorts: ""
+        sidecar.istio.io/rewriteAppHTTPProbers: "false"
+      {{- end }}
       labels:
         app: gateway-{{ include "tyk-pro.fullname" . }}
         release: {{ .Release.Name }}
