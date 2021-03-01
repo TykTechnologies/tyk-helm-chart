@@ -29,7 +29,6 @@ spec:
       annotations:
         traffic.sidecar.istio.io/excludeInboundPorts: "{{ .Values.dash.containerPort }}"
         traffic.sidecar.istio.io/includeInboundPorts: ""
-        sidecar.istio.io/rewriteAppHTTPProbers: "false"
       {{- end }}
     spec:
 {{- if .Values.dash.nodeSelector }}
