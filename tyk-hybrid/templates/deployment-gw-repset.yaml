@@ -78,17 +78,19 @@ spec:
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.gateway.tls }}"
           - name: TYK_GW_SLAVEOPTIONS_RPCKEY
-            value: "{{.Values.tyk_k8s.org_id }}"
+            value: "{{ default .Values.tyk_k8s.org_id .Values.rpc.rpcKey }}"
           - name: TYK_GW_SLAVEOPTIONS_APIKEY
-            value: "{{ .Values.tyk_k8s.dash_key }}"
+            value: "{{ default .Values.tyk_k8s.dash_key .Values.rpc.apiKey }}"
           - name: TYK_GW_SECRET
             value: "{{ .Values.secrets.APISecret }}"
           - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
             value: "{{ .Values.gateway.rpc.connString}}"
           - name: TYK_GW_SLAVEOPTIONS_USESSL
             value: "{{ .Values.gateway.rpc.useSSL}}"
-          - name: TYK_GW_SLAVEOPTIONS_BINDTOSLUGS
-            value: "{{ .Values.gateway.rpc.bindToSlugs }}"
+          - name: TYK_GW_SLAVEOPTIONS_BINDTOSLUGSINSTEADOFLISTENPATHS
+            value: "{{ default "false" .Values.gateway.rpc.bindToSlugs }}"
+          - name: TYK_GW_SLAVEOPTIONS_SSLINSECURESKIPVERIFY
+            value: "{{ .Values.gateway.rpc.sslInsecureSkipVerify }}"  
           - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
             value: "{{ .Values.enableSharding }}"
           - name: TYK_GW_DBAPPCONFOPTIONS_TAGS

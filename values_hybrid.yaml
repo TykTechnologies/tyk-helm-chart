@@ -5,13 +5,11 @@
 nameOverride: ""
 fullnameOverride: ""
 
-# Only set this to false if you are not planning on using the sidecar injector
-enableSharding: true
+enableSharding: false
 hybrid: true
 
 secrets:
   APISecret: "CHANGEME"
-  AdminSecret: "12345"
 
 redis:
     shardCount: 128
@@ -22,27 +20,42 @@ redis:
       - "redis.tyk.svc.cluster.local:6379"
     useSSL: false
     #If you're using Bitnami Redis chart please input your password in the field below
+    #pass: ""
 
 gateway:
   kind: DaemonSet
   # Set replicaCount for Deployments
   replicaCount: 2
-  tags: "ingress"
+  # if enableSharding set to true then you must define a tag to load APIs to these gateways i.e. "ingress"
+  tags: ""
   hostName: ""
   tls: true
   containerPort: 8080
-  # For MDCB setups change to connection string for your MDCB instance
+  # For on premise MDCB setups simply change the connection string to point to your MDCB instance
   rpc:
-    connString: "hybrid.cloud.tyk.io:9091"
+    # On the Tyk Cloud Console find this value in the endpoints for your control plane deployment
+    connString: ""
     useSSL: true
-    # for hybrid, bindToSlugs: true, for MDCB, bindToSlugs: false
-    bindToSlugs: true
+    sslInsecureSkipVerify: true
+    # orgID of your dashboard user
+    rpcKey: ""
+    # API key of your dashboard user
+    apiKey: ""
+    #
+    # For a classic cloud hybrid gateway use these settings:
+    #
+    # connString: "hybrid.cloud.tyk.io:9091"
+    # useSSL: true
+    # bindToSlugs: true
+    # sslInsecureSkipVerify: false
+    # rpcKey: ""
+    # apiKey: ""
   image:
     repository: tykio/tyk-gateway
     tag: v3.1.2
     pullPolicy: Always
   service:
-    type: LoadBalancer
+    type: NodePort
     port: 443
     externalTrafficPolicy: Local
     annotations: {}
