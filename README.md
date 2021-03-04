@@ -65,6 +65,12 @@ If you are deploying the Master Data Centre in an MDCB deployment then you can e
 
 This enables multicluster, multi Data-Centre API management from a single Dashboard.
 
+Change inside the values.yml the mdcb tag to true
+```
+dcb:
+  enabled: true
+```
+
 **Secrets**
 
 The Tyk owned MDCB registry is private and requires adding users to our organisation which you then define as a secret when pulling the MDCB image. Please contact your account manager to arrange this.
