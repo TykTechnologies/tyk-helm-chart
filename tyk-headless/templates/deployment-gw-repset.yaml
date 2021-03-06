@@ -81,6 +81,10 @@ spec:
             value: "{{ .Values.secrets.APISecret }}"
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.gateway.tls }}"
+            {{- if .Values.pump.enabled }}
+          - name: TYK_GW_ENABLEANALYTICS
+            value: {{ "true" }}
+            {{- end }}
         {{- if .Values.gateway.extraEnvs }}
         {{- range $env := .Values.gateway.extraEnvs }}
           - name: {{ $env.name }}

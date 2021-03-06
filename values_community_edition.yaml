@@ -6,7 +6,7 @@ nameOverride: ""
 fullnameOverride: "tyk-headless"
 
 # Only set this to false if you are not planning on using the sidecar injector
-enableSharding: true
+enableSharding: false
 
 secrets:
   APISecret: "CHANGEME"
@@ -14,20 +14,20 @@ secrets:
 
 redis:
     shardCount: 128
-    #If you're using Bitnami Redis chart please input the correct host to your instalaltion in the field below
-    #addrs:
-    #- "tyk-redis-master.tyk.svc.cluster.local:6379"
     addrs:
       - "redis.tyk.svc.cluster.local:6379"
     useSSL: false
+    #If you're using Bitnami Redis chart please input the correct host to your installation in the field below
+    #addrs:
+      #- "tyk-redis-master.tyk.svc.cluster.local:6379"
     #If you're using Bitnami Redis chart please input your password in the field below
-    #pass: ""
+      #pass: ""
 
-mongo:
-    mongoURL: "mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics"
-    #If you're using Bitnami MongoDB chart please input your password below
-    #mongoURL: "mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk-dashboard?authSource=admin"
-    useSSL: false
+#mongo:
+#    mongoURL: "mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics"
+#    #If you're using Bitnami MongoDB chart please input your password below
+#    #mongoURL: "mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk-dashboard?authSource=admin"
+#    useSSL: false
 
 gateway:
   kind: DaemonSet
@@ -35,13 +35,13 @@ gateway:
   hostName: "gateway.tykbeta.com"
   tls: true
   containerPort: 8080
-  tags: "ingress"
+  tags: ""
   image:
     repository: tykio/tyk-gateway
     tag: v3.1.2
     pullPolicy: IfNotPresent
   service:
-    type: LoadBalancer
+    type: NodePort
     port: 443
     externalTrafficPolicy: Local
     annotations: {}
@@ -75,7 +75,10 @@ gateway:
   affinity: {}
   extraEnvs: []
 
+# If pump is enabled the Gateway will create and collect analytics data to send to a data store of your choice
+# These can be set up in the pump config. The possible pump configs can be found here: https://github.com/TykTechnologies/tyk-pump#configuration
 pump:
+  enabled: false
   replicaCount: 1
   image:
     repository: tykio/tyk-pump-docker-pub
