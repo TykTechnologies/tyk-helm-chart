@@ -5,9 +5,6 @@
 nameOverride: ""
 fullnameOverride: "tyk-headless"
 
-# Only set this to false if you are not planning on using the sidecar injector
-enableSharding: false
-
 secrets:
   APISecret: "CHANGEME"
   OrgID: "1"
