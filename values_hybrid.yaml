@@ -90,3 +90,8 @@ gateway:
   extraEnvs: []
 
 rbac: true
+
+# deprecated - please use the rpcKey and apiKey in the gateway section
+tyk_k8s:
+  dash_key: ""
+  org_id: ""
