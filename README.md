@@ -37,13 +37,13 @@ Another option for Redis and MongoDB could be charts provided by Bitnami:
 ## Install Tyk Community Edition
 
 
-	helm install tyk-ce -f ./values_community_edition.yaml ./tyk-headless -n tyk
+	helm install tyk-ce ./tyk-headless -n tyk
 
 
 ## Install Tyk Pro
-To install, *first modify the `values.yaml` file to add your license*:
+To install, *first modify the `values.yaml` file inside tyk-pro chart to add your license*:
 
-	helm install tyk-pro -f ./values.yaml ./tyk-pro -n tyk --wait
+	helm install tyk-pro ./tyk-pro -n tyk --wait
 
 > Please note when installing the Tyk Pro chart the --wait argument is important for successful dashboard bootstrap.
 
@@ -51,12 +51,12 @@ Follow the instructions in the Notes that follow the installation to find your T
 
 ## Install Tyk Hybrid Gateways (This can be used either for Hybrid Gateways connected to Tyk Cloud or MDCB Hybrid Gateways)
 
-To install, *first modify `values_hybrid.yaml` file as follows:*
+To install, *first modify `values.yaml` file inside tyk-hybrid chart as follows:*
 1. Add your dashboard users organisation ID in `gateway.rpc.orgID` value
-2. Add your dashboard users API key in `gateway.rpc.apiKey` value 
+2. Add your dashboard users API key in `gateway.rpc.apiKey` value
 3. Add your connection string to allow the Hybrid gateway to connect to your control plane in `gateway.rpc.connString`. On the Tyk Cloud Console find this value in the endpoints panel for your control plane deployment.
 
-	`helm install tyk-hybrid -f ./values_hybrid.yaml ./tyk-hybrid -n tyk`
+	`helm install tyk-hybrid ./tyk-hybrid -n tyk`
 
 > If you are using hybrid gateway with the Tyk Classic Cloud use the rpc settings block commented out in the values yaml
 
