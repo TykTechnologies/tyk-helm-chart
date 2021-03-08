@@ -106,3 +106,7 @@ If you are running an older chart that does not have this value, then you can di
 NB: tyk-k8s has been deprecated. For reference, old documentation may be found here: [Tyk K8s](https://github.com/TykTechnologies/tyk-k8s)
 
 For further detail on how to configure Tyk as an Ingress Gateway, or how to manage APIs using the Kubernetes API, please refer to our [Tyk Operator documentation](https://github.com/TykTechnologies/tyk-operator/).
+
+## Istio Service Mesh Ingress gateway
+
+To use Tyks gateways as the ingress to your Istio Service Mesh simply change `enableIstioIngress: true` in the values.yaml. Ensure you are using an Istio manifest which disables the default Istio Ingress gateway.
