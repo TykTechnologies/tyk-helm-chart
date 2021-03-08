@@ -51,16 +51,10 @@ spec:
             {{- if .Values.mongo.enabled }}
           - name: PMP_MONGO_MONGOURL
             value: "{{ .Values.mongo.mongoURL }}"
-            {{- end }}
-            {{- if .Values.mongo.enabled }}
           - name: PMP_MONGO_MONGOUSESSL
             value: "{{ .Values.mongo.useSSL }}"
-            {{- end }}
-            {{- if .Values.mongo.enabled }}
           - name: PMP_MONGOAGG_MONGOURL
             value:  "{{ .Values.mongo.mongoURL }}"
-            {{- end }}
-            {{- if .Values.mongo.enabled }}
           - name: PMP_MONGOAGG_MONGOUSESSL
             value:  "{{ .Values.mongo.useSSL }}"
             {{- end }}
