@@ -1,3 +1,4 @@
+{{- if .Values.pump.enabled -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -9,3 +10,4 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   {{- (.Files.Glob "configs/pump.conf").AsConfig | nindent 2 }}
+{{- end }}
