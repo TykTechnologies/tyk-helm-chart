@@ -78,9 +78,9 @@ spec:
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.gateway.tls }}"
           - name: TYK_GW_SLAVEOPTIONS_RPCKEY
-            value: "{{ default .Values.tyk_k8s.org_id .Values.rpc.rpcKey }}"
+            value: "{{ default .Values.tyk_k8s.org_id .Values.gateway.rpc.rpcKey }}"
           - name: TYK_GW_SLAVEOPTIONS_APIKEY
-            value: "{{ default .Values.tyk_k8s.dash_key .Values.rpc.apiKey }}"
+            value: "{{ default .Values.tyk_k8s.dash_key .Values.gateway.rpc.apiKey }}"
           - name: TYK_GW_SECRET
             value: "{{ .Values.secrets.APISecret }}"
           - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
