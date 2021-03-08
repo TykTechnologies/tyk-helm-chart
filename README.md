@@ -49,6 +49,18 @@ To install, *first modify the `values.yaml` file to add your license*:
 
 Follow the instructions in the Notes that follow the installation to find your Tyk login credentials.
 
+## Install Tyk Hybrid Gateways (This can be used either for Hybrid Gateways connected to Tyk Cloud or MDCB Hybrid Gateways)
+
+To install, *first modify `values_hybrid.yaml` file as follows:*
+1. Add your dashboard users organisation ID in `gateway.rpc.orgID` value
+2. Add your dashboard users API key in `gateway.rpc.apiKey` value 
+3. Add your connection string to allow the Hybrid gateway to connect to your control plane in `gateway.rpc.connString`. On the Tyk Cloud Console find this value in the endpoints panel for your control plane deployment.
+
+	`helm install tyk-hybrid -f ./values_hybrid.yaml ./tyk-hybrid -n tyk`
+
+> If you are using hybrid gateway with the Tyk Classic Cloud use the rpc settings block commented out in the values yaml
+
+
 ## Installing TIB
 
 TIB is not necessary to install for Pro installations and it's functionality is included in the Tyk Dashboard API Manager.
@@ -69,20 +81,7 @@ This enables multicluster, multi Data-Centre API management from a single Dashbo
 
 The Tyk owned MDCB registry is private and requires adding users to our organisation which you then define as a secret when pulling the MDCB image. Please contact your account manager to arrange this.
 
-## Install Tyk Hybrid Gateways (This can be used either for Hybrid Gateways connected to Tyk Cloud or MDCB Hybrid Gateways)
 
-To install, first modify `values_hybrid.yaml` file as follows:
-1. Add your RPC key in `tyk_k8s.org_id` value
-2. Add your API key in `tyk_k8s.dash_key` value (could be the API key of any dashboard user but better to have a dedicated one)
-3. Add your dashboard URL in `tyk_k8s.dash_url` value. If it's a Tyk SaaS account the value `https://admin.cloud.tyk.io` is already set for you.
-
-	helm install tyk-hybrid -f ./values_hybrid.yaml ./tyk-hybrid -n tyk
-
-To check all the helm installations run:
-	`kubectl get secret --all-namespaces -l "owner=helm"`
-
-To uninstall run:
-	`helm uninstall tyk-hybrid -n=tyk`
 
 ## Caveat: Tyk license and the number of gateway nodes
 
