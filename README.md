@@ -61,7 +61,6 @@ To install, *first modify `values_hybrid.yaml` file as follows:*
 > If you are using hybrid gateway with the Tyk Classic Cloud use the rpc settings block commented out in the values yaml
 
 
-
 ## Installing TIB
 
 TIB is not necessary to install for Pro installations and it's functionality is included in the Tyk Dashboard API Manager.
