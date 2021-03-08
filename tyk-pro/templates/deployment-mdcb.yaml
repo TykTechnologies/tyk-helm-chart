@@ -26,6 +26,8 @@ spec:
       labels:
         app: mdcb-{{ include "tyk-pro.fullname" . }}
         release: {{ .Release.Name }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/deployment-mdcb.yaml") . | sha256sum }}
     spec:
 {{- if .Values.mdcb.nodeSelector }}
       nodeSelector:

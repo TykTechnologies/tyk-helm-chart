@@ -33,6 +33,8 @@ spec:
       labels:
         app: gateway-{{ include "tyk-pro.fullname" . }}
         release: {{ .Release.Name }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/deployment-gw-repset.yaml") . | sha256sum }}
     spec:
 {{- if .Values.gateway.nodeSelector }}
       nodeSelector:

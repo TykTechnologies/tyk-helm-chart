@@ -25,6 +25,8 @@ spec:
       labels:
         app: dashboard-{{ include "tyk-pro.fullname" . }}
         release: {{ .Release.Name }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/deployment-dash.yaml") . | sha256sum }}
     spec:
 {{- if .Values.dash.nodeSelector }}
       nodeSelector:

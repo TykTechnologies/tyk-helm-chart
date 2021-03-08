@@ -20,6 +20,7 @@ spec:
         release: {{ .Release.Name }}
     {{- if .Values.pump.annotations }}
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/deployment-pmp.yaml") . | sha256sum }}
       {{- range $key, $value := .Values.pump.annotations }}
         {{ $key }}: {{ $value | quote }}
       {{- end }}
