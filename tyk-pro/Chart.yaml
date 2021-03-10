@@ -3,4 +3,3 @@ appVersion: "1.0"
 description: Deploys Tyk Dashboard, assumes that MongoDB and Redis have already been installed
 name: tyk-pro
 version: 0.8.0
-
