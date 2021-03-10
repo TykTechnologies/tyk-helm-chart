@@ -52,7 +52,7 @@ Follow the instructions in the Notes that follow the installation to find your T
 ## Install Tyk Hybrid Gateways (This can be used either for Hybrid Gateways connected to Tyk Cloud or MDCB Hybrid Gateways)
 
 To install, *first modify `values_hybrid.yaml` file as follows:*
-1. Add your dashboard users organisation ID in `gateway.rpc.orgID` value
+1. Add your dashboard users organisation ID in `gateway.rpc.rpcKey` value
 2. Add your dashboard users API key in `gateway.rpc.apiKey` value 
 3. Add your connection string to allow the Hybrid gateway to connect to your control plane in `gateway.rpc.connString`. On the Tyk Cloud Console find this value in the endpoints panel for your control plane deployment.
 
