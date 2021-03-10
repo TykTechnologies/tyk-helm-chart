@@ -1,4 +1,4 @@
-# Default values for tyk-dashboard.
+# Default values for tyk-pro chart.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -9,7 +9,7 @@ fullnameOverride: ""
 enableSharding: true
 
 # Set to true to use Tyk as the Ingress gateway to an Istio Service Mesh
-# We apply some exceptions to the Istio IPTables so inbound calls to the 
+# We apply some exceptions to the Istio IPTables so inbound calls to the
 # Gateway and Dashboard are exposed to the outside world - see the deployment templates for implementation
 enableIstioIngress: false
 
