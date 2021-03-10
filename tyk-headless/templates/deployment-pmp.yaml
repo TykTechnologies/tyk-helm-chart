@@ -19,6 +19,8 @@ spec:
       labels:
         app: pump-{{ include "tyk-headless.fullname" . }}
         release: {{ .Release.Name }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/deployment-pmp.yaml") . | sha256sum }}
     spec:
 {{- if .Values.pump.nodeSelector }}
       nodeSelector:

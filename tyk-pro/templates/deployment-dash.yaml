@@ -25,11 +25,12 @@ spec:
       labels:
         app: dashboard-{{ include "tyk-pro.fullname" . }}
         release: {{ .Release.Name }}
-      {{- if .Values.enableIstioIngress }}
       annotations:
+      {{- if .Values.enableIstioIngress }}
         traffic.sidecar.istio.io/excludeInboundPorts: "{{ .Values.dash.containerPort }}"
         traffic.sidecar.istio.io/includeInboundPorts: ""
       {{- end }}
+        checksum/config: {{ include (print $.Template.BasePath "/deployment-dash.yaml") . | sha256sum }}
     spec:
 {{- if .Values.dash.nodeSelector }}
       nodeSelector:
