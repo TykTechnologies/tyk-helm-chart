@@ -104,6 +104,12 @@ spec:
             mountPath: /etc/certs
           - name: tyk-scratch
             mountPath: /mnt/tyk-gateway
+          - name: tyk-scratch
+            mountPath: /mnt/tyk-gateway/apps
+          - name: tyk-scratch
+            mountPath: /mnt/tyk-gateway/middleware
+          - name: tyk-scratch
+            mountPath: /mnt/tyk-gateway/policies
         livenessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.gateway.tls }}S{{ end }}"
