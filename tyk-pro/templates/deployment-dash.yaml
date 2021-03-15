@@ -30,7 +30,7 @@ spec:
         traffic.sidecar.istio.io/excludeInboundPorts: "{{ .Values.dash.containerPort }}"
         traffic.sidecar.istio.io/includeInboundPorts: ""
       {{- end }}
-        checksum/config: {{ include (print $.Template.BasePath "/deployment-dash.yaml") . | sha256sum }}
+        rollme: {{ randAlphaNum 5 | quote }}
     spec:
 {{- if .Values.dash.nodeSelector }}
       nodeSelector:
