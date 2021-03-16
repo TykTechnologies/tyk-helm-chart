@@ -33,8 +33,7 @@ gateway:
   hostName: "gateway.tykbeta.com"
   tls: true
   containerPort: 8080
-  controlApiPort: 9696
-  tags: "ingress"
+  tags: ""
   image:
     repository: tykio/tyk-gateway
     tag: v3.1.2
@@ -44,12 +43,11 @@ gateway:
     port: 443
     externalTrafficPolicy: Local
     annotations: {}
-  api:
+  control:
+    enabled: false
     containerPort: 9696
-    service:
-      enabled: false
-      type: ClusterIP
-      port: 9696
+    port: 9696
+    type: ClusterIP
   ingress:
     enabled: false
     annotations: {}
