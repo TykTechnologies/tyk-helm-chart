@@ -48,6 +48,14 @@ spec:
       affinity:
 {{ toYaml .Values.gateway.affinity | indent 8 }}
 {{- end }}
+      initContainers: 
+      - name: "setup-directories"
+        image: busybox
+        command: ['sh','-c','mkdir -p apps && mkdir -p middlewares && mkdir -p policies']
+        workingDir: /mnt/tyk-gateway
+        volumeMounts:
+          - name: tyk-scratch
+            mountPath: /mnt/tyk-gateway        
       containers:
       - name: gateway-{{ .Chart.Name }}
         image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
