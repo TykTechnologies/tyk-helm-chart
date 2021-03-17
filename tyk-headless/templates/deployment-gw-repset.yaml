@@ -107,6 +107,9 @@ spec:
         workingDir: /opt/tyk-gateway
         ports:
         - containerPort: {{ .Values.gateway.containerPort }}
+        {{- if .Values.gateway.control.enabled -}}
+        - containerPort: {{ .Values.gateway.control.containerPort }}
+        {{- end }}
         resources:
 {{ toYaml .Values.gateway.resources | indent 12 }}
         volumeMounts:
