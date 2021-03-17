@@ -50,7 +50,7 @@ spec:
 {{- end }}
       initContainers: 
       - name: "setup-directories"
-        image: busybox
+        image: busybox:1.32
         command: ['sh','-c','mkdir -p apps && mkdir -p middlewares && mkdir -p policies']
         workingDir: /mnt/tyk-gateway
         volumeMounts:
