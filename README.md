@@ -11,24 +11,6 @@ For further detail on how to configure Tyk as an Ingress Gateway, or how to mana
 
 > MongoDB is not required for Tyk Community Edition or Hybrid Gateways installations
 
-To get started quickly, you can use mongo.yaml and redis.yaml manifests to install MongoDB and Redis inside your kubernetes cluster.
-**Please note that these provided manifests must not ever be used in production and for anything but a quick start evaluation only, use external DBs or Official Helm charts for MongoDB and Redis in any other case.**
-We provide these manifests so you can quickly have Tyk running however they are not meant for long term storage of data for example.
-
-	kubectl create namespace tyk
-	kubectl apply -f deploy/dependencies/mongo.yaml -n tyk
-	kubectl apply -f deploy/dependencies/redis.yaml -n tyk
-
-Another option for Redis and MongoDB could be charts provided by Bitnami:
-
-	helm repo add bitnami https://charts.bitnami.com/bitnami
-	helm repo update
-	kubectl create namespace tyk
-	helm install tyk-mongo bitnami/mongodb --set "replicaSet.enabled=true" -n tyk
-	(follow notes from the installation output to get connection details and update them in `values.yaml` file)
-	helm install tyk-redis bitnami/redis -n tyk
-	(follow notes from the installation output to get connection details and update them in `values.yaml` file)
-
 
 > *Important Note regarding TLS:* This helm chart assumes TLS is being used by default, so the gateways will listen on port 443 and load up a dummy certificate. You can set your own default certificate by replacing the files in the certs/ folder.
 
