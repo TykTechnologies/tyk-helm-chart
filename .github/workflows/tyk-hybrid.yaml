@@ -1,0 +1,27 @@
+name: Tyk Hybrid Push Helm
+on: push
+defaults:
+  run:
+    working-directory: ./tyk-hybrid
+jobs:
+  push:
+    name: Tyk Hybrid Push CS
+    runs-on: ubuntu-latest
+    branches:
+      - main
+      - release-**
+    paths:
+      - 'tyk-hybrid/**'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Push
+        id: push
+        uses: cloudsmith-io/action@master
+        with:
+          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+          command: 'push'
+          format: 'helm'
+          owner: 'tyk'
+          repo: 'tyk-hybrid'
+          version: ${{ github.sha }}
+          file: 'test/fixture/tyk-hybrid-helm-chart-v0.0.1.tar.gz'
