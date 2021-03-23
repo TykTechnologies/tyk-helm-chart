@@ -49,6 +49,13 @@ To install, *first modify the `values.yaml` file inside tyk-pro chart to add you
 
 Follow the instructions in the Notes that follow the installation to find your Tyk login credentials.
 
+### Tyk Developer Portal
+
+Once the Tyk Stack is up and running, take the following steps in order to bootstrap the Tyk Developer Portal:
+1. Set the portal domain via the Dashboard UI
+2. Restart the Dashboard containers
+3. Create a Default home page through the UI
+
 ## Install Tyk Hybrid Gateways (This can be used either for Hybrid Gateways connected to Tyk Cloud or MDCB Hybrid Gateways)
 
 To install, *first modify `values.yaml` file inside tyk-hybrid chart as follows:*
