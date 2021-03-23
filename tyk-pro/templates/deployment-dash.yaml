@@ -96,7 +96,7 @@ spec:
           - name: TYK_DB_LICENSEKEY
             value: {{ .Values.dash.license | quote }}
           - name: TYK_DB_HOSTCONFIG_PORTALROOTPATH
-            value:  {{ .Values.portal.ingress.path }}
+            value:  {{ .Values.portal.path }}
         {{- if .Values.dash.extraEnvs }}
         {{- range $env := .Values.dash.extraEnvs }}
           - name: {{ $env.name }}
