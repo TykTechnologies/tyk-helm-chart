@@ -95,6 +95,8 @@ spec:
             value: "{{ .Values.secrets.APISecret }}"
           - name: TYK_DB_LICENSEKEY
             value: {{ .Values.dash.license | quote }}
+          - name: TYK_DB_HOSTCONFIG_PORTALROOTPATH
+            value:  {{ .Values.portal.ingress.path }}
         {{- if .Values.dash.extraEnvs }}
         {{- range $env := .Values.dash.extraEnvs }}
           - name: {{ $env.name }}
