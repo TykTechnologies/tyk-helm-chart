@@ -13,7 +13,32 @@ jobs:
     paths:
       - 'tyk-pro/**'
     steps:
+     - name: Install Helm, create dirs
+        run: |
+          echo "Installing Helm..."
+          wget -q https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz
+          tar -zxf helm-v${HELM_VERSION}-linux-amd64.tar.gz
+          sudo mv linux-amd64/helm /usr/local/bin/helm
+          helm version
+          mkdir fixture
+        env:
+          HELM_VERSION: "3.4.2"
+
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Pack helm artifact
+        run: |
+          helm package ${CHART} -d ${CHART_DST} --version ${CHART_VERSION}
+        env:
+          CHART_VERSION: ${{ github.sha }}
+          CHART: tyk-helm-chart/tyk-pro
+          CHART_DST: './fixture'
+
       - uses: actions/checkout@v2
+
       - name: Push
         id: push
         uses: cloudsmith-io/action@master
@@ -24,4 +49,4 @@ jobs:
           owner: 'tyk'
           repo: 'tyk-pro'
           version: ${{ github.sha }}
-          file: 'test/fixture/tyk-pro-helm-chart-v0.0.1.tar.gz'
+          file: 'fixture/tyk-pro-${{ github.sha }}.tar.gz'
