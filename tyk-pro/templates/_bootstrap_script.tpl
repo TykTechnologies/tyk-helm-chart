@@ -14,7 +14,7 @@ kubectl exec -it -n ${NAMESPACE} svc/dashboard-svc-tyk-pro -- ./tyk-analytics bo
 TYK_AUTH=$(awk -F ':' '/USER AUTHENTICATION CODE: /{ print $2 }' bootstrapped | tr -d '[:space:]')
 TYK_ORG=$(awk -F ':' '/ORG ID: /{ print $2 }' bootstrapped | tr -d '[:space:]')
 TYK_MODE=pro
-TYK_URL=http://dashboard-svc-tyk-pro.tyk.svc.cluster.local:3000
+TYK_URL={{include "tyk-pro.dash_url" . }}
 TYK_USER=$(awk -F ':' '/User: /{ print $2 }' bootstrapped | tr -d '[:space:]')
 TYK_PASS=$(awk -F ':' '/Pass: /{ print $2 }' bootstrapped | tr -d '[:space:]')
 

@@ -38,3 +38,15 @@ https
 http
 {{- end -}}
 {{- end -}}
+
+{{- define "tyk-pro.dash_proto" -}}
+{{- if .Values.gateway.tls -}}
+https
+{{- else -}}
+http
+{{- end -}}
+{{- end -}}
+
+{{- define "tyk-pro.dash_url" -}}
+{{include "tyk-pro.dash_proto" . }}://dashboard-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.dash.service.port }}
+{{- end -}}
