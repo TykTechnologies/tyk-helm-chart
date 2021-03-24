@@ -50,3 +50,7 @@ http
 {{- define "tyk-pro.dash_url" -}}
 {{include "tyk-pro.dash_proto" . }}://dashboard-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.dash.service.port }}
 {{- end -}}
+
+{{- define "tyk-pro.gateway_url" -}}
+{{include "tyk-pro.gwproto" . }}://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.gateway.service.port }}
+{{- end -}}
