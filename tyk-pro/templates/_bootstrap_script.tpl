@@ -9,7 +9,7 @@ install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
 NAMESPACE={{.Release.Namespace}}
 
-kubectl exec -it -n ${NAMESPACE} svc/dashboard-svc-tyk-pro -- ./tyk-analytics bootstrap --conf=/etc/tyk-dashboard/tyk_analytics.conf > bootstrapped
+kubectl exec -it -n ${NAMESPACE} svc/dashboard-svc-{{ include "tyk-pro.fullname" . }} -- ./tyk-analytics bootstrap --conf=/etc/tyk-dashboard/tyk_analytics.conf > bootstrapped
 
 TYK_AUTH=$(awk -F ':' '/USER AUTHENTICATION CODE: /{ print $2 }' bootstrapped | tr -d '[:space:]')
 TYK_ORG=$(awk -F ':' '/ORG ID: /{ print $2 }' bootstrapped | tr -d '[:space:]')
