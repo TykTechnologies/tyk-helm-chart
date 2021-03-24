@@ -64,3 +64,13 @@ http
 redis.{{ .Release.Namespace }}.svc.cluster.local:6379
 {{- end -}}
 {{- end -}}
+
+{{- define "tyk-pro.mongo_url" -}}
+{{- if and .Values.mongo.host .Values.mongo.port -}}
+mongodb://{{ .Values.mongo.host }}:{{ .Values.mongo.port }}
+{{- else if  .Values.mongo.mongoURL -}}
+{{ .Values.mongo.mongoURL }}
+{{- else -}}
+mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
+{{- end -}}
+{{- end -}}

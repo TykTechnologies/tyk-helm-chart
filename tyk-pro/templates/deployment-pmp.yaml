@@ -55,11 +55,11 @@ spec:
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "{{ .Values.redis.shardCount }}"
           - name: PMP_MONGO_MONGOURL
-            value: {{ .Values.mongo.mongoURL | quote }}
+            value: {{ include "tyk-pro.mongo_url" . | quote }}
           - name: PMP_MONGO_MONGOUSESSL
             value: "{{ .Values.mongo.useSSL }}"
           - name: PMP_MONGOAGG_MONGOURL
-            value:  {{ .Values.mongo.mongoURL | quote }}
+            value: {{ include "tyk-pro.mongo_url" . | quote }}
           - name: PMP_MONGOAGG_MONGOUSESSL
             value:  "{{ .Values.mongo.useSSL }}"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS
