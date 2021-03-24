@@ -1,8 +1,5 @@
 name: Tyk Hybrid Push Helm
 on: push
-defaults:
-  run:
-    working-directory: ./tyk-hybrid
 jobs:
   push:
     name: Tyk Hybrid Push CS
@@ -31,13 +28,11 @@ jobs:
 
       - name: Pack helm artifact
         run: |
-          helm package ${CHART} -d ${CHART_DST} --version ${CHART_VERSION}
+          output=$(helm package ${CHART} --version ${CHART_VERSION})
+          echo $output
         env:
-          CHART_VERSION: ${{ github.sha }}
-          CHART: tyk-helm-chart/tyk-hybrid
-          CHART_DST: './fixture'
-
-      - uses: actions/checkout@v2
+          CHART_VERSION: '0.0.0'
+          CHART: tyk-hybrid
 
       - name: Push
         id: push
@@ -48,5 +43,5 @@ jobs:
           format: 'helm'
           owner: 'tyk'
           repo: 'tyk-hybrid'
-          version: ${{ github.sha }}
-          file: 'fixture/tyk-hybrid-${{ github.sha }}.tar.gz'
+          version: '0.0.0'
+          file: './tyk-hybrid-0.0.0.tgz'

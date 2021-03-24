@@ -1,8 +1,5 @@
 name: Tyk Pro Push Helm
 on: push
-defaults:
-  run:
-    working-directory: ./tyk-pro
 jobs:
   push:
     name: Tyk Pro Push CS
@@ -13,7 +10,12 @@ jobs:
     paths:
       - 'tyk-pro/**'
     steps:
-     - name: Install Helm, create dirs
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm, create dirs
         run: |
           echo "Installing Helm..."
           wget -q https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz
@@ -24,20 +26,13 @@ jobs:
         env:
           HELM_VERSION: "3.4.2"
 
-      - name: Checkout repo
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
       - name: Pack helm artifact
         run: |
-          helm package ${CHART} -d ${CHART_DST} --version ${CHART_VERSION}
+          output=$(helm package ${CHART} --version ${CHART_VERSION})
+          echo $output
         env:
-          CHART_VERSION: ${{ github.sha }}
-          CHART: tyk-helm-chart/tyk-pro
-          CHART_DST: './fixture'
-
-      - uses: actions/checkout@v2
+          CHART_VERSION: '0.0.0'
+          CHART: tyk-pro
 
       - name: Push
         id: push
@@ -48,5 +43,5 @@ jobs:
           format: 'helm'
           owner: 'tyk'
           repo: 'tyk-pro'
-          version: ${{ github.sha }}
-          file: 'fixture/tyk-pro-${{ github.sha }}.tar.gz'
+          version: '0.0.0'
+          file: './tyk-pro-0.0.0.tgz'

@@ -1,8 +1,5 @@
 name: Tyk Headless Push Helm
 on: push
-defaults:
-  run:
-    working-directory: ./headless
 jobs:
   push:
     name: Tyk Headless Push CS
@@ -20,7 +17,6 @@ jobs:
           tar -zxf helm-v${HELM_VERSION}-linux-amd64.tar.gz
           sudo mv linux-amd64/helm /usr/local/bin/helm
           helm version
-          mkdir fixture
         env:
           HELM_VERSION: "3.4.2"
 
@@ -31,13 +27,11 @@ jobs:
 
       - name: Pack helm artifact
         run: |
-          helm package ${CHART} -d ${CHART_DST} --version ${CHART_VERSION}
+          output=$(helm package ${CHART} --version ${CHART_VERSION})
+          echo $output
         env:
-          CHART_VERSION: ${{ github.sha }}
-          CHART: tyk-helm-chart/tyk-headless
-          CHART_DST: './fixture'
-
-      - uses: actions/checkout@v2
+          CHART_VERSION: '0.0.0'
+          CHART: tyk-headless
 
       - name: Push
         id: push
@@ -48,5 +42,5 @@ jobs:
           format: 'helm'
           owner: 'tyk'
           repo: 'tyk-headless'
-          version: ${{ github.sha }}
-          file: './fixture/tyk-headless-${{ github.sha }}.tar.gz'
+          version: '0.0.0'
+          file: './tyk-headless-0.0.0.tgz'
