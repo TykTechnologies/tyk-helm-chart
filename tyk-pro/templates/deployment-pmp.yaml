@@ -63,11 +63,7 @@ spec:
           - name: PMP_MONGOAGG_MONGOUSESSL
             value:  "{{ .Values.mongo.useSSL }}"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS
-            {{- if and .Values.redis.host .Values.redis.port }}
-            value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"
-            {{- else }}
-            value: "{{ join "," .Values.redis.addrs }}"
-            {{- end }}
+            value: {{include "tyk-pro.redis_url" . |quote}}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ENABLECLUSTER
             value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_PASSWORD

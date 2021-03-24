@@ -22,8 +22,6 @@ redis:
     #If you're using Bitnami Redis chart please input the correct host to your instalaltion in the field below
     #addrs:
     #- "tyk-redis-master.tyk.svc.cluster.local:6379"
-    addrs:
-      - "redis.tyk.svc.cluster.local:6379"
     useSSL: false
     #If you're using Bitnami Redis chart please input your password in the field below
     #pass: ""

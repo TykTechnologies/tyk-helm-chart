@@ -54,3 +54,13 @@ http
 {{- define "tyk-pro.gateway_url" -}}
 {{include "tyk-pro.gwproto" . }}://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.gateway.service.port }}
 {{- end -}}
+
+{{- define "tyk-pro.redis_url" -}}
+{{- if and .Values.redis.host .Values.redis.port -}}
+{{ .Values.redis.host }}:{{ .Values.redis.port }}
+{{- else if  .Values.redis.addrs -}}
+{{ join "," .Values.redis.addrs }}
+{{- else -}}
+redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+{{- end -}}
+{{- end -}}
