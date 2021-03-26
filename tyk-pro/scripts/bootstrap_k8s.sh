@@ -79,7 +79,7 @@ if_present_echo(){
 }
 
 create_organisation() {
-  ORGDATA=$(curl --silent --header "admin-auth: $TYK_ADMIN_SECRET" --header "Content-Type:application/json" --data '{"owner_name": "'$TYK_ORG_NAME'", "cname_enabled": true, "cname": "'$TYK_ORG_CNAME'"}' $DASHBOARD_HOSTNAME/admin/organisations 2>&1)
+  ORGDATA=$(curl --silent --header "admin-auth: $TYK_ADMIN_SECRET" --header "Content-Type:application/json" --data '{"owner_name": "'"$TYK_ORG_NAME"'", "cname_enabled": true, "cname": "'$TYK_ORG_CNAME'"}' $DASHBOARD_HOSTNAME/admin/organisations 2>&1)
   if_present_echo "$ORGDATA" 3
 }
 

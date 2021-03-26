@@ -156,7 +156,7 @@ dash:
   org:
     name: Default Org
     # Set this value to domain of your developer portal
-    cname: localhost
+    cname: "localhost"
 
 
 portal:
