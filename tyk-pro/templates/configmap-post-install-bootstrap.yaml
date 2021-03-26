@@ -4,4 +4,4 @@ metadata:
   name: bootstrap-post-install-configmap-{{ include "tyk-pro.fullname" . }}
 data:
   bootstrap_k8s.sh: |-
-{{ .Files.Get "scripts/bootstrap_k8s.sh" | indent 4}}
+{{ include "tyk-pro.bootstrap" . | indent 4}}
