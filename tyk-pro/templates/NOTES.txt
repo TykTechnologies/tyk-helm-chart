@@ -2,8 +2,8 @@
 
 For the URL: (kubectl get nodes --selector=kubernetes.io/role!=master -o jsonpath='{.items[0].status.addresses[?(@.type=="ExternalIP")].address}'), if you're using Minikube then: (minikube ip) would be sufficient"
 For the port: (kubectl get --namespace tyk -o jsonpath="{.spec.ports[0].nodePort}" services dashboard-svc-tyk-pro)"
-For username: (kubectl get secret --namespace tyk tyk-login-details -o jsonpath="{.data.TYK_USER}" | base64 --decode)
-For password: (kubectl get secret --namespace tyk tyk-login-details -o jsonpath="{.data.TYK_PASS}" | base64 --decode)
+For username: "{{ .Values.dash.adminUser.email }}"
+For password: (kubectl get secret --namespace tyk {{ .Release.Name }}-login-details -o jsonpath="{.data.TYK_PASS}" | base64 --decode)
 
 > Please note, if you're using an ingress for the dashboard to find out your URL and port please see the steps below:
 

@@ -148,8 +148,20 @@ dash:
   tolerations: []
   affinity: {}
   extraEnvs: []
+  # Set these values for dashboard admin user 
+  adminUser:
+    firstName: admin
+    lastName: user
+    email: default@exmaple.com
+  org:
+    name: Default Org
+    # Set this value to domain of your developer portal
+    cname: localhost
+
 
 portal:
+  # Only set this to false if you're not planning on using developer portal
+  bootstrap: true
   ingress:
     enabled: false
     annotations: {}
