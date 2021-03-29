@@ -6,30 +6,24 @@ apk --no-cache add curl jq
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
-NAMESPACE=$TYK_POD_NAMESPACE
-
-DASHBOARD_HOSTNAME="$TYK_DASHBOARD_SVC.$TYK_POD_NAMESPACE.svc.cluster.local:$TYK_DB_LISTENPORT"
+DASHBOARD_HOSTNAME="http://$TYK_DASHBOARD_SVC.$TYK_POD_NAMESPACE.svc.cluster.local:$TYK_DB_LISTENPORT"
 
 main(){
   if [[ $# -lt 1 ]]
+  then
+    syntax_message
+  else
+    generate_credentials "$DASHBOARD_HOSTNAME"
+    exit_reason "$?"
+    if [ "$BOOTSTRAP_PORTAL" = "true" ]
     then
-      syntax_message
-  elif [ -z $(which curl) ]
-    then
-      curl_message
-    else
-      generate_credentials "$DASHBOARD_HOSTNAME"
-      exit_reason "$?"
+      create_portal
+    fi
   fi
 }
 
-syntax_message() {
+syntax_message(){
   echo 'SYNTAX ERROR: Usage `./bootstrap.sh DASHBOARD_HOSTNAME`'
-  exit 1
-}
-
-curl_message() {
-  echo 'ERROR: Please install cURL'
   exit 1
 }
 
@@ -78,7 +72,7 @@ if_present_echo(){
   [[ -z "$1" ]] && return $2 || echo "$1"
 }
 
-create_organisation() {
+create_organisation(){
   ORGDATA=$(curl --silent --header "admin-auth: $TYK_ADMIN_SECRET" --header "Content-Type:application/json" --data '{"owner_name": "'"$TYK_ORG_NAME"'", "cname_enabled": true, "cname": "'$TYK_ORG_CNAME'"}' $DASHBOARD_HOSTNAME/admin/organisations 2>&1)
   if_present_echo "$ORGDATA" 3
 }
@@ -102,75 +96,78 @@ user_data(){
   if_present_echo $user_curl 3
 }
 
+create_portal(){
+  log_message "Creating Portal for organisation $TYK_ORG_NAME"
+
+  log_message "  Creating Portal default settings"
+  log_json_result "$(curl $DASHBOARD_HOSTNAME/api/portal/configuration \
+    -H "Authorization: $USER_AUTH_CODE" \
+    -d "{}" 2>> bootstrap.log)"
+
+  log_message "  Initialising Catalogue"
+  result=$(curl $DASHBOARD_HOSTNAME/api/portal/catalogue \
+    -H "Authorization: $USER_AUTH_CODE" \
+    -d '{"org_id": "'$ORGID'"}' 2>> bootstrap.log)
+  catalogue_id=$(echo "$result" | jq -r '.Message')
+  log_json_result "$result"
+
+  log_message "  Creating Portal home page"
+  log_json_result "$(curl $DASHBOARD_HOSTNAME/api/portal/pages \
+    -H "Authorization: $USER_AUTH_CODE" \
+    -d '{
+    "is_homepage": true,
+    "template_name": "",
+    "title": "Developer Portal Home",
+    "slug": "/",
+    "fields": {
+      "JumboCTATitle": "Tyk Developer Portal",
+      "SubHeading": "Sub Header",
+      "JumboCTALink": "#cta",
+      "JumboCTALinkTitle": "Your awesome APIs, hosted with Tyk!",
+      "PanelOneContent": "Panel 1 content.",
+      "PanelOneLink": "#panel1",
+      "PanelOneLinkTitle": "Panel 1 Button",
+      "PanelOneTitle": "Panel 1 Title",
+      "PanelThereeContent": "",
+      "PanelThreeContent": "Panel 3 content.",
+      "PanelThreeLink": "#panel3",
+      "PanelThreeLinkTitle": "Panel 3 Button",
+      "PanelThreeTitle": "Panel 3 Title",
+      "PanelTwoContent": "Panel 2 content.",
+      "PanelTwoLink": "#panel2",
+      "PanelTwoLinkTitle": "Panel 2 Button",
+      "PanelTwoTitle": "Panel 2 Title"
+    }
+  }')"
+}
+
+log_message(){
+  echo "$(date -u) $1"
+}
+
+log_json_result(){
+  status=$(echo $1 | jq -r '.Status')
+  if [ "$status" = "OK" ] || [ "$status" = "Ok" ]
+  then
+    log_ok
+  else
+    log_message "  ERROR: $(echo $1 | jq -r '.Message')"
+    exit 1
+  fi
+}
+
+log_ok(){
+  log_message "  Ok"
+}
+
+
 main $DASHBOARD_HOSTNAME
 
-kubectl create secret -n ${NAMESPACE} generic tyk-operator-conf \
+kubectl create secret -n ${TYK_POD_NAMESPACE} generic tyk-operator-conf \
   --from-literal "TYK_AUTH=${USER_AUTH_CODE}" \
   --from-literal "TYK_ORG=${ORGID}" \
   --from-literal "TYK_MODE=pro" \
-  --from-literal "TYK_URL=http://${DASHBOARD_HOSTNAME}"
-
-if [ "$BOOTSTRAP_PORTAL" = "true" ]; then
-    function log_message {
-    echo "$(date -u) $1"
-  }
-    function log_json_result {
-      status=$(echo $1 | jq -r '.Status')
-      if [ "$status" = "OK" ] || [ "$status" = "Ok" ]
-      then
-        log_ok
-      else
-        log_message "  ERROR: $(echo $1 | jq -r '.Message')"
-        exit 1
-      fi
-    }
-    function log_ok {
-      log_message "  Ok"
-    }
-
-    log_message "Creating Portal for organisation $TYK_ORG_NAME"
-
-    log_message "  Creating Portal default settings"
-    log_json_result "$(curl $DASHBOARD_HOSTNAME/api/portal/configuration \
-      -H "Authorization: $USER_AUTH_CODE" \
-      -d "{}" 2>> bootstrap.log)"
-
-    log_message "  Initialising Catalogue"
-    result=$(curl $DASHBOARD_HOSTNAME/api/portal/catalogue \
-      -H "Authorization: $USER_AUTH_CODE" \
-      -d '{"org_id": "'$ORGID'"}' 2>> bootstrap.log)
-    catalogue_id=$(echo "$result" | jq -r '.Message')
-    log_json_result "$result"
-
-    log_message "  Creating Portal home page"
-    log_json_result "$(curl $DASHBOARD_HOSTNAME/api/portal/pages \
-      -H "Authorization: $USER_AUTH_CODE" \
-      -d '{
-      "is_homepage": true,
-      "template_name": "",
-      "title": "Developer Portal Home",
-      "slug": "/",
-      "fields": {
-        "JumboCTATitle": "Tyk Developer Portal",
-        "SubHeading": "Sub Header",
-        "JumboCTALink": "#cta",
-        "JumboCTALinkTitle": "Your awesome APIs, hosted with Tyk!",
-        "PanelOneContent": "Panel 1 content.",
-        "PanelOneLink": "#panel1",
-        "PanelOneLinkTitle": "Panel 1 Button",
-        "PanelOneTitle": "Panel 1 Title",
-        "PanelThereeContent": "",
-        "PanelThreeContent": "Panel 3 content.",
-        "PanelThreeLink": "#panel3",
-        "PanelThreeLinkTitle": "Panel 3 Button",
-        "PanelThreeTitle": "Panel 3 Title",
-        "PanelTwoContent": "Panel 2 content.",
-        "PanelTwoLink": "#panel2",
-        "PanelTwoLinkTitle": "Panel 2 Button",
-        "PanelTwoTitle": "Panel 2 Title"
-      }
-    }')"
-fi
+  --from-literal "TYK_URL=${DASHBOARD_HOSTNAME}"
 
 # restart dashboard deployment
 kubectl rollout restart deployment/dashboard-tyk-pro

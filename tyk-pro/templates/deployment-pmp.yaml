@@ -18,13 +18,11 @@ spec:
       labels:
         app: pump-{{ include "tyk-pro.fullname" . }}
         release: {{ .Release.Name }}
-    {{- if .Values.pump.annotations }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap-pump.yaml") . | sha256sum }}
       {{- range $key, $value := .Values.pump.annotations }}
         {{ $key }}: {{ $value | quote }}
       {{- end }}
-    {{- end }}
     spec:
 {{- if .Values.pump.nodeSelector }}
       nodeSelector:
@@ -55,19 +53,15 @@ spec:
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "{{ .Values.redis.shardCount }}"
           - name: PMP_MONGO_MONGOURL
-            value: {{ .Values.mongo.mongoURL | quote }}
+            value: {{ include "tyk-pro.mongo_url" . | quote }}
           - name: PMP_MONGO_MONGOUSESSL
             value: "{{ .Values.mongo.useSSL }}"
           - name: PMP_MONGOAGG_MONGOURL
-            value:  {{ .Values.mongo.mongoURL | quote }}
+            value: {{ include "tyk-pro.mongo_url" . | quote }}
           - name: PMP_MONGOAGG_MONGOUSESSL
             value:  "{{ .Values.mongo.useSSL }}"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS
-            {{- if and .Values.redis.host .Values.redis.port }}
-            value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"
-            {{- else }}
-            value: "{{ join "," .Values.redis.addrs }}"
-            {{- end }}
+            value: {{include "tyk-pro.redis_url" . |quote}}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ENABLECLUSTER
             value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_PASSWORD

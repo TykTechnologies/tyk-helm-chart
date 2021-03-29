@@ -5,7 +5,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: k8s-bootstrap-role
-  namespace: tyk
+  namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role
   name: k8s-bootstrap-role

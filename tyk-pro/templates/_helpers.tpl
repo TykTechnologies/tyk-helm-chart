@@ -38,3 +38,39 @@ https
 http
 {{- end -}}
 {{- end -}}
+
+{{- define "tyk-pro.dash_proto" -}}
+{{- if .Values.gateway.tls -}}
+https
+{{- else -}}
+http
+{{- end -}}
+{{- end -}}
+
+{{- define "tyk-pro.dash_url" -}}
+{{include "tyk-pro.dash_proto" . }}://dashboard-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.dash.service.port }}
+{{- end -}}
+
+{{- define "tyk-pro.gateway_url" -}}
+{{include "tyk-pro.gwproto" . }}://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.gateway.service.port }}
+{{- end -}}
+
+{{- define "tyk-pro.redis_url" -}}
+{{- if and .Values.redis.host .Values.redis.port -}}
+{{ .Values.redis.host }}:{{ .Values.redis.port }}
+{{- else if  .Values.redis.addrs -}}
+{{ join "," .Values.redis.addrs }}
+{{- else -}}
+redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+{{- end -}}
+{{- end -}}
+
+{{- define "tyk-pro.mongo_url" -}}
+{{- if and .Values.mongo.host .Values.mongo.port -}}
+mongodb://{{ .Values.mongo.host }}:{{ .Values.mongo.port }}
+{{- else if  .Values.mongo.mongoURL -}}
+{{ .Values.mongo.mongoURL }}
+{{- else -}}
+mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
+{{- end -}}
+{{- end -}}
