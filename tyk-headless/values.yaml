@@ -48,6 +48,7 @@ gateway:
     containerPort: 9696
     port: 9696
     type: ClusterIP
+    annotations: {}
   ingress:
     enabled: false
     annotations: {}

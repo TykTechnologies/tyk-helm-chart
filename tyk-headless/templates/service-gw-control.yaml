@@ -8,6 +8,12 @@ metadata:
     chart: {{ include "tyk-headless.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+{{- if .Values.gateway.service.annotations }}
+  annotations:
+  {{- range $key, $value := .Values.gateway.control.annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}
 spec:
   type: {{ .Values.gateway.control.type }}
   ports:
