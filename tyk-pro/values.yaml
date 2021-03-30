@@ -5,7 +5,7 @@
 nameOverride: ""
 fullnameOverride: ""
 
-# Only set this to false if you are not planning on using the sidecar injector
+# Used to shard the gateways. If you enable it make sure you have at least one gateway that is not sharded and also tag the APIs accordingly
 enableSharding: false
 
 # Set to true to use Tyk as the Ingress gateway to an Istio Service Mesh
