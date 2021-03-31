@@ -7,7 +7,7 @@ jobs:
     branches:
       - main
       - release-**
-    tag: 'v*-hybrid'
+    tag: 'v*-pro'
     paths:
       - 'tyk-pro/**'
     steps:
