@@ -7,9 +7,17 @@ jobs:
     branches:
       - main
       - release-**
+    tag: 'v*-hybrid'
     paths:
       - 'tyk-pro/**'
     steps:
+      - uses: actions/checkout@v2
+
+      - name: Set env
+        run: |
+          VER=$(sed 's/[^0-9.]//g' <<< GITHUB_REF##*/)
+          echo "RELEASE_VERSION=${VER}" >> $GITHUB_ENV
+
       - name: Checkout repo
         uses: actions/checkout@v2
         with:
@@ -28,10 +36,8 @@ jobs:
 
       - name: Pack helm artifact
         run: |
-          output=$(helm package ${CHART} --version ${CHART_VERSION})
-          echo $output
+          output=$(helm package ${CHART} --version ${{ env.RELEASE_VERSION }})
         env:
-          CHART_VERSION: '0.0.0'
           CHART: tyk-pro
 
       - name: Push
@@ -42,6 +48,6 @@ jobs:
           command: 'push'
           format: 'helm'
           owner: 'tyk'
-          repo: 'tyk-pro'
-          version: '0.0.0'
-          file: './tyk-pro-0.0.0.tgz'
+          repo: 'tyk-helm'
+          version: ${{ env.RELEASE_VERSION }}
+          file: './tyk-pro-${{ env.RELEASE_VERSION }}.tgz'
