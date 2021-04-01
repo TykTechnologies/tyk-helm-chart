@@ -90,30 +90,24 @@ The Tyk owned MDCB registry is private and requires adding users to our organisa
 
 
 
-## Caveat: Tyk license and the number of gateway nodes
+## Caveats: 
+
+### Tyk license and the number of gateway nodes
 
 Different Tyk Pro Licenses allow for different numbers of Gateway nodes to connect to a single Dashboard instance - ensure that your Gateway pods will not scale beyond this number by setting the gateway resource kind to `Deployment` and setting the replica count to the node limit. For example, use the following options for a single node license: `--set gateway.kind=Deployment --set gateway.replicaCount=1` or similar if modifying the `values.yaml`.
 
 Note, however, there may be intermittent issues on the new pods during the rolling update process, when the total number of online gateway pods is more than the license limit with lower amounts of Licensed nodes.
 
-### Making an API public
 
-You can set a tag for your exposed services in the API Designer, under the "Advanced Options" tab, the section called `Segment Tags (Node Segmentation)` allows you to add new tags. To make an API public, simply add `ingress` to this section, click the "Add" button, and save the API.
-
-Disabling this capability is detailed in the point below.
-
-### How to disable node sharding/ segmentation
-
-If you are using the latest chart, you can set the `enableSharding` value in the `values.yaml` to false.
-
-If you are running an older chart that does not have this value, then you can disable node sharding beforehand by editing the `tyk-pro/configs/tyk_mgmt.conf` file, simply set the value `db_app_conf_options.node_is_segmented` to `false`.
-
-## Kubernetes Ingress
+### Kubernetes Ingress
 
 NB: tyk-k8s has been deprecated. For reference, old documentation may be found here: [Tyk K8s](https://github.com/TykTechnologies/tyk-k8s)
 
 For further detail on how to configure Tyk as an Ingress Gateway, or how to manage APIs using the Kubernetes API, please refer to our [Tyk Operator documentation](https://github.com/TykTechnologies/tyk-operator/).
 
-## Istio Service Mesh Ingress gateway
+### Istio Service Mesh Ingress gateway
 
 To use Tyks gateways as the ingress to your Istio Service Mesh simply change `enableIstioIngress: true` in the values.yaml. Ensure you are using an Istio manifest which disables the default Istio Ingress gateway.
+
+### 
+For old versions of this repository, please make sure the `node_is_segmented` in on of the `tyk.conf` config files is `false` or `enableSharding` in `values.yaml` is `false`.
