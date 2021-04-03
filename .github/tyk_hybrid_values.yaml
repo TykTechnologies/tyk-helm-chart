@@ -1,0 +1,97 @@
+# Default values for tyk-hybrid chart
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: ""
+fullnameOverride: ""
+
+enableSharding: false
+hybrid: true
+
+secrets:
+  APISecret: "CHANGEME"
+
+redis:
+    shardCount: 128
+    #If you're using Bitnami Redis chart please input the correct host to your instalaltion in the field below
+    #addrs:
+    #- "tyk-redis-master.tyk.svc.cluster.local:6379"
+    addrs:
+      - "redis.tyk.svc.cluster.local:6379"
+    useSSL: false
+    #If you're using Bitnami Redis chart please input your password in the field below
+    #pass: ""
+
+gateway:
+  kind: DaemonSet
+  # Set replicaCount for Deployments
+  replicaCount: 3
+  # if enableSharding set to true then you must define a tag to load APIs to these gateways i.e. "ingress"
+  tags: ""
+  hostName: ""
+  tls: true
+  containerPort: 8080
+  # For on premise MDCB setups simply change the connection string to point to your MDCB instance
+  rpc:
+    # On the Tyk Cloud Console find this value in the endpoints for your control plane deployment
+    connString: ""
+    useSSL: true
+    sslInsecureSkipVerify: true
+    # orgID of your dashboard user
+    rpcKey: ""
+    # API key of your dashboard user
+    apiKey: ""
+    #
+    # For a classic cloud hybrid gateway use these settings:
+    #
+    # connString: "hybrid.cloud.tyk.io:9091"
+    # useSSL: true
+    # bindToSlugs: true
+    # sslInsecureSkipVerify: false
+    # rpcKey: ""
+    # apiKey: ""
+  image:
+    repository: tykio/tyk-gateway
+    tag: v3.1.2
+    pullPolicy: Always
+  service:
+    type: NodePort
+    port: 443
+    externalTrafficPolicy: Local
+    annotations: {}
+  ingress:
+    enabled: false
+    annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    path: /
+    hosts:
+      - tyk-gw.local
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+  #  memory: 128Mi
+  nodeSelector: {}
+  tolerations:
+    - key: node-role.kubernetes.io/master
+      effect: NoSchedule
+  affinity: {}
+  extraEnvs: []
+
+rbac: true
+
+# deprecated - please use the rpcKey and apiKey in the gateway section
+tyk_k8s:
+  dash_key: ""
+  org_id: ""

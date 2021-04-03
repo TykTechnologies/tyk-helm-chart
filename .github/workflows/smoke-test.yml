@@ -1,0 +1,127 @@
+name: Smoke test
+
+on:
+  pull_request: {}
+  push:
+    branches:
+      - master
+
+env:
+  TIMEOUT: 3m
+  NAMESPACE: tyk-ci
+  TYK_CE: .github/tyk_ce_values.yaml 
+  TYK_PRO: .github/tyk_pro_values.yaml
+  TYK_HYBRID: .github/tyk_hybrid_values.yaml 
+
+jobs:
+
+  generate-matrix:
+    name: Generate matrix for smoke-tests
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Check changed files
+        id: diff
+        run: |
+          if [ $GITHUB_BASE_REF ]; then
+            # Pull Request
+            git fetch origin $GITHUB_BASE_REF --depth=1
+            export DIFF=$( git diff --name-only origin/$GITHUB_BASE_REF $GITHUB_SHA )
+            echo "Diff between origin/$GITHUB_BASE_REF and $GITHUB_SHA"
+          else
+            # Push
+            git fetch origin ${{ github.event.before }} --depth=1
+            export DIFF=$( git diff --name-only ${{ github.event.before }} $GITHUB_SHA )
+            echo "Diff between ${{ github.event.before }} and $GITHUB_SHA"
+          fi
+          echo "$DIFF"
+          # Escape newlines (replace \n with %0A)
+          echo "::set-output name=diff::$( echo "$DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
+
+      - name: Set matrix for smoke-tests
+        id: set-matrix
+        run: |
+          DIFF="${{ steps.diff.outputs.diff }}"
+          JSON="{\"include\":["
+
+          # Loop by lines
+          while read path; do
+            # Set $directory to substring before /
+            directory="$( echo $path | cut -d'/' -f1 -s )"
+
+            if [ "$directory" == .github ]; then
+              continue # Exclude .github directory
+            elif [ "$directory" == deploy ]; then
+              continue # Exclude deploy directory
+            elif [ "$directory" == samples ]; then
+              continue # Exclude samples directory
+            fi
+
+            # Add build to the matrix only if it is not already included
+            JSONline="{\"directory\": \"$directory\"},"
+            if [[ "$JSON" != *"$JSONline"* ]]; then
+              JSON="$JSON$JSONline"
+            fi
+          done <<< "$DIFF"
+
+          # Remove last "," and add closing brackets
+          if [[ $JSON == *, ]]; then
+            JSON="${JSON%?}"
+          fi
+          JSON="$JSON]}"
+          echo $JSON
+
+          # Set output
+          echo "::set-output name=matrix::$( echo "$JSON" )"
+
+
+  smoke-tests:
+    runs-on: ubuntu-latest
+    name: Run Smoke Tests on "${{ matrix.directory }}" chart
+    needs: generate-matrix
+    strategy:
+      matrix: ${{fromJson(needs.generate-matrix.outputs.matrix)}}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Git Checkout
+      
+      - name: Create Kind Cluster
+        uses: helm/kind-action@v1.1.0
+        with:
+          config: .github/kind.yml
+      
+      - name: Install helm
+        uses: Azure/setup-helm@v1.1
+        with:
+          version: v3.5.3
+      
+      - name: Deploy "${{ matrix.directory }}" chart
+        run: |
+          kubectl create namespace ${{ env.NAMESPACE }}
+          kubectl apply -f deploy/dependencies/mongo.yaml -n ${{ env.NAMESPACE }}
+          kubectl apply -f deploy/dependencies/redis.yaml -n ${{ env.NAMESPACE }}
+
+          if [ "${{ matrix.directory }}" == tyk-headless ]; then
+            helm install ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
+          elif [ "${{ matrix.directory }}" == tyk-hybrid ]; then
+            # Need to set proper orgId, apiKey and connString values
+            helm install --set gateway.rpc.rpcKey=5cc03283d07e7f00019404b3 --set gateway.rpc.apiKey=ChAnGeMe --set gateway.rpc.connString=localhost ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
+          elif [ "${{ matrix.directory }}" == tyk-pro ]; then
+            helm install --set mdcb.license="${{ secrets.LICENSE_KEY }}" --set dash.license="${{ secrets.LICENSE_KEY }}" ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }} --wait
+          fi
+
+      - name: Upgrade "${{ matrix.directory }}" chart
+        run: |
+          if [ "${{ matrix.directory }}" == tyk-headless ]; then
+            helm upgrade -f ${{ env.TYK_CE }} ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
+          elif [ "${{ matrix.directory }}" == tyk-hybrid ]; then
+            helm upgrade -f ${{ env.TYK_HYBRID }} --set gateway.rpc.rpcKey=5cc03283d07e7f00019404b3 --set gateway.rpc.apiKey=ChAnGeMe --set gateway.rpc.connString=localhost ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
+          elif [ "${{ matrix.directory }}" == tyk-pro ]; then
+            helm upgrade -f ${{ env.TYK_PRO }} --set mdcb.license="${{ secrets.LICENSE_KEY }}" --set dash.license="${{ secrets.LICENSE_KEY }}" ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }} --wait
+          fi
+
+      - name: Uninstall "${{ matrix.directory }}" chart
+        run: |
+          helm uninstall ${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
