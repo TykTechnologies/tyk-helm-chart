@@ -16,3 +16,6 @@ rules:
   - get
   - list
   - create
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get","list","create","update","patch"]
