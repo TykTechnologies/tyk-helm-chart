@@ -18,4 +18,4 @@ rules:
   - create
 - apiGroups: ["apps"]
   resources: ["deployments"]
-  verbs: ["get","list","create","update","patch"]
+  verbs: ["get","update","patch"]
