@@ -170,4 +170,4 @@ kubectl create secret -n ${TYK_POD_NAMESPACE} generic tyk-operator-conf \
   --from-literal "TYK_URL=${DASHBOARD_HOSTNAME}"
 
 # restart dashboard deployment
-kubectl rollout restart deployment/dashboard-tyk-pro
+kubectl rollout restart deployment/${TYK_DASHBOARD_DEPLOY}
