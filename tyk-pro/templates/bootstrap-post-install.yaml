@@ -59,6 +59,8 @@ spec:
           - name: BOOTSTRAP_PORTAL
             value: "true"
           {{- end }}
+          - name: TYK_DASHBOARD_DEPLOY
+            value: dashboard-{{ include "tyk-pro.fullname" . }}
         volumeMounts:
           - name: bootstrap-config-volume
             mountPath: /opt/scripts
