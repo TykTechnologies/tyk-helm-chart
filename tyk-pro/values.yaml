@@ -65,7 +65,6 @@ mdcb:
   affinity: {}
   extraEnvs: []
 
-
 tib:
   enabled: false
   useSSL: true
@@ -110,6 +109,7 @@ tib:
     profiles: tyk-tib-profiles-conf
 
 dash:
+  bootstrap: true
   replicaCount: 1
   hostName: "tyk-dashboard.local"
   license: ""
@@ -161,6 +161,7 @@ dash:
     cname: "tyk-portal.local"
 
 portal:
+  # You can only bootstrap the Developer Portal if the Dashboard boostrap option is also enabled
   # Only set this to false if you're not planning on using developer portal
   bootstrap: true
   path: /

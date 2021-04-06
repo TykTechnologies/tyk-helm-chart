@@ -160,8 +160,10 @@ log_ok(){
   log_message "  Ok"
 }
 
-
-main $DASHBOARD_HOSTNAME
+if [ "$BOOTSTRAP_DASHBOARD" = "true" ]
+then
+  main $DASHBOARD_HOSTNAME
+fi
 
 kubectl create secret -n ${TYK_POD_NAMESPACE} generic tyk-operator-conf \
   --from-literal "TYK_AUTH=${USER_AUTH_CODE}" \
