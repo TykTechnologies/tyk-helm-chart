@@ -1,3 +1,4 @@
+{{- if .Values.gateway.enabled -}}
 apiVersion: apps/v1
 kind: {{ .Values.gateway.kind }}
 metadata:
@@ -146,3 +147,4 @@ spec:
         - name: {{ .Release.Name }}-default-cert
           secret:
             secretName: {{ .Release.Name }}-default-cert
+{{- end }}

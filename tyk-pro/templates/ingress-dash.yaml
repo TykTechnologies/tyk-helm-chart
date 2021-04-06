@@ -1,4 +1,4 @@
-{{- if .Values.dash.ingress.enabled -}}
+{{- if and .Values.dash.enabled .Values.dash.ingress.enabled -}}
 {{- $fullName := include "tyk-pro.fullname" . -}}
 {{- $ingressPath := .Values.dash.ingress.path -}}
 apiVersion: networking.k8s.io/v1beta1

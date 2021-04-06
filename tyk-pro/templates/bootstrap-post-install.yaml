@@ -55,6 +55,10 @@ spec:
             value: {{ .Values.dash.org.name | quote }}
           - name: TYK_ORG_CNAME
             value: {{ .Values.dash.org.cname | quote }}
+          {{- if .Values.dash.enabled }}
+          - name: DASHBOARD_ENABLED
+            value: "true"
+          {{- end }}
           {{- if .Values.dash.bootstrap }}
           - name: BOOTSTRAP_DASHBOARD
             value: "true"

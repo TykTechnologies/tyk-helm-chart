@@ -160,7 +160,7 @@ log_ok(){
   log_message "  Ok"
 }
 
-if [ "$BOOTSTRAP_DASHBOARD" = "true" ]
+if [ "$DASHBOARD_ENABLED" = "true" ] && [ "$BOOTSTRAP_DASHBOARD" = "true" ]
 then
   main $DASHBOARD_HOSTNAME
 fi
@@ -171,5 +171,8 @@ kubectl create secret -n ${TYK_POD_NAMESPACE} generic tyk-operator-conf \
   --from-literal "TYK_MODE=pro" \
   --from-literal "TYK_URL=${DASHBOARD_HOSTNAME}"
 
-# restart dashboard deployment
-kubectl rollout restart deployment/${TYK_DASHBOARD_DEPLOY}
+if [ "$DASHBOARD_ENABLED" = "true" ]
+then
+  # restart dashboard deployment
+  kubectl rollout restart deployment/${TYK_DASHBOARD_DEPLOY}
+fi

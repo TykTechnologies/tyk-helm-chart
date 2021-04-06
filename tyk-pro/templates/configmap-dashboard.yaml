@@ -1,3 +1,4 @@
+{{- if .Values.dash.enabled -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -9,3 +10,4 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   {{- (.Files.Glob "configs/tyk_analytics.conf").AsConfig | nindent 2 }}
+{{- end }}
