@@ -31,7 +31,7 @@ gateway:
   kind: DaemonSet
   replicaCount: 1
   hostName: "tyk-gw.local"
-  tls: true
+  tls: false
   containerPort: 8080
   tags: ""
   image:

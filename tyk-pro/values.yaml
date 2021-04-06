@@ -181,7 +181,7 @@ gateway:
   replicaCount: 2
   hostName: "tyk-gw.local"
   tags: "ingress"
-  tls: true
+  tls: false
   containerPort: 8080
   image:
     repository: tykio/tyk-gateway
