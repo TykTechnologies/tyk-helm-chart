@@ -9,15 +9,15 @@ enableSharding: false
 hybrid: true
 
 secrets:
-  APISecret: "CHANGEME"
+  APISecret: CHANGEME
 
 redis:
     shardCount: 128
     #If you're using Bitnami Redis chart please input the correct host to your instalaltion in the field below
     #addrs:
-    #- "tyk-redis-master.tyk.svc.cluster.local:6379"
+    #- tyk-redis-master.tyk.svc.cluster.local:6379
     addrs:
-      - "redis.tyk.svc.cluster.local:6379"
+      - redis.tyk.svc.cluster.local:6379
     useSSL: false
     #If you're using Bitnami Redis chart please input your password in the field below
     #pass: ""
@@ -28,7 +28,7 @@ gateway:
   replicaCount: 2
   # if enableSharding set to true then you must define a tag to load APIs to these gateways i.e. "ingress"
   tags: ""
-  hostName: "tyk-gw.local"
+  hostName: tyk-gw.local
   tls: false
   containerPort: 8080
   # For on premise MDCB setups simply change the connection string to point to your MDCB instance
@@ -63,7 +63,7 @@ gateway:
     enabled: false
     annotations: {}
     # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+    # kubernetes.io/tls-acme: true
     path: /
     hosts:
       - tyk-gw.local

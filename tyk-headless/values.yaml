@@ -3,34 +3,34 @@
 # Declare variables to be passed into your templates.
 
 nameOverride: ""
-fullnameOverride: "tyk-headless"
+fullnameOverride: tyk-headless
 
 secrets:
-  APISecret: "CHANGEME"
-  OrgID: "1"
+  APISecret: CHANGEME
+  OrgID: 1
 
 redis:
     shardCount: 128
     addrs:
-      - "redis.tyk.svc.cluster.local:6379"
+      - redis.tyk.svc.cluster.local:6379
     useSSL: false
     #If you're using Bitnami Redis chart please input the correct host to your installation in the field below
     #addrs:
-      #- "tyk-redis-master.tyk.svc.cluster.local:6379"
+      #- tyk-redis-master.tyk.svc.cluster.local:6379
     #If you're using Bitnami Redis chart please input your password in the field below
       #pass: ""
 
 mongo:
   enabled: false
-#    mongoURL: "mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics"
+#    mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
 #    #If you're using Bitnami MongoDB chart please input your password below
-#    #mongoURL: "mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk-dashboard?authSource=admin"
+#    #mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk-dashboard?authSource=admin
 #    useSSL: false
 
 gateway:
   kind: DaemonSet
   replicaCount: 1
-  hostName: "tyk-gw.local"
+  hostName: tyk-gw.local
   tls: false
   containerPort: 8080
   tags: ""
@@ -53,7 +53,7 @@ gateway:
     enabled: false
     annotations: {}
     # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+    # kubernetes.io/tls-acme: true
     path: /
     hosts:
       - tyk-gw.local
