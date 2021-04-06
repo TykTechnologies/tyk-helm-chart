@@ -1,0 +1,26 @@
+{{- if .Values.gateway.control.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-control-svc-{{ include "tyk-pro.fullname" . }}
+  labels:
+    app: gateway-control-svc-{{ include "tyk-pro.fullname" . }}
+    chart: {{ include "tyk-pro.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- if .Values.gateway.service.annotations }}
+  annotations:
+  {{- range $key, $value := .Values.gateway.control.annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}
+spec:
+  type: {{ .Values.gateway.control.type }}
+  ports:
+  - port: {{ .Values.gateway.control.port }}
+    targetPort: {{ .Values.gateway.control.containerPort }}
+    protocol: TCP
+  selector:
+    app: gateway-{{ include "tyk-pro.fullname" . }}
+    release: {{ .Release.Name }}
+{{- end }}

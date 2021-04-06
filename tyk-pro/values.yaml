@@ -197,6 +197,12 @@ gateway:
     port: 8080
     externalTrafficPolicy: Local
     annotations: {}
+  control:
+    enabled: false
+    containerPort: 9696
+    port: 9696
+    type: ClusterIP
+    annotations: {}
   ingress:
     enabled: false
     annotations: {}
