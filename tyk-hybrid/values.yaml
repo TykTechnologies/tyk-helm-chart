@@ -28,7 +28,7 @@ gateway:
   replicaCount: 2
   # if enableSharding set to true then you must define a tag to load APIs to these gateways i.e. "ingress"
   tags: ""
-  hostName: ""
+  hostName: "tyk-gw.local"
   tls: true
   containerPort: 8080
   # For on premise MDCB setups simply change the connection string to point to your MDCB instance

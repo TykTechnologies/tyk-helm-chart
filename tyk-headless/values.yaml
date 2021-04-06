@@ -30,7 +30,7 @@ mongo:
 gateway:
   kind: DaemonSet
   replicaCount: 1
-  hostName: "gateway.tykbeta.com"
+  hostName: "tyk-gw.local"
   tls: true
   containerPort: 8080
   tags: ""

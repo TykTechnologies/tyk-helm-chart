@@ -111,7 +111,7 @@ tib:
 
 dash:
   replicaCount: 1
-  hostName: "localhost"
+  hostName: "tyk-dashboard.local"
   license: ""
   containerPort: 3000
   image:
@@ -158,7 +158,7 @@ dash:
   org:
     name: Default Org
     # Set this value to the domain of your developer portal
-    cname: "localhost"
+    cname: "tyk-portal.local"
 
 portal:
   # Only set this to false if you're not planning on using developer portal
@@ -179,7 +179,7 @@ portal:
 gateway:
   kind: DaemonSet
   replicaCount: 2
-  hostName: "gateway.tykbeta.com"
+  hostName: "tyk-gw.local"
   tags: "ingress"
   tls: true
   containerPort: 8080
