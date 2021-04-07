@@ -109,7 +109,7 @@ jobs:
             # Need to set proper orgId, apiKey and connString values
             helm install --set gateway.rpc.rpcKey=5cc03283d07e7f00019404b3 --set gateway.rpc.apiKey=ChAnGeMe --set gateway.rpc.connString=localhost ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
           elif [ "${{ matrix.directory }}" == tyk-pro ]; then
-            helm install --set mdcb.license="${{ secrets.LICENSE_KEY }}" --set dash.license="${{ secrets.LICENSE_KEY }}" ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }} --wait
+            helm install --set mdcb.license="${{ secrets.LICENSE_KEY_MDCB }}" --set dash.license="${{ secrets.LICENSE_KEY_DASH }}" ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }} --wait
           fi
 
       - name: Upgrade "${{ matrix.directory }}" chart
@@ -119,7 +119,7 @@ jobs:
           elif [ "${{ matrix.directory }}" == tyk-hybrid ]; then
             helm upgrade -f ${{ env.TYK_HYBRID }} --set gateway.rpc.rpcKey=5cc03283d07e7f00019404b3 --set gateway.rpc.apiKey=ChAnGeMe --set gateway.rpc.connString=localhost ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
           elif [ "${{ matrix.directory }}" == tyk-pro ]; then
-            helm upgrade -f ${{ env.TYK_PRO }} --set mdcb.license="${{ secrets.LICENSE_KEY }}" --set dash.license="${{ secrets.LICENSE_KEY }}" ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }} --wait
+            helm upgrade -f ${{ env.TYK_PRO }} --set mdcb.license="${{ secrets.LICENSE_KEY_MDCB }}" --set dash.license="${{ secrets.LICENSE_KEY_DASH }}" ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }} --wait
           fi
 
       - name: Uninstall "${{ matrix.directory }}" chart
