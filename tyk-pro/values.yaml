@@ -13,6 +13,9 @@ enableSharding: false
 # Gateway and Dashboard are exposed to the outside world - see the deployment templates for implementation
 enableIstioIngress: false
 
+# Master switch for enabling/disabling bootstraing job batch, role binding, role, and account service.
+bootstrap: true
+
 secrets:
   APISecret: CHANGEME
   AdminSecret: "12345"

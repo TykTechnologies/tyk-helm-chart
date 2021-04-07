@@ -1,3 +1,4 @@
+{{- if .Values.bootstrap -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -79,3 +80,5 @@ spec:
             defaultMode: 0777
       restartPolicy: Never
       terminationGracePeriodSeconds: 0
+{{- end }}
+      
