@@ -162,7 +162,6 @@ dash:
     cname: tyk-portal.local
 
 portal:
-  enabled: true
   # You can only bootstrap the Developer Portal if the Dashboard boostrap option is also enabled
   # Only set this to false if you're not planning on using developer portal
   bootstrap: true
