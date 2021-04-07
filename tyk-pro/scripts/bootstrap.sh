@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
 set -e
-
-apk --no-cache add curl jq
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-
 DASHBOARD_HOSTNAME="http://$TYK_DASHBOARD_SVC.$TYK_POD_NAMESPACE.svc.cluster.local:$TYK_DB_LISTENPORT"
 
 main(){
@@ -13,9 +8,6 @@ main(){
   then
     syntax_message
   else
-    # Sleep for 10 seconds to allow for dashboard to come up.
-    sleep 10
-
     generate_credentials "$DASHBOARD_HOSTNAME"
     exit_reason "$?"
     if [ "$BOOTSTRAP_PORTAL" = "true" ]

@@ -28,7 +28,7 @@ spec:
         command: 
         - sh
         - -c
-        - /opt/scripts/bootstrap.sh
+        - /opt/scripts/init.sh
         env:
           - name: TYK_ADMIN_FIRST_NAME
             value: {{ .Values.dash.adminUser.firstName | quote }}
