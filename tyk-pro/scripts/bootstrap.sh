@@ -13,6 +13,9 @@ main(){
   then
     syntax_message
   else
+    # Sleep for 10 seconds to allow for dashboard to come up.
+    sleep 10
+
     generate_credentials "$DASHBOARD_HOSTNAME"
     exit_reason "$?"
     if [ "$BOOTSTRAP_PORTAL" = "true" ]
