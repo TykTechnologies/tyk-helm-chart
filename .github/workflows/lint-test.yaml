@@ -42,26 +42,24 @@ jobs:
       - name: Setup yq
         run: sudo wget https://github.com/mikefarah/yq/releases/download/v4.6.3/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
 
-      - name: Update Chart Values
+      - name: Update Chart Dependencies and Values
         run: |
           changed_list=($(ct list-changed --config ct.yaml))
           for chart in "${changed_list[@]}"; do
             if [ "$chart" == "tyk-pro" ]; then
-              yq eval '.dash.license' = "${{ secrets.LICENSE_KEY }}"' -i tyk-pro/values.yaml
-              yq eval '.mdcb.license' = "${{ secrets.LICENSE_KEY }}"' -i tyk-pro/values.yaml
-            fi
-            if [ "$chart" == "tyk-hybrid" ]; then
+              yq eval '.dash.license' = "${{ secrets.LICENSE_KEY_DASH }}"' -i tyk-pro/values.yaml
+              yq eval '.mdcb.license' = "${{ secrets.LICENSE_KEY_MDCB }}"' -i tyk-pro/values.yaml
+              yq eval '.dependencies += [{"name": "simple-redis","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/redis-ci/helm/charts/"},{"name": "simple-mongodb","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/mongo-ci/helm/charts/"}]' -i tyk-pro/Chart.yaml
+            elif [ "$chart" == "tyk-hybrid" ]; then
+              # change these values depending upon how to test hybrid chart
               yq eval '.gateway.rpc.connString = "localhost"' -i tyk-hybrid/values.yaml
               yq eval '.gateway.rpc.rpcKey = "5cc03283d07e7f00019404b3"' -i tyk-hybrid/values.yaml
               yq eval '.gateway.rpc.apiKey = "ChAnGeMe"' -i tyk-hybrid/values.yaml
+              yq eval '.dependencies += [{"name": "simple-redis","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/redis-ci/helm/charts/"}]' -i tyk-hybrid/Chart.yaml
+            else
+              yq eval '.dependencies += [{"name": "simple-redis","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/redis-ci/helm/charts/"},{"name": "simple-mongodb","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/mongo-ci/helm/charts/"}]' -i tyk-headless/Chart.yaml
             fi
           done
 
-      - name: Add Chart Dependencies
-        run: |
-          yq eval '.dependencies += [{"name": "simple-redis","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/redis-ci/helm/charts/"},{"name": "simple-mongodb","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/mongo-ci/helm/charts/"}]' -i tyk-headless/Chart.yaml
-          yq eval '.dependencies += [{"name": "simple-redis","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/redis-ci/helm/charts/"},{"name": "simple-mongodb","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/mongo-ci/helm/charts/"}]' -i tyk-pro/Chart.yaml
-          yq eval '.dependencies += [{"name": "simple-redis","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/redis-ci/helm/charts/"}]' -i tyk-hybrid/Chart.yaml
-      
       - name: Run chart-testing (install)
         run: ct install --config ct.yaml
