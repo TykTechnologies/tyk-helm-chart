@@ -113,6 +113,7 @@ tib:
 
 dash:
   enabled: true
+  # Dashboard will only bootstrap if the master bootstrap option is set to true
   bootstrap: true
   replicaCount: 1
   hostName: tyk-dashboard.local
@@ -165,7 +166,7 @@ dash:
     cname: tyk-portal.local
 
 portal:
-  # You can only bootstrap the Developer Portal if the Dashboard boostrap option is also enabled
+  # Portal will only bootstrap if both the Master and Dashboard bootstrap options are set to true
   # Only set this to false if you're not planning on using developer portal
   bootstrap: true
   path: /
