@@ -5,6 +5,10 @@ on: pull_request
 jobs:
   lint-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        k8s-version:
+          - v1.20.2
     steps:
       - name: Git Checkout
         uses: actions/checkout@v2
@@ -36,7 +40,7 @@ jobs:
       - name: Create kind cluster
         uses: helm/kind-action@v1.1.0
         with:
-          config: .github/kind.yml
+          config: .github/kind-cluster-${{ matrix.k8s-version }}.yml
         if: steps.list-changed.outputs.changed == 'true'
 
       - name: Setup yq
