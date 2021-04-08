@@ -1,12 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
-
-apk --no-cache add curl jq
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-
-DASHBOARD_HOSTNAME="http://$TYK_DASHBOARD_SVC.$TYK_POD_NAMESPACE.svc.cluster.local:$TYK_DB_LISTENPORT"
+DASHBOARD_HOSTNAME="$TYK_DASHBOARD_PROTO://$TYK_DASHBOARD_SVC.$TYK_POD_NAMESPACE.svc.cluster.local:$TYK_DB_LISTENPORT"
 
 main(){
   if [[ $# -lt 1 ]]
@@ -160,8 +155,10 @@ log_ok(){
   log_message "  Ok"
 }
 
-
-main $DASHBOARD_HOSTNAME
+if [ "$DASHBOARD_ENABLED" = "true" ] && [ "$BOOTSTRAP_DASHBOARD" = "true" ]
+then
+  main $DASHBOARD_HOSTNAME
+fi
 
 kubectl create secret -n ${TYK_POD_NAMESPACE} generic tyk-operator-conf \
   --from-literal "TYK_AUTH=${USER_AUTH_CODE}" \
@@ -169,5 +166,8 @@ kubectl create secret -n ${TYK_POD_NAMESPACE} generic tyk-operator-conf \
   --from-literal "TYK_MODE=pro" \
   --from-literal "TYK_URL=${DASHBOARD_HOSTNAME}"
 
-# restart dashboard deployment
-kubectl rollout restart deployment/${TYK_DASHBOARD_DEPLOY}
+if [ "$DASHBOARD_ENABLED" = "true" ]
+then
+  # restart dashboard deployment
+  kubectl rollout restart deployment/${TYK_DASHBOARD_DEPLOY}
+fi
