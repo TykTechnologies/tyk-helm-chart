@@ -6,12 +6,12 @@ nameOverride: ""
 fullnameOverride: ""
 
 # Used to shard the gateways. If you enable it make sure you have at least one gateway that is not sharded and also tag the APIs accordingly
-enableSharding: false
+enableSharding: true
 
 # Set to true to use Tyk as the Ingress gateway to an Istio Service Mesh
 # We apply some exceptions to the Istio IPTables so inbound calls to the
 # Gateway and Dashboard are exposed to the outside world - see the deployment templates for implementation
-enableIstioIngress: false
+enableIstioIngress: true
 
 secrets:
   APISecret: "CHANGEME"
@@ -35,7 +35,7 @@ mongo:
     useSSL: false
 
 mdcb:
-  enabled: false
+  enabled: true
   useSSL: false
   replicaCount: 1
   containerPort: 9090
@@ -67,7 +67,7 @@ mdcb:
 
 
 tib:
-  enabled: false
+  enabled: true
   useSSL: true
   replicaCount: 1
   containerPort: 3010
@@ -162,7 +162,7 @@ dash:
 
 portal:
   # Only set this to false if you're not planning on using developer portal
-  bootstrap: false
+  bootstrap: true
   path: /
   ingress:
     enabled: false

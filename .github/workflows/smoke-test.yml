@@ -44,7 +44,7 @@ jobs:
         id: set-matrix
         run: |
           DIFF="${{ steps.diff.outputs.diff }}"
-          JSON="{\"include\":["
+          JSON="{\"directory\":["
 
           # Loop by lines
           while read path; do
@@ -57,10 +57,12 @@ jobs:
               continue # Exclude deploy directory
             elif [ "$directory" == samples ]; then
               continue # Exclude samples directory
+            elif [ "$directory" == "" ]; then
+              continue # Exclude empty directory
             fi
 
             # Add build to the matrix only if it is not already included
-            JSONline="{\"directory\": \"$directory\"},"
+            JSONline="[\"$directory\"],"
             if [[ "$JSON" != *"$JSONline"* ]]; then
               JSON="$JSON$JSONline"
             fi
@@ -71,10 +73,12 @@ jobs:
             JSON="${JSON%?}"
           fi
           JSON="$JSON]}"
-          echo $JSON
+
+          # Add different kubernetes versions for the smoke-tests
+          MATRIX_JSON=$(echo "$JSON" | jq --raw-output '.k8s += ["v1.20.2","v1.19.7","v1.18.15","v1.17.17","v1.16.15"]')
 
           # Set output
-          echo "::set-output name=matrix::$( echo "$JSON" )"
+          echo "::set-output name=matrix::$( echo "$MATRIX_JSON" )"
 
 
   smoke-tests:
@@ -88,9 +92,10 @@ jobs:
       - name: Git Checkout
       
       - name: Create Kind Cluster
-        uses: helm/kind-action@v1.1.0
+        uses: engineerd/setup-kind@v0.5.0
         with:
-          config: .github/kind.yml
+          version: "v0.10.0"
+          config: .github/kind-cluster-${{ matrix.k8s }}.yml
       
       - name: Install helm
         uses: Azure/setup-helm@v1.1
@@ -109,7 +114,7 @@ jobs:
             # Need to set proper orgId, apiKey and connString values
             helm install --set gateway.rpc.rpcKey=5cc03283d07e7f00019404b3 --set gateway.rpc.apiKey=ChAnGeMe --set gateway.rpc.connString=localhost ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
           elif [ "${{ matrix.directory }}" == tyk-pro ]; then
-            helm install --set mdcb.license="${{ secrets.LICENSE_KEY_MDCB }}" --set dash.license="${{ secrets.LICENSE_KEY_DASH }}" ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }} --wait
+            helm install --set mdcb.license="${{ secrets.MDCB_LICENSE }}" --set dash.license="${{ secrets.DASH_LICENSE }}" ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }} --wait
           fi
 
       - name: Upgrade "${{ matrix.directory }}" chart
@@ -119,7 +124,7 @@ jobs:
           elif [ "${{ matrix.directory }}" == tyk-hybrid ]; then
             helm upgrade -f ${{ env.TYK_HYBRID }} --set gateway.rpc.rpcKey=5cc03283d07e7f00019404b3 --set gateway.rpc.apiKey=ChAnGeMe --set gateway.rpc.connString=localhost ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
           elif [ "${{ matrix.directory }}" == tyk-pro ]; then
-            helm upgrade -f ${{ env.TYK_PRO }} --set mdcb.license="${{ secrets.LICENSE_KEY_MDCB }}" --set dash.license="${{ secrets.LICENSE_KEY_DASH }}" ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }} --wait
+            helm upgrade -f ${{ env.TYK_PRO }} --set mdcb.license="${{ secrets.MDCB_LICENSE }}" --set dash.license="${{ secrets.DASH_LICENSE }}" ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }} --wait
           fi
 
       - name: Uninstall "${{ matrix.directory }}" chart

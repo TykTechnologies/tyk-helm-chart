@@ -5,7 +5,7 @@
 nameOverride: ""
 fullnameOverride: ""
 
-enableSharding: false
+enableSharding: true
 hybrid: true
 
 secrets:
