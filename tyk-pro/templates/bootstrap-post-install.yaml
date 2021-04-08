@@ -46,6 +46,8 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
+          - name: TYK_DASHBOARD_PROTO
+            value: {{ include "tyk-pro.dash_proto" . }}
           - name: TYK_DASHBOARD_SVC
             value: dashboard-svc-{{ include "tyk-pro.fullname" . }}
           - name: TYK_DB_LISTENPORT

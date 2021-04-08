@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
-DASHBOARD_HOSTNAME="http://$TYK_DASHBOARD_SVC.$TYK_POD_NAMESPACE.svc.cluster.local:$TYK_DB_LISTENPORT"
+DASHBOARD_HOSTNAME="$TYK_DASHBOARD_PROTO://$TYK_DASHBOARD_SVC.$TYK_POD_NAMESPACE.svc.cluster.local:$TYK_DB_LISTENPORT"
 
 main(){
   if [[ $# -lt 1 ]]
