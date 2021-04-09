@@ -62,7 +62,7 @@ jobs:
             fi
 
             # Add build to the matrix only if it is not already included
-            JSONline="[\"$directory\"],"
+            JSONline="\"$directory\","
             if [[ "$JSON" != *"$JSONline"* ]]; then
               JSON="$JSON$JSONline"
             fi
@@ -78,7 +78,7 @@ jobs:
           MATRIX_JSON=$(echo "$JSON" | jq --raw-output '.k8s += ["v1.20.2","v1.19.7","v1.18.15","v1.17.17","v1.16.15"]')
 
           # Set output
-          echo "::set-output name=matrix::$( echo "$MATRIX_JSON" )"
+          echo "::set-output name=matrix::$( echo $MATRIX_JSON )"
 
 
   smoke-tests:
@@ -88,8 +88,8 @@ jobs:
     strategy:
       matrix: ${{fromJson(needs.generate-matrix.outputs.matrix)}}
     steps:
-      - uses: actions/checkout@v2
       - name: Git Checkout
+        uses: actions/checkout@v2
       
       - name: Create Kind Cluster
         uses: engineerd/setup-kind@v0.5.0
