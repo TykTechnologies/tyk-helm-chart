@@ -86,9 +86,9 @@ spec:
           - name: TYK_GW_SECRET
             value: "{{ .Values.secrets.APISecret }}"
           - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
-            value: "{{ .Values.gateway.rpc.connString}}"
+            value: "{{ .Values.gateway.rpc.connString }}"
           - name: TYK_GW_SLAVEOPTIONS_USESSL
-            value: "{{ .Values.gateway.rpc.useSSL}}"
+            value: "{{ .Values.gateway.rpc.useSSL }}"
           - name: TYK_GW_SLAVEOPTIONS_BINDTOSLUGSINSTEADOFLISTENPATHS
             value: "{{ default "false" .Values.gateway.rpc.bindToSlugs }}"
           - name: TYK_GW_SLAVEOPTIONS_SSLINSECURESKIPVERIFY
