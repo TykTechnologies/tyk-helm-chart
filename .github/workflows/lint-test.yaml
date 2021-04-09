@@ -1,0 +1,72 @@
+name: Lint and Test Charts
+
+on: pull_request
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        k8s-version:
+          - v1.20.2
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: v3.5.3
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.0.1
+
+      - name: Run chart-testing (list-changed)
+        id: list-changed
+        run: |
+          changed=$(ct list-changed --config ct.yaml)
+          if [[ -n "$changed" ]]; then
+            echo "::set-output name=changed::true"
+          fi
+      
+      - name: Run chart-testing (lint)
+        run: ct lint --config ct.yaml
+
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.1.0
+        with:
+          config: .github/kind-cluster-${{ matrix.k8s-version }}.yml
+        if: steps.list-changed.outputs.changed == 'true'
+
+      - name: Check DASH_LICENSE secret expiry
+        run: jq -Re 'split(".")[1] | @base64d | fromjson | .exp > now' <<< "${{ secrets.DASH_LICENSE }}"
+
+      - name: Setup yq
+        run: sudo wget https://github.com/mikefarah/yq/releases/download/v4.6.3/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
+
+      - name: Update Chart Dependencies and Values
+        run: |
+          changed_list=($(ct list-changed --config ct.yaml))
+          for chart in "${changed_list[@]}"; do
+            if [ "$chart" == "tyk-pro" ]; then
+              # Both MDCB and Dashbaord license keys will expire on 07-04-21
+              yq eval '.dash.license = "${{ secrets.DASH_LICENSE }}"' -i tyk-pro/values.yaml
+              yq eval '.mdcb.license = "${{ secrets.MDCB_LICENSE }}"' -i tyk-pro/values.yaml
+              yq eval '.dependencies += [{"name": "simple-redis","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/redis-ci/helm/charts/"},{"name": "simple-mongodb","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/mongo-ci/helm/charts/"}]' -i tyk-pro/Chart.yaml
+            elif [ "$chart" == "tyk-hybrid" ]; then
+              yq eval '.gateway.rpc.connString = "${{ secrets.HYBRID_MDCB_HOST }}"' -i tyk-hybrid/values.yaml
+              yq eval '.gateway.rpc.rpcKey = "${{ secrets.HYBRID_RPC_KEY }}"' -i tyk-hybrid/values.yaml
+              yq eval '.gateway.rpc.apiKey = "${{ secrets.HYBRID_API_KEY }}"' -i tyk-hybrid/values.yaml
+              yq eval '.dependencies += [{"name": "simple-redis","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/redis-ci/helm/charts/"}]' -i tyk-hybrid/Chart.yaml
+            else
+              yq eval '.dependencies += [{"name": "simple-redis","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/redis-ci/helm/charts/"},{"name": "simple-mongodb","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/mongo-ci/helm/charts/"}]' -i tyk-headless/Chart.yaml
+            fi
+          done
+
+      - name: Run chart-testing (install)
+        run: ct install --config ct.yaml # Use --upgrade to test an in-place upgrade of each chart
