@@ -59,10 +59,9 @@ jobs:
               yq eval '.mdcb.license = "${{ secrets.MDCB_LICENSE }}"' -i tyk-pro/values.yaml
               yq eval '.dependencies += [{"name": "simple-redis","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/redis-ci/helm/charts/"},{"name": "simple-mongodb","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/mongo-ci/helm/charts/"}]' -i tyk-pro/Chart.yaml
             elif [ "$chart" == "tyk-hybrid" ]; then
-              # change these values depending upon how to test hybrid chart
-              yq eval '.gateway.rpc.connString = "localhost"' -i tyk-hybrid/values.yaml
-              yq eval '.gateway.rpc.rpcKey = "5cc03283d07e7f00019404b3"' -i tyk-hybrid/values.yaml
-              yq eval '.gateway.rpc.apiKey = "ChAnGeMe"' -i tyk-hybrid/values.yaml
+              yq eval '.gateway.rpc.connString = "${{ secrets.HYBRID_MDCB_HOST }}"' -i tyk-hybrid/values.yaml
+              yq eval '.gateway.rpc.rpcKey = "${{ secrets.HYBRID_RPC_KEY }}"' -i tyk-hybrid/values.yaml
+              yq eval '.gateway.rpc.apiKey = "${{ secrets.HYBRID_API_KEY }}"' -i tyk-hybrid/values.yaml
               yq eval '.dependencies += [{"name": "simple-redis","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/redis-ci/helm/charts/"}]' -i tyk-hybrid/Chart.yaml
             else
               yq eval '.dependencies += [{"name": "simple-redis","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/redis-ci/helm/charts/"},{"name": "simple-mongodb","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/mongo-ci/helm/charts/"}]' -i tyk-headless/Chart.yaml
@@ -70,4 +69,4 @@ jobs:
           done
 
       - name: Run chart-testing (install)
-        run: ct install --config ct.yaml
+        run: ct install --config ct.yaml # Use --upgrade to test an in-place upgrade of each chart
