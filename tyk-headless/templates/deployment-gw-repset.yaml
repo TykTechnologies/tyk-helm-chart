@@ -97,7 +97,7 @@ spec:
             value: "{{ .Values.gateway.tls }}"
             {{- if .Values.pump.enabled }}
           - name: TYK_GW_ENABLEANALYTICS
-            value: {{ "true" }}
+            value: "true"
             {{- end }}
         {{- if .Values.gateway.extraEnvs }}
         {{- range $env := .Values.gateway.extraEnvs }}
