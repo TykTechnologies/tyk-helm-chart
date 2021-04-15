@@ -31,7 +31,7 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
-      {{- if .Values.enableIstioIngress }}
+      {{- if .Values.gateway.enableIstioIngress }}
       annotations:
         traffic.sidecar.istio.io/excludeInboundPorts: "{{ .Values.gateway.containerPort}}"
         traffic.sidecar.istio.io/includeInboundPorts: ""

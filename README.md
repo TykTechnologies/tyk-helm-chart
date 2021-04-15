@@ -110,4 +110,4 @@ For further detail on how to configure Tyk as an Ingress Gateway, or how to mana
 
 ## Istio Service Mesh Ingress gateway
 
-To use Tyks gateways as the ingress to your Istio Service Mesh simply change `enableIstioIngress: true` in the values.yaml. Ensure you are using an Istio manifest which disables the default Istio Ingress gateway.
+To use Tyks gateways as the ingress to your Istio Service Mesh simply change `gateway.enableIstioIngress: true` in the values.yaml. Ensure you are using an Istio manifest which disables the default Istio Ingress gateway.

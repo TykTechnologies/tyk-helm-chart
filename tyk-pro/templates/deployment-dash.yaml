@@ -27,7 +27,7 @@ spec:
         app: dashboard-{{ include "tyk-pro.fullname" . }}
         release: {{ .Release.Name }}
       annotations:
-      {{- if .Values.enableIstioIngress }}
+      {{- if .Values.gateway.enableIstioIngress }}
         traffic.sidecar.istio.io/excludeInboundPorts: "{{ .Values.dash.containerPort }}"
         traffic.sidecar.istio.io/includeInboundPorts: ""
       {{- end }}
