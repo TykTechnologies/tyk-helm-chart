@@ -102,12 +102,6 @@ You can set a tag for your exposed services in the API Designer, under the "Adva
 
 Disabling this capability is detailed in the point below.
 
-### How to disable node sharding/ segmentation
-
-If you are using the latest chart, you can set the `enableSharding` value in the `values.yaml` to false.
-
-If you are running an older chart that does not have this value, then you can disable node sharding beforehand by editing the `tyk-pro/configs/tyk_mgmt.conf` file, simply set the value `db_app_conf_options.node_is_segmented` to `false`.
-
 ## Kubernetes Ingress
 
 NB: tyk-k8s has been deprecated. For reference, old documentation may be found here: [Tyk K8s](https://github.com/TykTechnologies/tyk-k8s)

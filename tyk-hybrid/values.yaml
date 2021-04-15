@@ -10,7 +10,6 @@ nameOverride: ""
 # Default value: tyk-hybrid.fullname
 fullnameOverride: ""
 
-enableSharding: false
 hybrid: true
 
 secrets:
@@ -38,9 +37,12 @@ gateway:
   kind: DaemonSet
   # Set replicaCount for Deployments
   replicaCount: 2
-  # if enableSharding set to true then you must define a tag to load APIs to these gateways i.e. "ingress"
-  tags: ""
   hostName: tyk-gw.local
+  # Sharding gateway allows you to selectively load APIs to specific gateways. If enabled make sure you have at least one gateway that is not sharded.
+  # Also be sure to match API segmentation tags with the tags selected below.
+  sharding: 
+    enabled: false
+    tag: ""
   tls: false
   containerPort: 8080
   # For on premise MDCB setups simply change the connection string to point to your MDCB instance

@@ -10,9 +10,6 @@ nameOverride: ""
 # Default value: tyk-pro.fullname
 fullnameOverride: ""
 
-# Used to shard the gateways. If you enable it make sure you have at least one gateway that is not sharded and also tag the APIs accordingly
-enableSharding: false
-
 # Set to true to use Tyk as the Ingress gateway to an Istio Service Mesh
 # We apply some exceptions to the Istio IPTables so inbound calls to the
 # Gateway and Dashboard are exposed to the outside world - see the deployment templates for implementation
@@ -201,8 +198,11 @@ gateway:
   kind: DaemonSet
   replicaCount: 2
   hostName: tyk-gw.local
-  # if enableSharding set to true then you must define a tag to load APIs to these gateways i.e. "ingress"
-  tags: ""
+  # Sharding gateway allows you to selectively load APIs to specific gateways. If enabled make sure you have at least one gateway that is not sharded.
+  # Also be sure to match API segmentation tags with the tags selected below.
+  sharding: 
+    enabled: false
+    tag: ""
   tls: false
   containerPort: 8080
   image:

@@ -108,7 +108,7 @@ spec:
           - name: TYK_GW_SLAVEOPTIONS_SSLINSECURESKIPVERIFY
             value: "{{ .Values.gateway.rpc.sslInsecureSkipVerify }}"
           - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
-            value: "{{ .Values.enableSharding }}"
+            value: "{{ .Values.sharding.enabled }}"
           - name: TYK_GW_DBAPPCONFOPTIONS_TAGS
             value: "{{.Values.gateway.tags }}"
         {{- if .Values.gateway.extraEnvs }}
