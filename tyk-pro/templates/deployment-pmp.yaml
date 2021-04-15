@@ -60,14 +60,14 @@ spec:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
                 key: mongoURL
           - name: PMP_MONGO_MONGOUSESSL
-            value: "{{ .Values.mongo.useSSL }}"
+            value: "{{ default "false" .Values.mongo.useSSL }}"
           - name: PMP_MONGOAGG_MONGOURL
             valueFrom:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
                 key: mongoURL
           - name: PMP_MONGOAGG_MONGOUSESSL
-            value:  "{{ .Values.mongo.useSSL }}"
+            value:  "{{ default "false" .Values.mongo.useSSL }}"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS
             value: {{include "tyk-pro.redis_url" . |quote}}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ENABLECLUSTER

@@ -45,3 +45,11 @@ Create Sematic Version of gateway without prefix v
 redis.{{ .Release.Namespace }}.svc.cluster.local:6379
 {{- end -}}
 {{- end -}}
+
+{{- define "tyk-headless.mongo_url" -}}
+{{- if  .Values.mongo.mongoURL -}}
+{{ .Values.mongo.mongoURL }}
+{{- else -}}
+mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
+{{- end -}}
+{{- end -}}

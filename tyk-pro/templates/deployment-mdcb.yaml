@@ -80,7 +80,7 @@ spec:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
                 key: mongoURL
           - name: TYK_MDCB_ANALYTICSCONFIG_MONGOUSESSL
-            value: "{{ .Values.mongo.useSSL }}"
+            value: "{{ default "false" .Values.mongo.useSSL }}"
           - name: TYK_MDCB_FORWARDANALYTICSTOPUMP
             value: "{{ .Values.mdcb.forwardAnalyticsToPump }}"
           - name: TYK_MDCB_LICENSE
