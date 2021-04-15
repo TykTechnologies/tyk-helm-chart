@@ -31,7 +31,8 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
-      {{- if .Values.gateway.enableIstioIngress }}
+      # Enable backward compatibility to chart 0.8.1.
+      {{- if or .Values.gateway.enableIstioIngress .Values.enableIstioIngress }}
       annotations:
         traffic.sidecar.istio.io/excludeInboundPorts: "{{ .Values.gateway.containerPort}}"
         traffic.sidecar.istio.io/includeInboundPorts: ""

@@ -27,7 +27,8 @@ spec:
         app: dashboard-{{ include "tyk-pro.fullname" . }}
         release: {{ .Release.Name }}
       annotations:
-      {{- if .Values.gateway.enableIstioIngress }}
+      # Enable backward compatibility to chart 0.8.1.
+      {{- if or .Values.gateway.enableIstioIngress .Values.enableIstioIngress }}
         traffic.sidecar.istio.io/excludeInboundPorts: "{{ .Values.dash.containerPort }}"
         traffic.sidecar.istio.io/includeInboundPorts: ""
       {{- end }}
