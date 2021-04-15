@@ -56,9 +56,7 @@ http
 {{- end -}}
 
 {{- define "tyk-pro.redis_url" -}}
-{{- if and .Values.redis.host .Values.redis.port -}}
-{{ .Values.redis.host }}:{{ .Values.redis.port }}
-{{- else if  .Values.redis.addrs -}}
+{{- if  .Values.redis.addrs -}}
 {{ join "," .Values.redis.addrs }}
 {{- else -}}
 redis.{{ .Release.Namespace }}.svc.cluster.local:6379
@@ -66,9 +64,7 @@ redis.{{ .Release.Namespace }}.svc.cluster.local:6379
 {{- end -}}
 
 {{- define "tyk-pro.mongo_url" -}}
-{{- if and .Values.mongo.host .Values.mongo.port -}}
-mongodb://{{ .Values.mongo.host }}:{{ .Values.mongo.port }}
-{{- else if  .Values.mongo.mongoURL -}}
+{{- if  .Values.mongo.mongoURL -}}
 {{ .Values.mongo.mongoURL }}
 {{- else -}}
 mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics

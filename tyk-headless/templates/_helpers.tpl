@@ -31,10 +31,17 @@ Create chart name and version as used by the chart label.
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-
 {{/*
 Create Sematic Version of gateway without prefix v
 */}}
 {{- define "tyk-headless.gateway-version" -}}
 {{- printf "%s" .Values.gateway.image.tag | replace "v" "" -}}
+{{- end -}}
+
+{{- define "tyk-headless.redis_url" -}}
+{{- if  .Values.redis.addrs -}}
+{{ join "," .Values.redis.addrs }}
+{{- else -}}
+redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+{{- end -}}
 {{- end -}}

@@ -38,3 +38,11 @@ https
 http
 {{- end -}}
 {{- end -}}
+
+{{- define "tyk-hybrid.redis_url" -}}
+{{- if  .Values.redis.addrs -}}
+{{ join "," .Values.redis.addrs }}
+{{- else -}}
+redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+{{- end -}}
+{{- end -}}

@@ -63,14 +63,11 @@ spec:
         env:
           - name: TYK_GW_LISTENPORT
             value: "{{ .Values.gateway.containerPort }}"
+          # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
-            value: "{{ .Values.redis.shardCount }}"
+            value: "128"
           - name: TYK_GW_STORAGE_ADDRS
-            {{- if and .Values.redis.host .Values.redis.port }}
-            value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"
-            {{- else }}
-            value: "{{ join "," .Values.redis.addrs }}"
-            {{- end }}
+            value: {{include "tyk-hybrid.redis_url" . |quote}}
           - name: TYK_GW_STORAGE_ENABLECLUSTER
             value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_GW_STORAGE_DATABASE
@@ -81,7 +78,7 @@ spec:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-hybrid.fullname" . }} {{ end}}
                 key: redisPass
           - name: TYK_GW_STORAGE_USESSL
-            value: "{{ .Values.redis.useSSL }}"
+            value: "{{ default "false" .Values.redis.useSSL }}"
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.gateway.tls }}"
           - name: TYK_GW_SLAVEOPTIONS_RPCKEY

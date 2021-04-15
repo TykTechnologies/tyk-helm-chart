@@ -51,8 +51,9 @@ spec:
             drop:
               - all
         env:
+          # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
-            value: "{{ .Values.redis.shardCount }}"
+            value: "128"
           - name: PMP_MONGO_MONGOURL
             valueFrom:
               secretKeyRef:
@@ -77,7 +78,7 @@ spec:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
                 key: redisPass
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISUSESSL
-            value: "{{ .Values.redis.useSSL }}"
+            value: "{{ default "false" .Values.redis.useSSL }}"
         {{- if .Values.pump.extraEnvs }}
         {{- range $env := .Values.pump.extraEnvs }}
           - name: {{ $env.name }}
