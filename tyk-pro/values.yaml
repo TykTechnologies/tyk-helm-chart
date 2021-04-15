@@ -64,13 +64,25 @@ mongo:
   # useSSL: true
 
 mdcb:
+  # Determines whither or not the mdcb component should be installed.
   enabled: false
+  # If set to true the MDCB will use SSL connection.
+  # You will also need to set the: 
+  # - TYK_MDCB_SERVEROPTIONS_CERTIFICATE_CERTFILE
+  # - TYK_MDCB_SERVEROPTIONS_CERTIFICATE_KEYFILE
+  # variables in extraEnvs object array to define your SSL cert and key files.
   useSSL: false
+  # Sets the port of the health endpoint.
+  healthcheckport: 8181
+  # Sets MDCB license.
+  license: ""
+  # When true. Instead of sending analytics directly to MongoDB, MDCB can send 
+  # analytics to Redis. This will allow tyk-pump to pull analytics from Redis 
+  # and send to your own data sinks.
+  forwardAnalyticsToPump: true
+
   replicaCount: 1
   containerPort: 9090
-  healthcheckport: 8181
-  license: ""
-  forwardAnalyticsToPump: true
   image:
     repository: tykio/tyk-mdcb-docker    # requires credential
     tag: v1.7.7
