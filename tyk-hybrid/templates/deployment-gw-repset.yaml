@@ -104,10 +104,24 @@ spec:
             value: "{{ default "false" .Values.gateway.rpc.bindToSlugs }}"
           - name: TYK_GW_SLAVEOPTIONS_SSLINSECURESKIPVERIFY
             value: "{{ .Values.gateway.rpc.sslInsecureSkipVerify }}"
+        # Enable backward compatibility to chart 0.5.1.
+        {{- if or .Values.gateway.sharding .Values.enableSharding}}
           - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
-            value: "{{ .Values.sharding.enabled }}"
+          {{- if .Values.gateway.sharding }}
+            value: "{{ .Values.gateway.sharding.enabled }}"
+          {{- else }}
+            value: "{{ .Values.enableSharding }}"
+          {{- end }}
+        {{- end }}
+        # Enable backward compatibility to chart 0.5.1.
+        {{- if or .Values.gateway.sharding .Values.enableSharding}}
           - name: TYK_GW_DBAPPCONFOPTIONS_TAGS
-            value: "{{.Values.gateway.sharding.tags }}"
+          {{- if .Values.gateway.sharding }}
+            value: "{{ .Values.gateway.sharding.tags }}"
+          {{- else }}
+            value: "{{ .Values.gateway.tags }}"
+          {{- end }}
+        {{- end }}
         {{- if .Values.gateway.extraEnvs }}
         {{- range $env := .Values.gateway.extraEnvs }}
           - name: {{ $env.name }}
