@@ -107,7 +107,13 @@ mdcb:
   extraEnvs: []
 
 tib:
+  # Determines whither or not the mdcb component should be installed.
   enabled: false
+  # If set to true TIB will use SSL connection. THIS IS RECOMMENDED.
+  # You will also need to set the: 
+  # - TYK_TIB_SERVEROPTIONS_CERTIFICATE_CERTFILE
+  # - TYK_TIB_SERVEROPTIONS_CERTIFICATE_KEYFILE
+  # variables in extraEnvs object array to define your SSL cert and key files.
   useSSL: true
   # The REST API secret to configure the Tyk Identity Broker remotely
   secret: ""
