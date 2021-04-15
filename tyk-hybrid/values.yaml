@@ -45,17 +45,15 @@ redis:
     database: 0
 
 gateway:
-  kind: DaemonSet
-  # Set replicaCount for Deployments
-  replicaCount: 2
+  # The hostname to bind the Gateway to.
   hostName: tyk-gw.local
   # Sharding gateway allows you to selectively load APIs to specific gateways. If enabled make sure you have at least one gateway that is not sharded.
   # Also be sure to match API segmentation tags with the tags selected below.
   sharding: 
     enabled: false
     tag: ""
+  # When true, sets the gateway protocol to HTTPS.
   tls: false
-  containerPort: 8080
   # For on premise MDCB setups simply change the connection string to point to your MDCB instance
   rpc:
     # On the Tyk Cloud Console find this value in the endpoints for your control plane deployment
@@ -75,6 +73,10 @@ gateway:
     # sslInsecureSkipVerify: false
     # rpcKey: ""
     # apiKey: ""
+
+  kind: DaemonSet
+  replicaCount: 2
+  containerPort: 8080
   image:
     repository: tykio/tyk-gateway
     tag: v3.1.2
@@ -84,6 +86,8 @@ gateway:
     port: 443
     externalTrafficPolicy: Local
     annotations: {}
+  # Creates an ingress object in k8s. Will require an ingress-controller and 
+  # annotation to that ingress controller. 
   ingress:
     enabled: false
     annotations: {}

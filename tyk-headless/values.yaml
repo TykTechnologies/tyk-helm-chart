@@ -61,12 +61,14 @@ mongo:
   # useSSL: true
 
 gateway:
+  # The hostname to bind the Gateway to.
+  hostName: tyk-gw.local
+  # When true, sets the gateway protocol to HTTPS.
+  tls: false
+  
   kind: DaemonSet
   replicaCount: 1
-  hostName: tyk-gw.local
-  tls: false
   containerPort: 8080
-  tags: ""
   image:
     repository: docker.tyk.io/tyk-gateway/tyk-gateway
     tag: v3.1.2
@@ -82,6 +84,8 @@ gateway:
     port: 9696
     type: ClusterIP
     annotations: {}
+  # Creates an ingress object in k8s. Will require an ingress-controller and 
+  # annotation to that ingress controller. 
   ingress:
     enabled: false
     annotations: {}

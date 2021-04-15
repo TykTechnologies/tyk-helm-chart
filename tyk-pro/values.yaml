@@ -249,16 +249,24 @@ portal:
     #      - chart-example.local
 
 gateway:
+  # Determines whither or not the gateway component should be installed.
   enabled: true
-  kind: DaemonSet
-  replicaCount: 2
+  # The hostname to bind the Gateway to.
   hostName: tyk-gw.local
+  # When true, sets the gateway protocol to HTTPS.
+  tls: false
   # Sharding gateway allows you to selectively load APIs to specific gateways. If enabled make sure you have at least one gateway that is not sharded.
   # Also be sure to match API segmentation tags with the tags selected below.
   sharding: 
     enabled: false
     tag: ""
-  tls: false
+  # Set to true to use Tyk as the Ingress gateway to an Istio Service Mesh
+  # We apply some exceptions to the Istio IPTables so inbound calls to the
+  # Gateway and Dashboard are exposed to the outside world - see the deployment templates for implementation
+  enableIstioIngress: false
+
+  kind: DaemonSet
+  replicaCount: 2
   containerPort: 8080
   image:
     repository: tykio/tyk-gateway
@@ -275,10 +283,8 @@ gateway:
     port: 9696
     type: ClusterIP
     annotations: {}
-  # Set to true to use Tyk as the Ingress gateway to an Istio Service Mesh
-  # We apply some exceptions to the Istio IPTables so inbound calls to the
-  # Gateway and Dashboard are exposed to the outside world - see the deployment templates for implementation
-  enableIstioIngress: false
+  # Creates an ingress object in k8s. Will require an ingress-controller and 
+  # annotation to that ingress controller. 
   ingress:
     enabled: false
     annotations: {}
