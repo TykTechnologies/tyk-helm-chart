@@ -119,7 +119,9 @@ gateway:
 # If pump is enabled the Gateway will create and collect analytics data to send to a data store of your choice
 # These can be set up in the pump config. The possible pump configs can be found here: https://github.com/TykTechnologies/tyk-pump#configuration
 pump:
+  # Determines whither or not the pump component should be installed.
   enabled: false
+  
   replicaCount: 1
   image:
     repository: docker.tyk.io/tyk-pump/tyk-pump

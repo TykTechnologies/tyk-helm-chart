@@ -316,7 +316,9 @@ gateway:
   extraEnvs: []
 
 pump:
+  # Determines whither or not the pump component should be installed.
   enabled: true
+
   replicaCount: 1
   image:
     repository: tykio/tyk-pump-docker-pub
