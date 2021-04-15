@@ -107,7 +107,7 @@ mdcb:
   extraEnvs: []
 
 tib:
-  # Determines whither or not the mdcb component should be installed.
+  # Determines whither or not the tib component should be installed.
   enabled: false
   # If set to true TIB will use SSL connection. THIS IS RECOMMENDED.
   # You will also need to set the: 
@@ -158,12 +158,28 @@ tib:
     profiles: tyk-tib-profiles-conf
 
 dash:
+  # Determines whither or not the dashboard component should be installed.
   enabled: true
-  # Dashboard will only bootstrap if the master bootstrap option is set to true
+  # Dashboard will only bootstrap if the master bootstrap option is set to true.
   bootstrap: true
-  replicaCount: 1
+  # The hostname to bind the Dashboard to.
   hostName: tyk-dashboard.local
+  # Dashboard license.
   license: ""
+  # Dashboard admin information.
+  adminUser:
+    firstName: admin
+    lastName: user
+    email: default@exmaple.com
+    # Set a password or a random one will be assigned.
+    password: ""
+  # Dashboard Organisation information.
+  org:
+    name: Default Org
+    # The hostname to bind the Portal to.
+    cname: tyk-portal.local
+
+  replicaCount: 1
   containerPort: 3000
   image:
     repository: tykio/tyk-dashboard
@@ -172,6 +188,8 @@ dash:
   service:
     type: NodePort
     port: 3000
+  # Creates an ingress object in k8s. Will require an ingress-controller and 
+  # annotation to that ingress controller. 
   ingress:
     enabled: false
     annotations: {}
@@ -216,6 +234,8 @@ portal:
   # Only set this to false if you're not planning on using developer portal
   bootstrap: true
   path: /
+  # Creates an ingress object in k8s. Will require an ingress-controller and 
+  # annotation to that ingress controller. 
   ingress:
     enabled: false
     annotations: {}
