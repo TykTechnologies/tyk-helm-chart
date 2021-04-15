@@ -2,8 +2,13 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# Chart name override. Truncates to 63 characters. 
+# Default value: tyk-headless.name
 nameOverride: ""
-fullnameOverride: tyk-headless
+
+# App name override. Truncates to 63 characters. 
+# Default value: tyk-headless.fullname
+fullnameOverride: ""
 
 secrets:
   APISecret: CHANGEME
