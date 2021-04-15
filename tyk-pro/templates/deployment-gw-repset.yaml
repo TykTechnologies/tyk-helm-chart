@@ -110,7 +110,7 @@ spec:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
                 key: APISecret
           - name: TYK_GW_DBAPPCONFOPTIONS_TAGS
-            value: "{{ .Values.gateway.tags }}"
+            value: "{{ .Values.gateway.sharding.tags }}"
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.gateway.tls }}"
         {{- if .Values.gateway.extraEnvs }}

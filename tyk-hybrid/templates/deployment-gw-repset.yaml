@@ -107,7 +107,7 @@ spec:
           - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
             value: "{{ .Values.sharding.enabled }}"
           - name: TYK_GW_DBAPPCONFOPTIONS_TAGS
-            value: "{{.Values.gateway.tags }}"
+            value: "{{.Values.gateway.sharding.tags }}"
         {{- if .Values.gateway.extraEnvs }}
         {{- range $env := .Values.gateway.extraEnvs }}
           - name: {{ $env.name }}
