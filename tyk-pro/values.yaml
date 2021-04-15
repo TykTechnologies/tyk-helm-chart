@@ -13,8 +13,16 @@ fullnameOverride: ""
 # Master switch for enabling/disabling bootstraing job batch, role binding, role, and account service.
 bootstrap: true
 
+# These are your Tyk stack secrets will directly map to the following Tyk stack configuration:
 secrets:
+  # tyk_analytics.conf tyk_api_config.secret
+  # tyk_analytics.conf shared_node_secret
+  # tyk.conf node_secret
+  # tyk.conf secret
   APISecret: CHANGEME
+  # tyk_analytics.conf admin_secret
+  # tib.conf TykAPISettings.GatewayConfig.AdminSecret
+  # tib.conf TykAPISettings.DashboardConfig.AdminSecret
   AdminSecret: "12345"
   # If you don't want to store plaintext secrets in the Helm value file and would rather provide the k8s Secret externally please populate the value below
   useSecretName: ""
