@@ -27,7 +27,7 @@ secrets:
   # If you don't want to store plaintext secrets in the Helm value file and would rather provide the k8s Secret externally please populate the value below
   useSecretName: ""
 
-redis:
+redis: {}
   # The addrs value will allow you to set your Redis addresses. If you are
   # using a redis cluster, you can list the endpoints of the redis instances
   # or use the cluster configuration endpoint.
@@ -51,7 +51,7 @@ redis:
   storage:
     database: 0
 
-mongo:
+mongo: {}
   # The mongoURL value will allow you to set your MongoDB address.
   # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
   # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
