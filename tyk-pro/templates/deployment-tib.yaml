@@ -62,7 +62,8 @@ spec:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
                 key: tibSecret
           - name: TYK_IB_HTTPSERVEROPTIONS_USESSL
-            value: "{{ .Values.tib.useSSL }}"
+          # Enable backward compatibility to chart 0.8.1.
+            value: "{{ or .Values.tib.tls .Values.tib.useSSL }}"
           - name: TYK_IB_TYKAPISETTINGS_DASHBOARDCONFIG_ADMINSECRET
             valueFrom:
               secretKeyRef:
