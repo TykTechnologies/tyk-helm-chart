@@ -40,11 +40,7 @@ http
 {{- end -}}
 
 {{- define "tyk-pro.dash_proto" -}}
-{{- if .Values.gateway.tls -}}
-https
-{{- else -}}
 http
-{{- end -}}
 {{- end -}}
 
 {{- define "tyk-pro.dash_url" -}}

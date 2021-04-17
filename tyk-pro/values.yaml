@@ -17,8 +17,8 @@ enableIstioIngress: false
 bootstrap: true
 
 secrets:
-  APISecret: CHANGEME
-  AdminSecret: "12345"
+  APISecret: CHANGEME ## Gateway Master Secret
+  AdminSecret: "12345" ## Dashboard Master Secret, for Dashboard Admin API
 
 redis:
     shardCount: 128
