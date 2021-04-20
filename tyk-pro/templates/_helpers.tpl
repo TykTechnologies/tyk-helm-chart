@@ -71,7 +71,7 @@ redis.{{ .Release.Namespace }}.svc.cluster.local:6379
 {{ .Values.mongo.mongoURL }}
 {{/* Adds support for older charts with the host and port options */}}
 {{- else if and .Values.mongo.host .Values.mongo.port -}}
-mongodb://{{ .Values.mongo.host }}:{{ .Values.mongo.port }}
+mongodb://{{ .Values.mongo.host }}:{{ .Values.mongo.port }}/tyk_analytics
 {{- else -}}
 mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
 {{- end -}}
