@@ -4,8 +4,6 @@ Tyk provides 3 different helm charts in this repo. Please visit the respective p
 - [Tyk Hybrid](https://github.com/TykTechnologies/tyk-helm-chart/tree/master/tyk-hybrid)
 - [Tyk Headless](https://github.com/TykTechnologies/tyk-helm-chart/tree/master/tyk-headless)
 
-**Note: All helm commands should be run from the root of the repo.**
-
 ## Redis and MongoDB
 - Redis is required for all of the Tyk installations it must be installed in the cluster or reachable from inside K8s.
 - MongoDB is only required for the tyk-pro installation and must be installed in the cluster, or reachable from inside K8s. If you are using the mongo pumps in the tyk-headless installation you will require mongo installed for that as well. 
