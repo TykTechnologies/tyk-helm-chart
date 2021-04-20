@@ -107,20 +107,20 @@ spec:
         # Enable backward compatibility to chart 0.5.1.
         {{- if or .Values.gateway.sharding .Values.enableSharding}}
           - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
-          {{- if .Values.gateway.sharding }}
+            {{- if .Values.gateway.sharding }}
             value: "{{ .Values.gateway.sharding.enabled }}"
-          {{- else }}
+            {{- else }}
             value: "{{ .Values.enableSharding }}"
-          {{- end }}
+            {{- end }}
         {{- end }}
         # Enable backward compatibility to chart 0.5.1.
         {{- if or .Values.gateway.sharding .Values.enableSharding}}
           - name: TYK_GW_DBAPPCONFOPTIONS_TAGS
-          {{- if .Values.gateway.sharding }}
+            {{- if .Values.gateway.sharding }}
             value: "{{ .Values.gateway.sharding.tags }}"
-          {{- else }}
+            {{- else }}
             value: "{{ .Values.gateway.tags }}"
-          {{- end }}
+            {{- end }}
         {{- end }}
         {{- if .Values.gateway.extraEnvs }}
         {{- range $env := .Values.gateway.extraEnvs }}
