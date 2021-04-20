@@ -41,6 +41,7 @@ Create Sematic Version of gateway without prefix v
 {{- define "tyk-headless.redis_url" -}}
 {{- if .Values.redis.addrs -}}
 {{ join "," .Values.redis.addrs }}
+{{/* Adds support for older charts with the host and port options */}}
 {{- else if and .Values.redis.host .Values.redis.port -}}
 {{ .Values.redis.host }}:{{ .Values.redis.port }}
 {{- else -}}
@@ -51,6 +52,7 @@ redis.{{ .Release.Namespace }}.svc.cluster.local:6379
 {{- define "tyk-headless.mongo_url" -}}
 {{- if .Values.mongo.mongoURL -}}
 {{ .Values.mongo.mongoURL }}
+{{/* Adds support for older charts with the host and port options */}}
 {{- else if and .Values.mongo.host .Values.mongo.port -}}
 mongodb://{{ .Values.mongo.host }}:{{ .Values.mongo.port }}
 {{- else -}}
