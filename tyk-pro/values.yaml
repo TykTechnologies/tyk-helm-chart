@@ -2,11 +2,11 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# Chart name override. Truncates to 63 characters. 
+# Chart name override. Truncates to 63 characters.
 # Default value: tyk-pro.name
 nameOverride: ""
 
-# App name override. Truncates to 63 characters. 
+# App name override. Truncates to 63 characters.
 # Default value: tyk-pro.fullname
 fullnameOverride: ""
 
@@ -67,7 +67,7 @@ mdcb:
   # Determines whither or not the mdcb component should be installed.
   enabled: false
   # If set to true the MDCB will use SSL connection.
-  # You will also need to set the: 
+  # You will also need to set the:
   # - TYK_MDCB_SERVEROPTIONS_CERTIFICATE_CERTFILE
   # - TYK_MDCB_SERVEROPTIONS_CERTIFICATE_KEYFILE
   # variables in extraEnvs object array to define your SSL cert and key files.
@@ -76,15 +76,16 @@ mdcb:
   healthcheckport: 8181
   # Sets MDCB license.
   license: ""
-  # When true. Instead of sending analytics directly to MongoDB, MDCB can send 
-  # analytics to Redis. This will allow tyk-pump to pull analytics from Redis 
+  # When true. Instead of sending analytics directly to MongoDB, MDCB can send
+  # analytics to Redis. This will allow tyk-pump to pull analytics from Redis
   # and send to your own data sinks.
   forwardAnalyticsToPump: true
 
   replicaCount: 1
   containerPort: 9090
   image:
-    repository: tykio/tyk-mdcb-docker    # requires credential
+    # Requires credential
+    repository: tykio/tyk-mdcb-docker
     tag: v1.7.7
     pullPolicy: Always
   service:
@@ -110,7 +111,7 @@ tib:
   # Determines whither or not the tib component should be installed.
   enabled: false
   # If set to true TIB will use SSL connection. THIS IS RECOMMENDED.
-  # You will also need to set the: 
+  # You will also need to set the:
   # - TYK_TIB_SERVEROPTIONS_CERTIFICATE_CERTFILE
   # - TYK_TIB_SERVEROPTIONS_CERTIFICATE_KEYFILE
   # variables in extraEnvs object array to define your SSL cert and key files.
@@ -189,8 +190,8 @@ dash:
   service:
     type: NodePort
     port: 3000
-  # Creates an ingress object in k8s. Will require an ingress-controller and 
-  # annotation to that ingress controller. 
+  # Creates an ingress object in k8s. Will require an ingress-controller and
+  # annotation to that ingress controller.
   ingress:
     enabled: false
     annotations: {}
@@ -235,8 +236,8 @@ portal:
   # Only set this to false if you're not planning on using developer portal
   bootstrap: true
   path: /
-  # Creates an ingress object in k8s. Will require an ingress-controller and 
-  # annotation to that ingress controller. 
+  # Creates an ingress object in k8s. Will require an ingress-controller and
+  # annotation to that ingress controller.
   ingress:
     enabled: false
     annotations: {}
@@ -258,7 +259,7 @@ gateway:
   tls: false
   # Sharding gateway allows you to selectively load APIs to specific gateways. If enabled make sure you have at least one gateway that is not sharded.
   # Also be sure to match API segmentation tags with the tags selected below.
-  sharding: 
+  sharding:
     enabled: false
     tag: ""
   # Set to true to use Tyk as the Ingress gateway to an Istio Service Mesh
@@ -284,8 +285,8 @@ gateway:
     port: 9696
     type: ClusterIP
     annotations: {}
-  # Creates an ingress object in k8s. Will require an ingress-controller and 
-  # annotation to that ingress controller. 
+  # Creates an ingress object in k8s. Will require an ingress-controller and
+  # annotation to that ingress controller.
   ingress:
     enabled: false
     annotations: {}
