@@ -1,4 +1,4 @@
-## Tyk Pro
+## Tyk Hybrid
 Provides a Tyk Installation for Hybrid Gateways connected to Tyk Cloud or MDCB Hybrid Gateways
 
 ### Installation
