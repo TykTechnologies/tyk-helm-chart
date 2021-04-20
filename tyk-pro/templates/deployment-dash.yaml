@@ -85,7 +85,7 @@ spec:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
                 key: APISecret
           - name: TYK_DB_REDISADDRS
-            value: {{include "tyk-pro.redis_url" . | quote}}
+            value: {{ include "tyk-pro.redis_url" . | quote }}
           - name: TYK_DB_ENABLECLUSTER
             value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_DB_REDISPASSWORD

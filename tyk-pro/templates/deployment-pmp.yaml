@@ -69,7 +69,7 @@ spec:
           - name: PMP_MONGOAGG_MONGOUSESSL
             value:  "{{ default "false" .Values.mongo.useSSL }}"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS
-            value: {{include "tyk-pro.redis_url" . |quote}}
+            value: {{ include "tyk-pro.redis_url" . | quote }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ENABLECLUSTER
             value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_PASSWORD

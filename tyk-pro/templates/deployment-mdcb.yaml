@@ -65,7 +65,7 @@ spec:
           - name: TYK_MDCB_HEALTHCHECKPORT
             value: "{{ .Values.mdcb.healthcheckport }}"
           - name: TYK_MDCB_STORAGE_ADDRS
-            value: {{include "tyk-pro.redis_url" . |quote}}
+            value: {{ include "tyk-pro.redis_url" . | quote }}
           - name: TYK_MDCB_STORAGE_PASSWORD
             valueFrom:
               secretKeyRef:

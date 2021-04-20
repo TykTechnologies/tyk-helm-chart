@@ -82,7 +82,7 @@ spec:
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
           - name: TYK_GW_STORAGE_ADDRS
-            value: {{include "tyk-pro.redis_url" . |quote}}
+            value: {{ include "tyk-pro.redis_url" . | quote }}
           - name: TYK_GW_STORAGE_ENABLECLUSTER
             value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_GW_STORAGE_PASSWORD
