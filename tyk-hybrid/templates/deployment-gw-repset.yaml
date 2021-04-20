@@ -74,17 +74,29 @@ spec:
           - name: TYK_GW_STORAGE_ENABLECLUSTER
             value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_GW_STORAGE_PASSWORD
-            value: "{{ .Values.redis.pass }}"
+            valueFrom:
+              secretKeyRef:
+                name: secrets
+                key: redisPass
           - name: TYK_GW_STORAGE_USESSL
             value: "{{ .Values.redis.useSSL }}"
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.gateway.tls }}"
           - name: TYK_GW_SLAVEOPTIONS_RPCKEY
-            value: "{{ default .Values.tyk_k8s.org_id .Values.gateway.rpc.rpcKey }}"
+            valueFrom:
+              secretKeyRef:
+                name: secrets
+                key: rpcKey
           - name: TYK_GW_SLAVEOPTIONS_APIKEY
-            value: "{{ default .Values.tyk_k8s.dash_key .Values.gateway.rpc.apiKey }}"
+            valueFrom:
+              secretKeyRef:
+                name: secrets
+                key: apiKey
           - name: TYK_GW_SECRET
-            value: "{{ .Values.secrets.APISecret }}"
+            valueFrom:
+              secretKeyRef:
+                name: secrets
+                key: APISecret
           - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
             value: "{{ .Values.gateway.rpc.connString }}"
           - name: TYK_GW_SLAVEOPTIONS_USESSL
@@ -92,7 +104,7 @@ spec:
           - name: TYK_GW_SLAVEOPTIONS_BINDTOSLUGSINSTEADOFLISTENPATHS
             value: "{{ default "false" .Values.gateway.rpc.bindToSlugs }}"
           - name: TYK_GW_SLAVEOPTIONS_SSLINSECURESKIPVERIFY
-            value: "{{ .Values.gateway.rpc.sslInsecureSkipVerify }}"  
+            value: "{{ .Values.gateway.rpc.sslInsecureSkipVerify }}"
           - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
             value: "{{ .Values.enableSharding }}"
           - name: TYK_GW_DBAPPCONFOPTIONS_TAGS

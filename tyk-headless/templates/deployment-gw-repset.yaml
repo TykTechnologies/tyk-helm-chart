@@ -48,14 +48,14 @@ spec:
       affinity:
 {{ toYaml .Values.gateway.affinity | indent 8 }}
 {{- end }}
-      initContainers: 
+      initContainers:
       - name: "setup-directories"
         image: busybox:1.32
         command: ['sh','-c','mkdir -p apps middleware policies']
         workingDir: /mnt/tyk-gateway
         volumeMounts:
           - name: tyk-scratch
-            mountPath: /mnt/tyk-gateway        
+            mountPath: /mnt/tyk-gateway
       containers:
       - name: gateway-{{ .Chart.Name }}
         image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
@@ -86,13 +86,22 @@ spec:
           - name: TYK_GW_STORAGE_ENABLECLUSTER
             value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_GW_STORAGE_PASSWORD
-            value: "{{ .Values.redis.pass }}"
+            valueFrom:
+              secretKeyRef:
+                name: secrets
+                key: redisPass
           - name: TYK_GW_STORAGE_USESSL
             value: "{{ .Values.redis.useSSL }}"
           - name: TYK_GW_SECRET
-            value: "{{ .Values.secrets.APISecret }}"
+            valueFrom:
+              secretKeyRef:
+                name: secrets
+                key: APISecret
           - name: TYK_GW_NODESECRET
-            value: "{{ .Values.secrets.APISecret }}"
+            valueFrom:
+              secretKeyRef:
+                name: secrets
+                key: APISecret
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.gateway.tls }}"
             {{- if .Values.pump.enabled }}

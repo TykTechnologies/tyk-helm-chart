@@ -69,19 +69,28 @@ spec:
           - name: TYK_MDCB_STORAGE_ADDRS
             value: {{include "tyk-pro.redis_url" . |quote}}
           - name: TYK_MDCB_STORAGE_PASSWORD
-            value: "{{ .Values.redis.pass }}"
+            valueFrom:
+              secretKeyRef:
+                name: secrets
+                key: redisPass
           - name: TYK_MDCB_STORAGE_REDISUSESSL
             value: "{{ .Values.redis.useSSL }}"
           - name: TYK_MDCB_STORAGE_REDISSSLINSECURESKIPVERIFY
             value: "true"
           - name: TYK_MDCB_ANALYTICSCONFIG_MONGOURL
-            value: {{ include "tyk-pro.mongo_url" . | quote }}
+            valueFrom:
+              secretKeyRef:
+                name: secrets
+                key: mongoURL
           - name: TYK_MDCB_ANALYTICSCONFIG_MONGOUSESSL
             value: "{{ .Values.mongo.useSSL }}"
           - name: TYK_MDCB_FORWARDANALYTICSTOPUMP
             value: "{{ .Values.mdcb.forwardAnalyticsToPump }}"
           - name: TYK_MDCB_LICENSE
-            value: {{ .Values.mdcb.license | quote }}
+            valueFrom:
+              secretKeyRef:
+                name: secrets
+                key: MDCBLicense
         {{- if .Values.mdcb.extraEnvs }}
         {{- range $env := .Values.mdcb.extraEnvs }}
           - name: {{ $env.name }}
