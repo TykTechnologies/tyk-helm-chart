@@ -48,7 +48,7 @@ redis.{{ .Release.Namespace }}.svc.cluster.local:6379
 {{- end -}}
 {{- end -}}
 
-{{- define "tyk-pro.mongo_url" -}}
+{{- define "tyk-headless.mongo_url" -}}
 {{- if .Values.mongo.mongoURL -}}
 {{ .Values.mongo.mongoURL }}
 {{- else if and .Values.mongo.host .Values.mongo.port -}}
