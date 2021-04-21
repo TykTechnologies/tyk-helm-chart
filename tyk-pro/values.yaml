@@ -46,7 +46,7 @@ mdcb:
   license: ""
   forwardAnalyticsToPump: true
   image:
-    repository: tykio/tyk-mdcb-docker #requires credential
+    repository: tykio/tyk-mdcb-docker      # requires credential
     tag: v1.7.7
     pullPolicy: Always
   service:
@@ -71,7 +71,7 @@ mdcb:
 tib:
   enabled: false
   useSSL: true
-# The REST API secret to configure the Tyk Identity Broker remotely.  
+  # The REST API secret to configure the Tyk Identity Broker remotely
   secret: ""
   replicaCount: 1
   containerPort: 3010
@@ -110,7 +110,7 @@ tib:
   affinity: {}
   extraEnvs: []
   configMap:
-    #Create a configMap to store profiles json
+    # Create a configMap to store profiles json
     profiles: tyk-tib-profiles-conf
 
 dash:
