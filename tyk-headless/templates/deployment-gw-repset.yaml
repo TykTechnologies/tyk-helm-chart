@@ -88,19 +88,19 @@ spec:
           - name: TYK_GW_STORAGE_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: secrets
+                name: secrets-{{ include "tyk-headless.fullname" . }}
                 key: redisPass
           - name: TYK_GW_STORAGE_USESSL
             value: "{{ .Values.redis.useSSL }}"
           - name: TYK_GW_SECRET
             valueFrom:
               secretKeyRef:
-                name: secrets
+                name: secrets-{{ include "tyk-headless.fullname" . }}
                 key: APISecret
           - name: TYK_GW_NODESECRET
             valueFrom:
               secretKeyRef:
-                name: secrets
+                name: secrets-{{ include "tyk-headless.fullname" . }}
                 key: APISecret
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.gateway.tls }}"

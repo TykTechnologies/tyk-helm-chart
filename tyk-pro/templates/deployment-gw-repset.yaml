@@ -83,11 +83,13 @@ spec:
             value: {{include "tyk-pro.redis_url" . |quote}}
           - name: TYK_GW_STORAGE_ENABLECLUSTER
             value: "{{ default "false" .Values.redis.enableCluster }}"
+          {{- if .Values.redis.pass.enabled }}
           - name: TYK_DB_REDISPASSWORD
             valueFrom:
               secretKeyRef:
-                name: secrets
+                name: secrets-{{ include "tyk-pro.fullname" . }}
                 key: redisPass
+          {{- end }}
           - name: TYK_GW_STORAGE_USESSL
             value: "{{ .Values.redis.useSSL }}"
           - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
@@ -99,12 +101,12 @@ spec:
           - name: TYK_GW_SECRET
             valueFrom:
               secretKeyRef:
-                name: secrets
+                name: secrets-{{ include "tyk-pro.fullname" . }}
                 key: APISecret
           - name: TYK_GW_NODESECRET
             valueFrom:
               secretKeyRef:
-                name: secrets
+                name: secrets-{{ include "tyk-pro.fullname" . }}
                 key: APISecret
           - name: TYK_GW_DBAPPCONFOPTIONS_TAGS
             value: "{{ .Values.gateway.tags }}"

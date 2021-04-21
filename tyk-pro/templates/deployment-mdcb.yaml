@@ -71,7 +71,7 @@ spec:
           - name: TYK_MDCB_STORAGE_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: secrets
+                name: secrets-{{ include "tyk-pro.fullname" . }}
                 key: redisPass
           - name: TYK_MDCB_STORAGE_REDISUSESSL
             value: "{{ .Values.redis.useSSL }}"
@@ -80,7 +80,7 @@ spec:
           - name: TYK_MDCB_ANALYTICSCONFIG_MONGOURL
             valueFrom:
               secretKeyRef:
-                name: secrets
+                name: secrets-{{ include "tyk-pro.fullname" . }}
                 key: mongoURL
           - name: TYK_MDCB_ANALYTICSCONFIG_MONGOUSESSL
             value: "{{ .Values.mongo.useSSL }}"
@@ -89,7 +89,7 @@ spec:
           - name: TYK_MDCB_LICENSE
             valueFrom:
               secretKeyRef:
-                name: secrets
+                name: secrets-{{ include "tyk-pro.fullname" . }}
                 key: MDCBLicense
         {{- if .Values.mdcb.extraEnvs }}
         {{- range $env := .Values.mdcb.extraEnvs }}

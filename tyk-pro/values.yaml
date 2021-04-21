@@ -21,21 +21,21 @@ secrets:
   AdminSecret: "12345"
 
 redis:
-    shardCount: 128
-    #If you're using Bitnami Redis chart please input the correct host to your instalaltion in the field below
-    #addrs:
-    #   - tyk-redis-master.tyk.svc.cluster.local:6379
-    # addrs:
-    #   - redis.tyk.svc.cluster.local:6379
-    useSSL: false
-    #If you're using Bitnami Redis chart please input your password in the field below
-    #pass: ""
+  shardCount: 128
+  # If you're using Bitnami Redis chart please input the correct host to your instalaltion in the field below
+  # addrs:
+  #   - tyk-redis-master.tyk.svc.cluster.local:6379
+  addrs:
+    - redis.tyk.svc.cluster.local:6379
+  useSSL: false
+  # If you're using Bitnami Redis chart please input your password in the field below
+  pass: ""
 
 mongo:
-    # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
-    #If you're using Bitnami MongoDB chart please input your password below
-    #mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk-dashboard?authSource=admin
-    useSSL: false
+  # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+  # If you're using Bitnami MongoDB chart please input your password below
+  # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk-dashboard?authSource=admin
+  useSSL: false
 
 mdcb:
   enabled: false
@@ -71,6 +71,8 @@ mdcb:
 tib:
   enabled: false
   useSSL: true
+# The REST API secret to configure the Tyk Identity Broker remotely.  
+  secret: ""
   replicaCount: 1
   containerPort: 3010
   image:
@@ -153,7 +155,7 @@ dash:
   tolerations: []
   affinity: {}
   extraEnvs: []
-  # Set these values for dashboard admin user 
+  # Set these values for dashboard admin user
   adminUser:
     firstName: admin
     lastName: user
