@@ -123,7 +123,7 @@ jobs:
           elif [ "${{ matrix.directory }}" == tyk-hybrid ]; then
             helm upgrade -f ${{ env.TYK_HYBRID }} --set gateway.rpc.rpcKey=${{ secrets.HYBRID_RPC_KEY }} --set gateway.rpc.apiKey=${{ secrets.HYBRID_API_KEY }} --set gateway.rpc.connString=${{ secrets.HYBRID_MDCB_HOST }} ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
           elif [ "${{ matrix.directory }}" == tyk-pro ]; then
-            helm upgrade -f ${{ env.TYK_PRO }} --set mdcb.license="${{ secrets.MDCB_LICENSE }}" --set dash.license="${{ secrets.DASH_LICENSE }}" ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }} --wait
+            helm upgrade -f ${{ env.TYK_PRO }} --set mdcb.license="${{ secrets.MDCB_LICENSE }}" --set dash.license="${{ secrets.DASH_LICENSE }}" ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
           fi
 
       - name: Uninstall "${{ matrix.directory }}" chart
