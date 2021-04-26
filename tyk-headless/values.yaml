@@ -10,15 +10,15 @@ secrets:
   OrgID: "1"
 
 redis:
-    shardCount: 128
-    addrs:
-      - redis.tyk.svc.cluster.local:6379
-    useSSL: false
-    #If you're using Bitnami Redis chart please input the correct host to your installation in the field below
-    #addrs:
-      #- tyk-redis-master.tyk.svc.cluster.local:6379
-    #If you're using Bitnami Redis chart please input your password in the field below
-      #pass: ""
+  shardCount: 128
+  addrs:
+    - redis.tyk.svc.cluster.local:6379
+  useSSL: false
+  # If you're using Bitnami Redis chart please input the correct host to your installation in the field below
+  # addrs:
+    # - tyk-redis-master.tyk.svc.cluster.local:6379
+  # If you're using Bitnami Redis chart please input your password in the field below
+    # pass: ""
 
 mongo:
   enabled: false
@@ -35,7 +35,7 @@ gateway:
   containerPort: 8080
   tags: ""
   image:
-    repository: tykio/tyk-gateway
+    repository: docker.tyk.io/tyk-gateway/tyk-gateway
     tag: v3.1.2
     pullPolicy: IfNotPresent
   service:
@@ -85,7 +85,7 @@ pump:
   enabled: false
   replicaCount: 1
   image:
-    repository: tykio/tyk-pump-docker-pub
+    repository: docker.tyk.io/tyk-pump/tyk-pump
     tag: v1.2.0
     pullPolicy: IfNotPresent
   annotations: {}
