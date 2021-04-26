@@ -78,8 +78,8 @@ jobs:
           MATRIX_JSON=$(echo "$JSON" | jq --raw-output '.k8s += ["v1.20.2","v1.19.7","v1.18.15","v1.17.17","v1.16.15"]')
 
           # Set output
+          echo "::debug::matrix is ${MATRIX_JSON}"
           echo "::set-output name=matrix::$( echo $MATRIX_JSON )"
-
 
   smoke-tests:
     runs-on: ubuntu-latest
