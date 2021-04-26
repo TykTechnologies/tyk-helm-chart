@@ -10,15 +10,15 @@ secrets:
   OrgID: "1"
 
 redis:
-    shardCount: 128
-    addrs:
-      - redis.tyk.svc.cluster.local:6379
-    useSSL: false
-    #If you're using Bitnami Redis chart please input the correct host to your installation in the field below
-    #addrs:
-      #- tyk-redis-master.tyk.svc.cluster.local:6379
-    #If you're using Bitnami Redis chart please input your password in the field below
-      #pass: ""
+  shardCount: 128
+  addrs:
+    - redis.tyk.svc.cluster.local:6379
+  useSSL: false
+  # If you're using Bitnami Redis chart please input the correct host to your installation in the field below
+  # addrs:
+    # - tyk-redis-master.tyk.svc.cluster.local:6379
+  # If you're using Bitnami Redis chart please input your password in the field below
+    # pass: ""
 
 mongo:
   enabled: false
