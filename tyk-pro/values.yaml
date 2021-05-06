@@ -121,7 +121,7 @@ dash:
   containerPort: 3000
   image:
     repository: tykio/tyk-dashboard
-    tag: v3.1.2
+    tag: v3.2.0
     pullPolicy: Always
   service:
     type: NodePort
@@ -153,7 +153,7 @@ dash:
   tolerations: []
   affinity: {}
   extraEnvs: []
-  # Set these values for dashboard admin user 
+  # Set these values for dashboard admin user
   adminUser:
     firstName: admin
     lastName: user
@@ -193,7 +193,7 @@ gateway:
   containerPort: 8080
   image:
     repository: tykio/tyk-gateway
-    tag: v3.1.2
+    tag: v3.2.0
     pullPolicy: Always
   service:
     type: NodePort
