@@ -35,7 +35,7 @@ gateway:
   containerPort: 8080
   tags: ""
   image:
-    repository: tykio/tyk-gateway
+    repository: docker.tyk.io/tyk-gateway/tyk-gateway
     tag: v3.1.2
     pullPolicy: IfNotPresent
   service:
@@ -85,7 +85,7 @@ pump:
   enabled: false
   replicaCount: 1
   image:
-    repository: tykio/tyk-pump-docker-pub
+    repository: docker.tyk.io/tyk-pump/tyk-pump
     tag: v1.2.0
     pullPolicy: IfNotPresent
   annotations: {}
