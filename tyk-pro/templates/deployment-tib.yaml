@@ -57,26 +57,32 @@ spec:
           - name: TYK_IB_PORT
             value: "{{ .Values.tib.containerPort }}"
           - name: TYK_IB_SECRET
+            {{- if .Values.SecretName.enabled -}}
             valueFrom:
               secretKeyRef:
                 name: secrets-{{ include "tyk-pro.fullname" . }}
                 key: tibSecret
+            {{- end }}
           - name: TYK_IB_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.tib.useSSL }}"
           - name: TYK_IB_TYKAPISETTINGS_DASHBOARDCONFIG_ADMINSECRET
+            {{- if .Values.SecretName.enabled -}}
             valueFrom:
               secretKeyRef:
                 name: secrets-{{ include "tyk-pro.fullname" . }}
                 key: AdminSecret
+            {{- end }}
           - name: TYK_IB_TYKAPISETTINGS_GATEWAYCONFIG_ENDPOINT
             value: "{{ include "tyk-pro.gwproto" . }}://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
           - name: TYK_IB_TYKAPISETTINGS_GATEWAYCONFIG_PORT
             value: "{{ .Values.gateway.service.port }}"
           - name: TYK_IB_TYKAPISETTINGS_GATEWAYCONFIG_ADMINSECRET
+            {{- if .Values.SecretName.enabled -}}
             valueFrom:
               secretKeyRef:
                 name: secrets-{{ include "tyk-pro.fullname" . }}
                 key: AdminSecret
+            {{- end }}
           - name: TYK_IB_TYKAPISETTINGS_DASHBOARDCONFIG_ENDPOINT
             value: "{{ include "tyk-pro.dash_proto" . }}://dashboard-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
           - name: TYK_IB_TYKAPISETTINGS_DASHBOARDCONFIG_PORT

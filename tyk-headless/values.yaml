@@ -9,6 +9,10 @@ secrets:
   APISecret: CHANGEME
   OrgID: "1"
 
+# If you don't want to store plaintext secrets in the Helm value file and would rather provide the k8s Secret externally please disable this value
+SecretName:
+  enabled: true
+
 redis:
   shardCount: 128
   addrs:

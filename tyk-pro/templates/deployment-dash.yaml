@@ -77,45 +77,57 @@ spec:
             value: "{{ .Values.gateway.control.containerPort }}"
           {{- end }}
           - name: TYK_DB_TYKAPI_SECRET
+            {{- if .Values.SecretName.enabled -}}
             valueFrom:
               secretKeyRef:
                 name: secrets-{{ include "tyk-pro.fullname" . }}
                 key: APISecret
+            {{- end }}
           - name: TYK_DB_REDISADDRS
             value: {{include "tyk-pro.redis_url" . | quote}}
           - name: TYK_DB_ENABLECLUSTER
             value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_DB_REDISPASSWORD
+            {{- if .Values.SecretName.enabled -}}
             valueFrom:
               secretKeyRef:
                 name: secrets-{{ include "tyk-pro.fullname" . }}
                 key: redisPass
+            {{- end }}
           - name: TYK_DB_REDISUSESSL
             value: "{{ .Values.redis.useSSL }}"
           - name: TYK_DB_REDISSSLINSECURESKIPVERIFY
             value: "true"
           - name: TYK_DB_MONGOURL
+            {{- if .Values.SecretName.enabled -}}
             valueFrom:
               secretKeyRef:
                 name: secrets-{{ include "tyk-pro.fullname" . }}
                 key: mongoURL
+            {{- end }}
           - name: TYK_DB_MONGOUSESSL
             value: "{{ .Values.mongo.useSSL }}"
           - name: TYK_DB_ADMINSECRET
+            {{- if .Values.SecretName.enabled -}}
             valueFrom:
               secretKeyRef:
                 name: secrets-{{ include "tyk-pro.fullname" . }}
                 key: AdminSecret
+            {{- end }}
           - name: TYK_DB_NODESECRET
+            {{- if .Values.SecretName.enabled -}}
             valueFrom:
               secretKeyRef:
                 name: secrets-{{ include "tyk-pro.fullname" . }}
                 key: APISecret
-            - name: TYK_DB_LICENSEKEY
-              valueFrom:
-                secretKeyRef:
-                  name: secrets-{{ include "tyk-pro.fullname" . }}
-                  key: DashLicense
+            {{- end }}
+          - name: TYK_DB_LICENSEKEY
+            {{- if .Values.SecretName.enabled -}}
+            valueFrom:
+              secretKeyRef:
+                name: secrets-{{ include "tyk-pro.fullname" . }}
+                key: DashLicense
+            {{- end }}
           - name: TYK_DB_HOSTCONFIG_PORTALROOTPATH
             value:  {{ .Values.portal.path }}
         {{- if .Values.dash.extraEnvs }}

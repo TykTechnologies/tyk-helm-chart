@@ -86,22 +86,28 @@ spec:
           - name: TYK_GW_STORAGE_ENABLECLUSTER
             value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_GW_STORAGE_PASSWORD
+            {{- if .Values.SecretName.enabled -}}
             valueFrom:
               secretKeyRef:
                 name: secrets-{{ include "tyk-headless.fullname" . }}
                 key: redisPass
+            {{- end }}
           - name: TYK_GW_STORAGE_USESSL
             value: "{{ .Values.redis.useSSL }}"
           - name: TYK_GW_SECRET
+            {{- if .Values.SecretName.enabled -}}
             valueFrom:
               secretKeyRef:
                 name: secrets-{{ include "tyk-headless.fullname" . }}
                 key: APISecret
+            {{- end }}
           - name: TYK_GW_NODESECRET
+            {{- if .Values.SecretName.enabled -}}
             valueFrom:
               secretKeyRef:
                 name: secrets-{{ include "tyk-headless.fullname" . }}
                 key: APISecret
+            {{- end }}
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.gateway.tls }}"
             {{- if .Values.pump.enabled }}

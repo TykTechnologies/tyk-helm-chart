@@ -74,29 +74,37 @@ spec:
           - name: TYK_GW_STORAGE_ENABLECLUSTER
             value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_GW_STORAGE_PASSWORD
+            {{- if .Values.SecretName.enabled -}}
             valueFrom:
               secretKeyRef:
                 name: secrets-{{ include "tyk-hybrid.fullname" . }}
                 key: redisPass
+           {{- end }}
           - name: TYK_GW_STORAGE_USESSL
             value: "{{ .Values.redis.useSSL }}"
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.gateway.tls }}"
           - name: TYK_GW_SLAVEOPTIONS_RPCKEY
+            {{- if .Values.SecretName.enabled -}}
             valueFrom:
               secretKeyRef:
                 name: secrets-{{ include "tyk-hybrid.fullname" . }}
                 key: rpcKey
+            {{- end }}
           - name: TYK_GW_SLAVEOPTIONS_APIKEY
+            {{- if .Values.SecretName.enabled -}}
             valueFrom:
               secretKeyRef:
                 name: secrets-{{ include "tyk-hybrid.fullname" . }}
                 key: apiKey
+            {{- end }}
           - name: TYK_GW_SECRET
+            {{- if .Values.SecretName.enabled -}}
             valueFrom:
               secretKeyRef:
                 name: secrets-{{ include "tyk-hybrid.fullname" . }}
                 key: APISecret
+            {{- end }}
           - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
             value: "{{ .Values.gateway.rpc.connString }}"
           - name: TYK_GW_SLAVEOPTIONS_USESSL

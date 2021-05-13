@@ -54,17 +54,21 @@ spec:
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "{{ .Values.redis.shardCount }}"
           - name: PMP_MONGO_MONGOURL
+            {{- if .Values.SecretName.enabled -}}
             valueFrom:
               secretKeyRef:
                 name: secrets-{{ include "tyk-pro.fullname" . }}
                 key: mongoURL
+            {{- end }}
           - name: PMP_MONGO_MONGOUSESSL
             value: "{{ .Values.mongo.useSSL }}"
           - name: PMP_MONGOAGG_MONGOURL
+            {{- if .Values.SecretName.enabled -}}
             valueFrom:
               secretKeyRef:
                 name: secrets-{{ include "tyk-pro.fullname" . }}
                 key: mongoURL
+            {{- end }}
           - name: PMP_MONGOAGG_MONGOUSESSL
             value:  "{{ .Values.mongo.useSSL }}"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS
@@ -72,10 +76,12 @@ spec:
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ENABLECLUSTER
             value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_PASSWORD
+            {{- if .Values.SecretName.enabled -}}
             valueFrom:
               secretKeyRef:
                 name: secrets-{{ include "tyk-pro.fullname" . }}
                 key: redisPass
+            {{- end }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISUSESSL
             value: "{{ .Values.redis.useSSL }}"
         {{- if .Values.pump.extraEnvs }}
