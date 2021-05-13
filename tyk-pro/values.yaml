@@ -32,10 +32,10 @@ redis:
   # pass: ""
 
 mongo:
-    # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
-    #If you're using Bitnami MongoDB chart please input your password below
-    #mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk-dashboard?authSource=admin
-    useSSL: false
+  # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+  # If you're using Bitnami MongoDB chart please input your password below
+  # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk-dashboard?authSource=admin
+  useSSL: false
 
 mdcb:
   enabled: false
@@ -46,7 +46,7 @@ mdcb:
   license: ""
   forwardAnalyticsToPump: true
   image:
-    repository: tykio/tyk-mdcb-docker #requires credential
+    repository: tykio/tyk-mdcb-docker      # requires credential
     tag: v1.7.7
     pullPolicy: Always
   service:
@@ -108,7 +108,7 @@ tib:
   affinity: {}
   extraEnvs: []
   configMap:
-    #Create a configMap to store profiles json
+    # Create a configMap to store profiles json
     profiles: tyk-tib-profiles-conf
 
 dash:
