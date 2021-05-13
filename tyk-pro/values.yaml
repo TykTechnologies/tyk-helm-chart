@@ -21,15 +21,15 @@ secrets:
   AdminSecret: "12345"
 
 redis:
-    shardCount: 128
-    #If you're using Bitnami Redis chart please input the correct host to your instalaltion in the field below
-    #addrs:
-    #   - tyk-redis-master.tyk.svc.cluster.local:6379
-    # addrs:
-    #   - redis.tyk.svc.cluster.local:6379
-    useSSL: false
-    #If you're using Bitnami Redis chart please input your password in the field below
-    #pass: ""
+  shardCount: 128
+  # If you're using Bitnami Redis chart please input the correct host to your instalaltion in the field below
+  # addrs:
+  #   - tyk-redis-master.tyk.svc.cluster.local:6379
+  # addrs:
+  #   - redis.tyk.svc.cluster.local:6379
+  useSSL: false
+  # If you're using Bitnami Redis chart please input your password in the field below
+  # pass: ""
 
 mongo:
     # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
@@ -75,7 +75,7 @@ tib:
   containerPort: 3010
   image:
     repository: tykio/tyk-identity-broker
-    tag: v1.1.0
+    tag: v1.2.0
     pullPolicy: Always
   service:
     type: ClusterIP
@@ -241,7 +241,7 @@ pump:
   replicaCount: 1
   image:
     repository: tykio/tyk-pump-docker-pub
-    tag: v1.2.0
+    tag: v1.3.0
     pullPolicy: Always
   annotations: {}
   resources: {}

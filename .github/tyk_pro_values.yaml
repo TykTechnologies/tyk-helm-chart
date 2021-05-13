@@ -148,7 +148,7 @@ dash:
   tolerations: []
   affinity: {}
   extraEnvs: []
-  # Set these values for dashboard admin user 
+  # Set these values for dashboard admin user
   adminUser:
     firstName: admin
     lastName: user
@@ -226,7 +226,7 @@ pump:
   replicaCount: 2
   image:
     repository: tykio/tyk-pump-docker-pub
-    tag: v1.2.0
+    tag: v1.3.0
     pullPolicy: Always
   annotations: {}
   resources: {}
