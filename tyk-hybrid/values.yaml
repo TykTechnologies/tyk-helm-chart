@@ -13,14 +13,19 @@ secrets:
 
 redis:
   shardCount: 128
-  # If you're using Bitnami Redis chart please input the correct host to your instalaltion in the field below
-  # addrs:
-  # - tyk-redis-master.tyk.svc.cluster.local:6379
   addrs:
     - redis.tyk.svc.cluster.local:6379
   useSSL: false
-  # If you're using Bitnami Redis chart please input your password in the field below
-  # pass: ""
+#    #If you're using Bitnami Redis chart please input the correct host to your installation in the field below
+#    addrs:
+#      - tyk-redis-master.tyk.svc.cluster.local:6379
+#   #If you're using Bitnami Redis chart please input your password in the field below
+#    pass: ""
+#   #If you are using Redis cluster, enable it here.
+#    enableCluster: false
+#   #By default the database index is 0. Setting the database index is not supported with redis cluster. As such, if you have enableCluster: true, then this value should be omitted or explicitly set to 0.
+  storage:
+    database: 0
 
 gateway:
   kind: DaemonSet
