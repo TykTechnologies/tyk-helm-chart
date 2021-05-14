@@ -73,6 +73,8 @@ spec:
             {{- end }}
           - name: TYK_GW_STORAGE_ENABLECLUSTER
             value: "{{ default "false" .Values.redis.enableCluster }}"
+          - name: TYK_GW_STORAGE_DATABASE
+            value: "{{ default "0" .Values.redis.storage.database }}"
           - name: TYK_GW_STORAGE_PASSWORD
             value: "{{ .Values.redis.pass }}"
           - name: TYK_GW_STORAGE_USESSL
@@ -92,7 +94,7 @@ spec:
           - name: TYK_GW_SLAVEOPTIONS_BINDTOSLUGSINSTEADOFLISTENPATHS
             value: "{{ default "false" .Values.gateway.rpc.bindToSlugs }}"
           - name: TYK_GW_SLAVEOPTIONS_SSLINSECURESKIPVERIFY
-            value: "{{ .Values.gateway.rpc.sslInsecureSkipVerify }}"  
+            value: "{{ .Values.gateway.rpc.sslInsecureSkipVerify }}"
           - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
             value: "{{ .Values.enableSharding }}"
           - name: TYK_GW_DBAPPCONFOPTIONS_TAGS
