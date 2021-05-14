@@ -73,6 +73,8 @@ spec:
             {{- end }}
           - name: TYK_GW_STORAGE_ENABLECLUSTER
             value: "{{ default "false" .Values.redis.enableCluster }}"
+          - name: TYK_GW_STORAGE_DATABASE
+            value: "{{ default "0" .Values.redis.storage.database }}"
           - name: TYK_GW_STORAGE_PASSWORD
             {{- if .Values.SecretName.enabled -}}
             valueFrom:
