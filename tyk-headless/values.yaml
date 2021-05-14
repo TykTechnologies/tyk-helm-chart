@@ -14,14 +14,13 @@ redis:
   addrs:
     - redis.tyk.svc.cluster.local:6379
   useSSL: false
-#    #If you're using Bitnami Redis chart please input the correct host to your installation in the field below
-#    addrs:
-#      - tyk-redis-master.tyk.svc.cluster.local:6379
-#   #If you're using Bitnami Redis chart please input your password in the field below
-#    pass: ""
-#   #If you are using Redis cluster, enable it here.
-#    enableCluster: false
-#   #By default the database index is 0. Setting the database index is not supported with redis cluster. As such, if you have enableCluster: true, then this value should be omitted or explicitly set to 0.
+  # If you're using Bitnami Redis chart please input the correct host and password to your installation in the fields below
+  # addrs:
+  #  - tyk-redis-master.tyk.svc.cluster.local:6379
+  # pass: ""
+  # If you are using Redis cluster, enable it here.
+  # enableCluster: false
+  # By default the database index is 0. Setting the database index is not supported with redis cluster. As such, if you have enableCluster: true, then this value should be omitted or explicitly set to 0.
   storage:
     database: 0
 
@@ -40,7 +39,7 @@ gateway:
   containerPort: 8080
   tags: ""
   image:
-    repository: tykio/tyk-gateway
+    repository: docker.tyk.io/tyk-gateway/tyk-gateway
     tag: v3.1.2
     pullPolicy: IfNotPresent
   service:
@@ -90,7 +89,7 @@ pump:
   enabled: false
   replicaCount: 1
   image:
-    repository: tykio/tyk-pump-docker-pub
+    repository: docker.tyk.io/tyk-pump/tyk-pump
     tag: v1.2.0
     pullPolicy: IfNotPresent
   annotations: {}
