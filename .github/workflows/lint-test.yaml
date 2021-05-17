@@ -73,4 +73,4 @@ jobs:
           done
 
       - name: Run chart-testing (install)
-        run: ct install --config ct.yaml # Use --upgrade to test an in-place upgrade of each chart
+        run: ct install --debug --config ct.yaml # Use --upgrade to test an in-place upgrade of each chart
