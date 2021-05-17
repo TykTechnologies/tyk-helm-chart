@@ -83,6 +83,8 @@ spec:
             value: {{include "tyk-pro.redis_url" . |quote}}
           - name: TYK_GW_STORAGE_ENABLECLUSTER
             value: "{{ default "false" .Values.redis.enableCluster }}"
+          - name: TYK_GW_STORAGE_DATABASE
+            value: "{{ default "0" .Values.redis.storage.database }}"
           - name: TYK_GW_STORAGE_PASSWORD
             value: "{{ .Values.redis.pass }}"
           - name: TYK_GW_STORAGE_USESSL

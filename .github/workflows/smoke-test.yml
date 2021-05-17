@@ -9,9 +9,9 @@ on:
 env:
   TIMEOUT: 3m
   NAMESPACE: tyk-ci
-  TYK_CE: .github/tyk_ce_values.yaml 
+  TYK_CE: .github/tyk_ce_values.yaml
   TYK_PRO: .github/tyk_pro_values.yaml
-  TYK_HYBRID: .github/tyk_hybrid_values.yaml 
+  TYK_HYBRID: .github/tyk_hybrid_values.yaml
 
 jobs:
 
@@ -78,8 +78,8 @@ jobs:
           MATRIX_JSON=$(echo "$JSON" | jq --raw-output '.k8s += ["v1.20.2","v1.19.7","v1.18.15","v1.17.17","v1.16.15"]')
 
           # Set output
+          echo "::debug::matrix is ${MATRIX_JSON}"
           echo "::set-output name=matrix::$( echo $MATRIX_JSON )"
-
 
   smoke-tests:
     runs-on: ubuntu-latest
@@ -90,18 +90,18 @@ jobs:
     steps:
       - name: Git Checkout
         uses: actions/checkout@v2
-      
+
       - name: Create Kind Cluster
         uses: engineerd/setup-kind@v0.5.0
         with:
           version: "v0.10.0"
           config: .github/kind-cluster-${{ matrix.k8s }}.yml
-      
+
       - name: Install helm
         uses: Azure/setup-helm@v1.1
         with:
           version: v3.5.3
-      
+
       - name: Deploy "${{ matrix.directory }}" chart
         run: |
           kubectl create namespace ${{ env.NAMESPACE }}
