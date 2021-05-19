@@ -88,28 +88,22 @@ spec:
           - name: TYK_GW_STORAGE_DATABASE
             value: "{{ default "0" .Values.redis.storage.database }}"
           - name: TYK_GW_STORAGE_PASSWORD
-            {{- if .Values.SecretName.enabled -}}
             valueFrom:
               secretKeyRef:
-                name: secrets-{{ include "tyk-headless.fullname" . }}
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end}}
                 key: redisPass
-            {{- end }}
           - name: TYK_GW_STORAGE_USESSL
             value: "{{ .Values.redis.useSSL }}"
           - name: TYK_GW_SECRET
-            {{- if .Values.SecretName.enabled -}}
             valueFrom:
               secretKeyRef:
-                name: secrets-{{ include "tyk-headless.fullname" . }}
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end}}
                 key: APISecret
-            {{- end }}
           - name: TYK_GW_NODESECRET
-            {{- if .Values.SecretName.enabled -}}
             valueFrom:
               secretKeyRef:
-                name: secrets-{{ include "tyk-headless.fullname" . }}
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end}}
                 key: APISecret
-            {{- end }}
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.gateway.tls }}"
             {{- if .Values.pump.enabled }}
