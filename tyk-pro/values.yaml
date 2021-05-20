@@ -80,7 +80,7 @@ tib:
   containerPort: 3010
   image:
     repository: tykio/tyk-identity-broker
-    tag: v1.2.0
+    tag: v1.1.1
     pullPolicy: Always
   service:
     type: ClusterIP
