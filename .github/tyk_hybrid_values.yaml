@@ -52,7 +52,7 @@ gateway:
     # apiKey: ""
   image:
     repository: tykio/tyk-gateway
-    tag: v3.2.0
+    tag: v3.2.1
     pullPolicy: Always
   service:
     type: NodePort
