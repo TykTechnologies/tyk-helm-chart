@@ -1,0 +1,95 @@
+{{- if and .Values.tyk-pro.enabled .Values.tyk-pro.pump.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pump-{{ include "tyk-chart.fullname" . }}
+  labels:
+    app: pump-{{ include "tyk-chart.fullname" . }}
+    chart: {{ include "tyk-chart.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.tyk-pro.pump.replicaCount }}
+  selector:
+    matchLabels:
+      app: pump-{{ include "tyk-chart.fullname" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: pump-{{ include "tyk-chart.fullname" . }}
+        release: {{ .Release.Name }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-pump.yaml") . | sha256sum }}
+      {{- range $key, $value := .Values.tyk-pro.pump.annotations }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+    spec:
+{{- if .Values.tyk-pro.pump.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.tyk-pro.pump.nodeSelector | indent 8 }}
+{{- end }}
+{{- if .Values.tyk-pro.pump.tolerations }}
+      tolerations:
+{{ toYaml .Values.tyk-pro.pump.tolerations | indent 8 }}
+{{- end }}
+{{- if .Values.tyk-pro.pump.affinity }}
+      affinity:
+{{ toYaml .Values.tyk-pro.pump.affinity | indent 8 }}
+{{- end }}
+      containers:
+      - name: pump-{{ .Chart.Name }}
+        image: "{{ .Values.tyk-pro.pump.image.repository }}:{{ .Values.tyk-pro.pump.image.tag }}"
+        imagePullPolicy: {{ .Values.tyk-pro.pump.image.pullPolicy }}
+        workingDir: "/opt/tyk-pump"
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - all
+        env:
+          - name: REDIGOCLUSTER_SHARDCOUNT
+            value: "{{ .Values.redis.shardCount }}"
+          - name: PMP_MONGO_MONGOURL
+            value: {{ include "tyk-chart.mongo_url" . | quote }}
+          - name: PMP_MONGO_MONGOUSESSL
+            value: "{{ .Values.mongo.useSSL }}"
+          - name: PMP_MONGOAGG_MONGOURL
+            value: {{ include "tyk-chart.mongo_url" . | quote }}
+          - name: PMP_MONGOAGG_MONGOUSESSL
+            value:  "{{ .Values.mongo.useSSL }}"
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS
+            value: {{include "tyk-chart.redis_url" . |quote}}
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ENABLECLUSTER
+            value: "{{ default "false" .Values.redis.enableCluster }}"
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_PASSWORD
+            value: "{{ .Values.redis.pass }}"
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISUSESSL
+            value: "{{ .Values.redis.useSSL }}"
+        {{- if .Values.tyk-pro.pump.extraEnvs }}
+        {{- range $env := .Values.tyk-pro.pump.extraEnvs }}
+          - name: {{ $env.name }}
+            value: {{ $env.value | quote }}
+        {{- end }}
+        {{- end }}
+        command: ["/opt/tyk-pump/tyk-pump", "-c", "/etc/tyk-pump/pump.conf"]
+        volumeMounts:
+          - name: tyk-pump-conf
+            mountPath: /etc/tyk-pump
+        resources:
+{{ toYaml .Values.tyk-pro.pump.resources | indent 12 }}
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 2000
+      volumes:
+        - name: tyk-pump-conf
+          configMap:
+            name: pump-conf-{{ include "tyk-chart.fullname" . }}
+            items:
+              - key: pump.conf
+                path: pump.conf
+{{- end}}
+{{- end}}

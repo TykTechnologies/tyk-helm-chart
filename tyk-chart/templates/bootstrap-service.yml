@@ -1,0 +1,6 @@
+{{- if and .Values.tyk-pro.enabled .Values.tyk-pro.bootstrap -}}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: k8s-bootstrap-role
+{{- end }}

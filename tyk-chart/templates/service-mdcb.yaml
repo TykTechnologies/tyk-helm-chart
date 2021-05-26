@@ -1,0 +1,20 @@
+{{- if and .Values.tyk-pro.enabled .Values.tyk-pro.mdcb.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: mdcb-svc-{{ include "tyk-chart.fullname" . }}
+  labels:
+    app: mdcb-svc-{{ include "tyk-chart.fullname" . }}
+    chart: {{ include "tyk-chart.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  ports:
+  - port: {{ .Values.tyk-pro.mdcb.service.port }}
+    targetPort: {{ .Values.tyk-pro.mdcb.containerPort }}
+    protocol: TCP
+  type: {{ .Values.tyk-pro.mdcb.service.type }}
+  selector:
+    app: mdcb-{{ include "tyk-chart.fullname" . }}
+    release: {{ .Release.Name }}
+{{- end }}

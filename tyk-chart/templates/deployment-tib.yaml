@@ -1,0 +1,122 @@
+{{- if and .Values.tyk-pro.enabled .Values.tyk-pro.tib.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tib-{{ include "tyk-chart.fullname" . }}
+  labels:
+    app: tib-{{ include "tyk-chart.fullname" . }}
+    chart: {{ include "tyk-chart.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.tyk-pro.tib.replicaCount }}
+  minReadySeconds: 10
+  strategy:
+    # indicate which strategy we want for rolling update
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: tib-{{ include "tyk-chart.fullname" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: tib-{{ include "tyk-chart.fullname" . }}
+        release: {{ .Release.Name }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-tib.yaml") . | sha256sum }}
+    spec:
+{{- if .Values.tyk-pro.tib.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.tyk-pro.tib.nodeSelector | indent 8 }}
+{{- end }}
+{{- if .Values.tyk-pro.tib.tolerations }}
+      tolerations:
+{{ toYaml .Values.tyk-pro.tib.tolerations | indent 8 }}
+{{- end }}
+{{- if .Values.tyk-pro.tib.affinity }}
+      affinity:
+{{ toYaml .Values.tyk-pro.tib.affinity | indent 8 }}
+{{- end }}
+      containers:
+      - image: "{{ .Values.tyk-pro.tib.image.repository }}:{{ .Values.tyk-pro.tib.image.tag }}"
+        imagePullPolicy: {{ .Values.tyk-pro.tib.image.pullPolicy }}
+        name: tib-{{ .Chart.Name }}
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - all
+        env:
+          - name: TYK_IB_PORT
+            value: "{{ .Values.tyk-pro.tib.containerPort }}"
+          - name: TYK_IB_SECRET
+            value: "{{ .Values.tyk-pro.tib.secret }}"
+          - name: TYK_IB_HTTPSERVEROPTIONS_USESSL
+            value: "{{ .Values.tyk-pro.tib.useSSL }}"
+          - name: TYK_IB_TYKAPISETTINGS_DASHBOARDCONFIG_ADMINSECRET
+            value: "{{ .Values.secrets.AdminSecret }}"
+          - name: TYK_IB_TYKAPISETTINGS_GATEWAYCONFIG_ENDPOINT
+            value: "{{ include "tyk-chart.gwproto" . }}://gateway-svc-{{ include "tyk-chart.fullname" . }}.{{ .Release.Namespace }}"
+          - name: TYK_IB_TYKAPISETTINGS_GATEWAYCONFIG_PORT
+            value: "{{ .Values.gateway.service.port }}"
+          - name: TYK_IB_TYKAPISETTINGS_GATEWAYCONFIG_ADMINSECRET
+            value: "{{ .Values.secrets.AdminSecret }}"
+          - name: TYK_IB_TYKAPISETTINGS_DASHBOARDCONFIG_ENDPOINT
+            value: "{{ include "tyk-chart.dash_proto" . }}://dashboard-svc-{{ include "tyk-chart.fullname" . }}.{{ .Release.Namespace }}"
+          - name: TYK_IB_TYKAPISETTINGS_DASHBOARDCONFIG_PORT
+            value: "{{ .Values.tyk-pro.dash.service.port }}"
+        {{- if .Values.tyk-pro.tib.extraEnvs }}
+        {{- range $env := .Values.tyk-pro.tib.extraEnvs }}
+          - name: {{ $env.name }}
+            value: {{ $env.value | quote }}
+        {{- end }}
+        {{- end }}
+        resources:
+{{ toYaml .Values.tyk-pro.tib.resources | indent 10 }}
+        ports:
+        - containerPort: {{ .Values.tyk-pro.tib.containerPort }}
+        volumeMounts:
+          - name: tyk-tib-conf-volume
+            mountPath: /opt/tyk-identity-broker/tib.conf
+            subPath: tib.conf
+            readOnly: true
+          - name: tyk-tib-profiles-conf-volume
+            mountPath: /opt/tyk-identity-broker/profiles.json
+            subPath: profiles.json
+            readOnly: true
+        livenessProbe:
+          httpGet:
+            scheme: "HTTP"
+            path: /health
+            port: {{ .Values.tyk-pro.tib.containerPort }}
+          initialDelaySeconds: 5
+          periodSeconds: 2
+          timeoutSeconds: 3
+          failureThreshold: 2
+        readinessProbe:
+          httpGet:
+            scheme: "HTTP"
+            path: /health
+            port: {{ .Values.tyk-pro.tib.containerPort }}
+          initialDelaySeconds: 1
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 2000
+      volumes:
+        - name: tyk-tib-conf-volume
+          configMap:
+            name: tyk-tib-conf
+        - name: tyk-tib-profiles-conf-volume
+          configMap:
+            name: {{ .Values.tyk-pro.tib.configMap.profiles }}
+{{- end }}

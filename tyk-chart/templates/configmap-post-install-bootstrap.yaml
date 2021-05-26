@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bootstrap-post-install-configmap-{{ include "tyk-chart.fullname" . }}
+data:
+  init.sh: |-
+{{ .Files.Get "scripts/init.sh" | indent 4 }}
+  bootstrap.sh: |-
+{{ .Files.Get "scripts/bootstrap.sh" | indent 4 }}
+  wait-for-it.sh: |-
+{{ .Files.Get "scripts/wait-for-it.sh" | indent 4 }}

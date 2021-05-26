@@ -1,0 +1,21 @@
+{{- if and .Values.tyk-pro.enabled .Values.tyk-pro.dash.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: dashboard-svc-{{ include "tyk-chart.fullname" . }}
+  labels:
+    app: dashboard-svc-{{ include "tyk-chart.fullname" . }}
+    chart: {{ include "tyk-chart.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  ports:
+  - port: {{ .Values.tyk-pro.dash.service.port }}
+    targetPort: {{ .Values.tyk-pro.dash.containerPort }}
+    protocol: TCP
+    name: http
+  type: {{ .Values.tyk-pro.dash.service.type }}
+  selector:
+    app: dashboard-{{ include "tyk-chart.fullname" . }}
+    release: {{ .Release.Name }}
+{{- end}} 

@@ -1,0 +1,146 @@
+{{- if and .Values.tyk-pro.enabled .Values.tyk-pro.dash.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dashboard-{{ include "tyk-chart.fullname" . }}
+  labels:
+    app: dashboard-{{ include "tyk-chart.fullname" . }}
+    chart: {{ include "tyk-chart.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.tyk-pro.dash.replicaCount }}
+  minReadySeconds: 5
+  strategy:
+    # indicate which strategy we want for rolling update
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: dashboard-{{ include "tyk-chart.fullname" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: dashboard-{{ include "tyk-chart.fullname" . }}
+        release: {{ .Release.Name }}
+      annotations:
+      {{- if .Values.tyk-pro.enableIstioIngress }}
+        traffic.sidecar.istio.io/excludeInboundPorts: "{{ .Values.tyk-pro.dash.containerPort }}"
+        traffic.sidecar.istio.io/includeInboundPorts: ""
+      {{- end }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-dashboard.yaml") . | sha256sum }}
+    spec:
+{{- if .Values.tyk-pro.dash.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.tyk-pro.dash.nodeSelector | indent 8 }}
+{{- end }}
+{{- if .Values.tyk-pro.dash.tolerations }}
+      tolerations:
+{{ toYaml .Values.tyk-pro.dash.tolerations | indent 8 }}
+{{- end }}
+{{- if .Values.tyk-pro.dash.affinity }}
+      affinity:
+{{ toYaml .Values.tyk-pro.dash.affinity | indent 8 }}
+{{- end }}
+      containers:
+      - image: "{{ .Values.tyk-pro.dash.image.repository }}:{{ .Values.tyk-pro.dash.image.tag }}"
+        imagePullPolicy: {{ .Values.tyk-pro.dash.image.pullPolicy }}
+        name: dashboard-{{ .Chart.Name }}
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - all
+        env:
+          - name: TYK_DB_LISTENPORT
+            value: "{{ .Values.tyk-pro.dash.containerPort }}"
+          - name: REDIGOCLUSTER_SHARDCOUNT
+            value: "{{ .Values.redis.shardCount }}"
+          - name: TYK_DB_HOSTCONFIG_HOSTNAME
+            value: "{{ .Values.tyk-pro.dash.hostName }}"
+          - name: TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME
+            value: "{{ .Values.gateway.hostName }}"
+          - name: TYK_DB_TYKAPI_HOST
+            value: "{{ include "tyk-chart.gwproto" . }}://gateway-svc-{{ include "tyk-chart.fullname" . }}.{{ .Release.Namespace }}"
+          - name: TYK_DB_TYKAPI_PORT
+            value: "{{ .Values.gateway.service.port }}"
+          {{- if .Values.gateway.control.enabled }}
+          - name: TYK_DB_TYKAPI_HOST
+            value: "{{ include "tyk-chart.gwproto" . }}://gateway-control-svc-{{ include "tyk-chart.fullname" . }}.{{ .Release.Namespace }}"
+          - name: TYK_DB_TYKAPI_PORT
+            value: "{{ .Values.gateway.control.containerPort }}"
+          {{- end }}
+          - name: TYK_DB_TYKAPI_SECRET
+            value: "{{ .Values.secrets.APISecret }}"
+          - name: TYK_DB_REDISADDRS
+            value: {{include "tyk-chart.redis_url" . | quote}}
+          - name: TYK_DB_ENABLECLUSTER
+            value: "{{ default "false" .Values.redis.enableCluster }}"
+          - name: TYK_DB_REDISPASSWORD
+            value: "{{ .Values.redis.pass }}"
+          - name: TYK_DB_REDISUSESSL
+            value: "{{ .Values.redis.useSSL }}"
+          - name: TYK_DB_REDISSSLINSECURESKIPVERIFY
+            value: "true"
+          - name: TYK_DB_MONGOURL
+            value: {{ include "tyk-chart.mongo_url" . | quote }}
+          - name: TYK_DB_MONGOUSESSL
+            value: "{{ .Values.mongo.useSSL }}"
+          - name: TYK_DB_ADMINSECRET
+            value: "{{ .Values.secrets.AdminSecret }}"
+          - name: TYK_DB_NODESECRET
+            value: "{{ .Values.secrets.APISecret }}"
+          - name: TYK_DB_LICENSEKEY
+            value: {{ .Values.tyk-pro.dash.license | quote }}
+          - name: TYK_DB_HOSTCONFIG_PORTALROOTPATH
+            value:  {{ .Values.tyk-pro.portal.path }}
+        {{- if .Values.tyk-pro.dash.extraEnvs }}
+        {{- range $env := .Values.tyk-pro.dash.extraEnvs }}
+          - name: {{ $env.name }}
+            value: {{ $env.value | quote }}
+        {{- end }}
+        {{- end }}
+        resources:
+{{ toYaml .Values.tyk-pro.dash.resources | indent 12 }}
+        command: ["/opt/tyk-dashboard/tyk-analytics", "--conf=/etc/tyk-dashboard/tyk_analytics.conf"]
+        workingDir: /opt/tyk-dashboard
+        ports:
+        - containerPort: {{ .Values.tyk-pro.dash.containerPort }}
+        volumeMounts:
+          - name: tyk-dashboard-conf
+            mountPath: /etc/tyk-dashboard
+        livenessProbe:
+          httpGet:
+            scheme: "HTTP"
+            path: /
+            port: {{ .Values.tyk-pro.dash.containerPort }}
+          initialDelaySeconds: 5
+          periodSeconds: 2
+          timeoutSeconds: 3
+          failureThreshold: 2
+        readinessProbe:
+          httpGet:
+            scheme: "HTTP"
+            path: /
+            port: {{ .Values.tyk-pro.dash.containerPort }}
+          initialDelaySeconds: 1
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 2000
+      volumes:
+        - name: tyk-dashboard-conf
+          configMap:
+            name: dashboard-conf-{{ include "tyk-chart.fullname" . }}
+            items:
+              - key: tyk_analytics.conf
+                path: tyk_analytics.conf
+{{- end }}

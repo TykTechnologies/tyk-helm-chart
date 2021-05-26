@@ -1,0 +1,13 @@
+{{- if .Values.gateway.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mgmt-gateway-conf-{{ include "tyk-chart.fullname" . }}
+  labels:
+    app: gateway-{{ include "tyk-chart.fullname" . }}
+    chart: {{ include "tyk-chart.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  {{- (.Files.Glob "configs/tyk_mgmt.conf").AsConfig | nindent 2 }}
+{{- end }}

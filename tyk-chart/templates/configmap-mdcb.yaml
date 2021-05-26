@@ -1,0 +1,13 @@
+{{- if and .Values.tyk-pro.enabled .Values.mdcb.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mdcb-conf-{{ include "tyk-chart.fullname" . }}
+  labels:
+    app: mdcb-{{ include "tyk-chart.fullname" . }}
+    chart: {{ include "tyk-chart.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  {{- (.Files.Glob "configs/tyk_sink.conf").AsConfig | nindent 2 }}
+{{- end }}
