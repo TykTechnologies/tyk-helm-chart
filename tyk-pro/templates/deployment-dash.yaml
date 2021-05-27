@@ -66,15 +66,16 @@ spec:
             value: "{{ .Values.dash.hostName }}"
           - name: TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME
             value: "{{ .Values.gateway.hostName }}"
-          - name: TYK_DB_TYKAPI_HOST
-            value: "{{ include "tyk-pro.gwproto" . }}://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
-          - name: TYK_DB_TYKAPI_PORT
-            value: "{{ .Values.gateway.service.port }}"
           {{- if .Values.gateway.control.enabled }}
           - name: TYK_DB_TYKAPI_HOST
             value: "{{ include "tyk-pro.gwproto" . }}://gateway-control-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
           - name: TYK_DB_TYKAPI_PORT
             value: "{{ .Values.gateway.control.containerPort }}"
+          {{- else }}
+          - name: TYK_DB_TYKAPI_HOST
+            value: "{{ include "tyk-pro.gwproto" . }}://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
+          - name: TYK_DB_TYKAPI_PORT
+            value: "{{ .Values.gateway.service.port }}"
           {{- end }}
           - name: TYK_DB_TYKAPI_SECRET
             value: "{{ .Values.secrets.APISecret }}"
