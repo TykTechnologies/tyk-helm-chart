@@ -43,10 +43,6 @@ spec:
 {{- end }}
       containers:
       - image: "{{ .Values.mdcb.image.repository }}:{{ .Values.mdcb.image.tag }}"
-        {{- with .Values.mdcb.image.pullSecrets }}
-        imagePullSecrets:
-        {{- toYaml . | nindent 12 }}
-        {{- end }}
         imagePullPolicy: {{ .Values.mdcb.image.pullPolicy }}
         name: dashboard-{{ .Chart.Name }}
         securityContext:
@@ -124,6 +120,10 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
+      {{- with .Values.mdcb.image.pullSecrets }}
+      imagePullSecrets:
+      {{- toYaml . | nindent 12 }}
+      {{- end }}
       securityContext:
         runAsUser: 1000
         fsGroup: 2000
