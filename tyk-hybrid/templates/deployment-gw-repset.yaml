@@ -76,17 +76,29 @@ spec:
           - name: TYK_GW_STORAGE_DATABASE
             value: "{{ default "0" .Values.redis.storage.database }}"
           - name: TYK_GW_STORAGE_PASSWORD
-            value: "{{ .Values.redis.pass }}"
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-hybrid.fullname" . }} {{ end}}
+                key: redisPass
           - name: TYK_GW_STORAGE_USESSL
             value: "{{ .Values.redis.useSSL }}"
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.gateway.tls }}"
           - name: TYK_GW_SLAVEOPTIONS_RPCKEY
-            value: "{{ default .Values.tyk_k8s.org_id .Values.gateway.rpc.rpcKey }}"
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-hybrid.fullname" . }} {{ end}}
+                key: rpcKey
           - name: TYK_GW_SLAVEOPTIONS_APIKEY
-            value: "{{ default .Values.tyk_k8s.dash_key .Values.gateway.rpc.apiKey }}"
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-hybrid.fullname" . }} {{ end}}
+                key: apiKey
           - name: TYK_GW_SECRET
-            value: "{{ .Values.secrets.APISecret }}"
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-hybrid.fullname" . }} {{ end}}
+                key: APISecret
           - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
             value: "{{ .Values.gateway.rpc.connString }}"
           - name: TYK_GW_SLAVEOPTIONS_USESSL
