@@ -43,7 +43,7 @@ mongo:
   useSSL: false
 
 mdcb:
-  enabled: false
+  enabled: true
   useSSL: false
   replicaCount: 1
   containerPort: 9090

@@ -71,9 +71,9 @@ spec:
           - name: TYK_DB_TYKAPI_PORT
             value: "{{ .Values.gateway.service.port }}"
           {{- if .Values.gateway.control.enabled }}
-          - name: TYK_GW_CONTROLAPIHOSTNAME
+          - name: TYK_DB_TYKAPI_HOST
             value: "{{ include "tyk-pro.gwproto" . }}://gateway-control-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
-          - name: TYK_GW_CONTROLAPIPORT
+          - name: TYK_DB_TYKAPI_PORT
             value: "{{ .Values.gateway.control.containerPort }}"
           {{- end }}
           - name: TYK_DB_TYKAPI_SECRET
