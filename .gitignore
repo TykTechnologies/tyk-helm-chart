@@ -5,3 +5,6 @@ output.yaml
 tyk-pro/old_tpl
 values_real.yaml
 **/.DS_Store
+
+**/mounts/files/*
+**/mounts/secrets/*
