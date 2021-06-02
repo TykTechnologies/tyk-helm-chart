@@ -17,10 +17,11 @@ secrets:
   # tyk.conf node_secret
   # tyk.conf secret
   APISecret: CHANGEME
-  # If you don't want to store plaintext secrets in the Helm value file and would rather provide the k8s Secret externally please populate the value below
+  # If you don't want to store plaintext secrets in the Helm value file and would
+  # rather provide the k8s Secret externally please populate the value below
   useSecretName: ""
 
-redis: {}
+redis:
   # The addrs value will allow you to set your Redis addresses. If you are
   # using a redis cluster, you can list the endpoints of the redis instances
   # or use the cluster configuration endpoint.
@@ -40,23 +41,28 @@ redis: {}
   # Default value: false
   # enableCluster: true
 
-  # By default the database index is 0. Setting the database index is not supported with redis cluster. As such, if you have enableCluster: true, then this value should be omitted or explicitly set to 0.
+  # By default the database index is 0. Setting the database index is not
+  # supported with redis cluster. As such, if you have enableCluster: true,
+  # then this value should be omitted or explicitly set to 0.
   storage:
     database: 0
 
 gateway:
   # The hostname to bind the Gateway to.
   hostName: tyk-gw.local
-  # Sharding gateway allows you to selectively load APIs to specific gateways. If enabled make sure you have at least one gateway that is not sharded.
+  # Sharding gateway allows you to selectively load APIs to specific gateways.
+  # If enabled make sure you have at least one gateway that is not sharded.
   # Also be sure to match API segmentation tags with the tags selected below.
   sharding:
     enabled: false
     tag: ""
   # When true, sets the gateway protocol to HTTPS.
   tls: false
-  # For on premise MDCB setups simply change the connection string to point to your MDCB instance
+  # For on premise MDCB setups simply change the connection string to point to
+  # your MDCB instance
   rpc:
-    # On the Tyk Cloud Console find this value in the endpoints for your control plane deployment
+    # On the Tyk Cloud Console find this value in the endpoints for your
+    # control plane deployment
     connString: ""
     useSSL: true
     sslInsecureSkipVerify: true
@@ -101,10 +107,11 @@ gateway:
     #    hosts:
     #      - chart-example.local
   resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # We usually recommend not to specify default resources and to leave this
+    # as a conscious choice for the user. This also increases chances charts
+    # run on environments with little resources, such as Minikube. If you do
+    # want to specify resources, uncomment the following lines, adjust them
+    # as necessary, and remove the curly braces after 'resources:'.
     # limits:
     #  cpu: 100m
     #  memory: 128Mi

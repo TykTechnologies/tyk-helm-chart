@@ -16,10 +16,11 @@ secrets:
   # tyk.conf node_secret
   # tyk.conf secret
   APISecret: CHANGEME
-  # If you don't want to store plaintext secrets in the Helm value file and would rather provide the k8s Secret externally please populate the value below
+  # If you don't want to store plaintext secrets in the Helm value file and would
+  # rather provide the k8s Secret externally please populate the value below
   useSecretName: ""
 
-redis: {}
+redis:
   # The addrs value will allow you to set your Redis addresses. If you are
   # using a redis cluster, you can list the endpoints of the redis instances
   # or use the cluster configuration endpoint.
@@ -34,12 +35,14 @@ redis: {}
   # Default value: false
   # useSSL: true
 
-  # The enableCluster value will allow you to indicate to Tyk whither you are running
-  # a Redis cluster or not.
+  # The enableCluster value will allow you to indicate to Tyk whither you are
+  # running a Redis cluster or not.
   # Default value: false
   # enableCluster: true
 
-  # By default the database index is 0. Setting the database index is not supported with redis cluster. As such, if you have enableCluster: true, then this value should be omitted or explicitly set to 0.
+  # By default the database index is 0. Setting the database index is not
+  # supported with redis cluster. As such, if you have enableCluster: true,
+  # then this value should be omitted or explicitly set to 0.
   storage:
     database: 0
 
@@ -99,10 +102,11 @@ gateway:
     #    hosts:
     #      - chart-example.local
   resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # We usually recommend not to specify default resources and to leave this
+    # as a conscious choice for the user. This also increases chances charts
+    # run on environments with little resources, such as Minikube. If you do
+    # want to specify resources, uncomment the following lines, adjust them
+    # as necessary, and remove the curly braces after 'resources:'.
     # limits:
     #  cpu: 100m
     #  memory: 128Mi
@@ -116,8 +120,10 @@ gateway:
   affinity: {}
   extraEnvs: []
 
-# If pump is enabled the Gateway will create and collect analytics data to send to a data store of your choice
-# These can be set up in the pump config. The possible pump configs can be found here: https://github.com/TykTechnologies/tyk-pump#configuration
+# If pump is enabled the Gateway will create and collect analytics data to send
+# to a data store of your choice. These can be set up in the pump config. The
+# possible pump configs can be found here:
+# https://github.com/TykTechnologies/tyk-pump#configuration
 pump:
   # Determines whither or not the pump component should be installed.
   enabled: false
@@ -129,10 +135,11 @@ pump:
     pullPolicy: IfNotPresent
   annotations: {}
   resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # We usually recommend not to specify default resources and to leave this
+    # as a conscious choice for the user. This also increases chances charts
+    # run on environments with little resources, such as Minikube. If you do
+    # want to specify resources, uncomment the following lines, adjust them
+    # as necessary, and remove the curly braces after 'resources:'.
     # limits:
     #  cpu: 100m
     #  memory: 128Mi

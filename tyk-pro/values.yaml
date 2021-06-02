@@ -10,10 +10,12 @@ nameOverride: ""
 # Default value: tyk-pro.fullname
 fullnameOverride: ""
 
-# Master switch for enabling/disabling bootstraing job batch, role binding, role, and account service.
+# Master switch for enabling/disabling bootstraing job batch, role binding,
+# role, and account service.
 bootstrap: true
 
-# These are your Tyk stack secrets will directly map to the following Tyk stack configuration:
+# These are your Tyk stack secrets will directly map to the following
+# Tyk stack configuration:
 secrets:
   # tyk_analytics.conf tyk_api_config.secret
   # tyk_analytics.conf shared_node_secret
@@ -24,10 +26,11 @@ secrets:
   # tib.conf TykAPISettings.GatewayConfig.AdminSecret
   # tib.conf TykAPISettings.DashboardConfig.AdminSecret
   AdminSecret: "12345"
-  # If you don't want to store plaintext secrets in the Helm value file and would rather provide the k8s Secret externally please populate the value below
+  # If you don't want to store plaintext secrets in the Helm value file and would
+  # rather provide the k8s Secret externally please populate the value below
   useSecretName: ""
 
-redis: {}
+redis:
   # The addrs value will allow you to set your Redis addresses. If you are
   # using a redis cluster, you can list the endpoints of the redis instances
   # or use the cluster configuration endpoint.
@@ -42,12 +45,14 @@ redis: {}
   # Default value: false
   # useSSL: true
 
-  # The enableCluster value will allow you to indicate to Tyk whither you are running
-  # a Redis cluster or not.
+  # The enableCluster value will allow you to indicate to Tyk whither you are
+  # running a Redis cluster or not.
   # Default value: false
   # enableCluster: true
 
-  # By default the database index is 0. Setting the database index is not supported with redis cluster. As such, if you have enableCluster: true, then this value should be omitted or explicitly set to 0.
+  # By default the database index is 0. Setting the database index is not
+  # supported with redis cluster. As such, if you have enableCluster: true,
+  # then this value should be omitted or explicitly set to 0.
   storage:
     database: 0
 
@@ -92,10 +97,11 @@ mdcb:
     type: LoadBalancer
     port: 9090
   resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # We usually recommend not to specify default resources and to leave this
+    # as a conscious choice for the user. This also increases chances charts
+    # run on environments with little resources, such as Minikube. If you do
+    # want to specify resources, uncomment the following lines, adjust them
+    # as necessary, and remove the curly braces after 'resources:'.
     # limits:
     #  cpu: 100m
     #  memory: 128Mi
@@ -141,10 +147,11 @@ tib:
     #    hosts:
     #      - chart-example.local
   resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # We usually recommend not to specify default resources and to leave this
+    # as a conscious choice for the user. This also increases chances charts
+    # run on environments with little resources, such as Minikube. If you do
+    # want to specify resources, uncomment the following lines, adjust them
+    # as necessary, and remove the curly braces after 'resources:'.
     # limits:
     #  cpu: 100m
     #  memory: 128Mi
@@ -205,10 +212,11 @@ dash:
     #    hosts:
     #      - chart-example.local
   resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # We usually recommend not to specify default resources and to leave this
+    # as a conscious choice for the user. This also increases chances charts
+    # run on environments with little resources, such as Minikube. If you do
+    # want to specify resources, uncomment the following lines, adjust them
+    # as necessary, and remove the curly braces after 'resources:'.
     # limits:
     #  cpu: 100m
     #  memory: 128Mi
@@ -219,21 +227,11 @@ dash:
   tolerations: []
   affinity: {}
   extraEnvs: []
-  # Set these values for dashboard admin user
-  adminUser:
-    firstName: admin
-    lastName: user
-    email: default@exmaple.com
-    # Set a password or a random one will be assigned
-    password: ""
-  org:
-    name: Default Org
-    # Set this value to the domain of your developer portal
-    cname: tyk-portal.local
 
 portal:
-  # Portal will only bootstrap if both the Master and Dashboard bootstrap options are set to true
-  # Only set this to false if you're not planning on using developer portal
+  # Portal will only bootstrap if both the Master and Dashboard bootstrap
+  # options are set to true. Only set this to false if you're not planning
+  # on using developer portal
   bootstrap: true
   path: /
   # Creates an ingress object in k8s. Will require an ingress-controller and
@@ -257,14 +255,16 @@ gateway:
   hostName: tyk-gw.local
   # When true, sets the gateway protocol to HTTPS.
   tls: false
-  # Sharding gateway allows you to selectively load APIs to specific gateways. If enabled make sure you have at least one gateway that is not sharded.
+  # Sharding gateway allows you to selectively load APIs to specific gateways.
+  # If enabled make sure you have at least one gateway that is not sharded.
   # Also be sure to match API segmentation tags with the tags selected below.
   sharding:
     enabled: false
     tag: ""
   # Set to true to use Tyk as the Ingress gateway to an Istio Service Mesh
   # We apply some exceptions to the Istio IPTables so inbound calls to the
-  # Gateway and Dashboard are exposed to the outside world - see the deployment templates for implementation
+  # Gateway and Dashboard are exposed to the outside world - see the deployment
+  # templates for implementation
   enableIstioIngress: false
 
   kind: DaemonSet
@@ -300,10 +300,11 @@ gateway:
     #    hosts:
     #      - chart-example.local
   resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # We usually recommend not to specify default resources and to leave this
+    # as a conscious choice for the user. This also increases chances charts
+    # run on environments with little resources, such as Minikube. If you do
+    # want to specify resources, uncomment the following lines, adjust them
+    # as necessary, and remove the curly braces after 'resources:'.
     # limits:
     #  cpu: 100m
     #  memory: 128Mi
@@ -328,10 +329,11 @@ pump:
     pullPolicy: Always
   annotations: {}
   resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # We usually recommend not to specify default resources and to leave this
+    # as a conscious choice for the user. This also increases chances charts
+    # run on environments with little resources, such as Minikube. If you do
+    # want to specify resources, uncomment the following lines, adjust them
+    # as necessary, and remove the curly braces after 'resources:'.
     # limits:
     #  cpu: 100m
     #  memory: 128Mi
