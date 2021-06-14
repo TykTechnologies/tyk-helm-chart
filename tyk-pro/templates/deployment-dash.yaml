@@ -121,12 +121,9 @@ spec:
                 key: DashLicense
           - name: TYK_DB_HOSTCONFIG_PORTALROOTPATH
             value:  {{ .Values.portal.path }}
-        {{- if .Values.dash.extraEnvs }}
-        {{- range $env := .Values.dash.extraEnvs }}
-          - name: {{ $env.name }}
-            value: {{ $env.value | quote }}
-        {{- end }}
-        {{- end }}
+          {{- if .Values.dash.extraEnvs }}
+          {{- toYaml .Values.dash.extraEnvs| nindent 10 }}
+          {{- end }}
         resources:
 {{ toYaml .Values.dash.resources | indent 12 }}
         command: ["/opt/tyk-dashboard/tyk-analytics", "--conf=/etc/tyk-dashboard/tyk_analytics.conf"]
