@@ -56,6 +56,12 @@ spec:
         volumeMounts:
           - name: tyk-scratch
             mountPath: /mnt/tyk-gateway
+          {{- if .Values.gateway.mounts }}
+          {{- range $secret := .Values.gateway.mounts }}
+          - name: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
+            mountPath: {{ $secret.mountPath }}
+          {{- end }}
+          {{- end }}
       containers:
       - name: gateway-{{ .Chart.Name }}
         image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
@@ -170,3 +176,10 @@ spec:
         - name: {{ .Release.Name }}-default-cert
           secret:
             secretName: {{ .Release.Name }}-default-cert
+        {{- if .Values.gateway.mounts }}
+        {{- range $secret := .Values.gateway.mounts }}
+        - name: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
+          secret:
+            secretName: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
+        {{- end }}
+        {{- end }}
