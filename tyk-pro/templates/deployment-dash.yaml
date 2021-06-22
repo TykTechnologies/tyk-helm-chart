@@ -135,7 +135,7 @@ spec:
             mountPath: /etc/tyk-dashboard
           {{- if .Values.dash.mounts }}
           {{- range $secret := .Values.dash.mounts }}
-          - name: {{ $.Release.Name }}-secret-{{ $secret.name }}
+          - name: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
             mountPath: {{ $secret.mountPath }}
           {{- end }}
           {{- end }}
@@ -169,9 +169,9 @@ spec:
                 path: tyk_analytics.conf
         {{- if .Values.dash.mounts }}
         {{- range $secret := .Values.dash.mounts }}
-        - name: {{ $.Release.Name }}-secret-{{ $secret.name }}
+        - name: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
           secret:
-            secretName: {{ $.Release.Name }}-secret-{{ $secret.name }}
+            secretName: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
         {{- end }}
         {{- end }}
 {{- end }}
