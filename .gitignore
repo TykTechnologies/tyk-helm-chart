@@ -6,4 +6,11 @@ tyk-pro/old_tpl
 values_real.yaml
 **/.DS_Store
 
-**/mounts/*
+!tyk-pro/mounts/.gitkeep
+tyk-pro/mounts/*
+
+!tyk-hybrid/mounts/.gitkeep
+tyk-hybrid/mounts/*
+
+!tyk-headless/mounts/.gitkeep
+tyk-headless/mounts/*
