@@ -101,6 +101,12 @@ spec:
         volumeMounts:
           - name: tyk-mdcb-conf
             mountPath: /etc/tyk-sink
+          {{- if .Values.mdcb.mounts }}
+          {{- range $secret := .Values.mdcb.mounts }}
+          - name: {{ $.Release.Name }}-mdcb-secret-{{ $secret.name }}
+            mountPath: {{ $secret.mountPath }}
+          {{- end }}
+          {{- end }}
         livenessProbe:
           httpGet:
             scheme: "HTTP"
@@ -136,4 +142,11 @@ spec:
         - name: {{ .Release.Name }}-default-cert
           secret:
             secretName: {{ .Release.Name }}-default-cert
+        {{- if .Values.mdcb.mounts }}
+        {{- range $secret := .Values.mdcb.mounts }}
+        - name: {{ $.Release.Name }}-mdcb-secret-{{ $secret.name }}
+          secret:
+            secretName: {{ $.Release.Name }}-mdcb-secret-{{ $secret.name }}
+        {{- end }}
+        {{- end }}
 {{- end }}
