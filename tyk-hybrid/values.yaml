@@ -125,9 +125,6 @@ gateway:
   affinity: {}
   extraEnvs: []
   mounts: []
-    # - name: mount
-    #   filename: mount.txt
-    #   mountPath: /dev/null
 
 rbac: true
 
