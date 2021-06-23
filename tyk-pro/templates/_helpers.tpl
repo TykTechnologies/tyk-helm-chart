@@ -48,29 +48,38 @@ http
 {{- end -}}
 
 {{- define "tyk-pro.dash_url" -}}
-{{include "tyk-pro.dash_proto" . }}://dashboard-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.dash.service.port }}
+{{ include "tyk-pro.dash_proto" . }}://dashboard-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.dash.service.port }}
 {{- end -}}
 
 {{- define "tyk-pro.gateway_url" -}}
-{{include "tyk-pro.gwproto" . }}://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.gateway.service.port }}
+{{ include "tyk-pro.gwproto" . }}://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.gateway.service.port }}
 {{- end -}}
 
 {{- define "tyk-pro.redis_url" -}}
-{{- if and .Values.redis.host .Values.redis.port -}}
-{{ .Values.redis.host }}:{{ .Values.redis.port }}
-{{- else if  .Values.redis.addrs -}}
+{{- if .Values.redis.addrs -}}
 {{ join "," .Values.redis.addrs }}
+{{/* Adds support for older charts with the host and port options */}}
+{{- else if and .Values.redis.host .Values.redis.port -}}
+{{ .Values.redis.host }}:{{ .Values.redis.port }}
 {{- else -}}
 redis.{{ .Release.Namespace }}.svc.cluster.local:6379
 {{- end -}}
 {{- end -}}
 
 {{- define "tyk-pro.mongo_url" -}}
-{{- if and .Values.mongo.host .Values.mongo.port -}}
-mongodb://{{ .Values.mongo.host }}:{{ .Values.mongo.port }}
-{{- else if  .Values.mongo.mongoURL -}}
+{{- if .Values.mongo.mongoURL -}}
 {{ .Values.mongo.mongoURL }}
+{{/* Adds support for older charts with the host and port options */}}
+{{- else if and .Values.mongo.host .Values.mongo.port -}}
+mongodb://{{ .Values.mongo.host }}:{{ .Values.mongo.port }}/tyk_analytics
 {{- else -}}
 mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
 {{- end -}}
+{{- end -}}
+
+{{/*
+Create Sematic Version of gateway without prefix v
+*/}}
+{{- define "tyk-pro.gateway-version" -}}
+{{- printf "%s" .Values.gateway.image.tag | replace "v" "" -}}
 {{- end -}}

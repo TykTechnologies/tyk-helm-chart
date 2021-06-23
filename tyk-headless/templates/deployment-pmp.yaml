@@ -48,18 +48,22 @@ spec:
             drop:
               - all
         env:
+          # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
-            value: "{{ .Values.redis.shardCount }}"
-            {{- if .Values.mongo.enabled }}
+            value: "128"
+          {{- if .Values.mongo.enabled }}
           - name: PMP_MONGO_MONGOURL
-            value: "{{ .Values.mongo.mongoURL }}"
+            value: {{ include "tyk-headless.mongo_url" . | quote }}
           - name: PMP_MONGO_MONGOUSESSL
-            value: "{{ .Values.mongo.useSSL }}"
+            value: "{{ default "false" .Values.mongo.useSSL }}"
           - name: PMP_MONGOAGG_MONGOURL
-            value:  "{{ .Values.mongo.mongoURL }}"
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end}}
+                key: mongoURL
           - name: PMP_MONGOAGG_MONGOUSESSL
-            value:  "{{ .Values.mongo.useSSL }}"
-            {{- end }}
+            value:  "{{ default "false" .Values.mongo.useSSL }}"
+          {{- end }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS
             {{- if and .Values.redis.host .Values.redis.port }}
             value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"
@@ -69,9 +73,12 @@ spec:
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ENABLECLUSTER
             value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_PASSWORD
-            value: "{{ .Values.redis.pass }}"
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end}}
+                key: redisPass
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISUSESSL
-            value: "{{ .Values.redis.useSSL }}"
+            value: "{{ default "false" .Values.redis.useSSL }}"
         {{- if .Values.pump.extraEnvs }}
         {{- range $env := .Values.pump.extraEnvs }}
           - name: {{ $env.name }}

@@ -1,7 +1,6 @@
 name: Smoke test
 
 on:
-  pull_request: {}
   push:
     branches:
       - master
@@ -102,12 +101,14 @@ jobs:
         with:
           version: v3.5.3
 
-      - name: Deploy "${{ matrix.directory }}" chart
+      - name: Deploy "${{ matrix.directory }}" requisites
         run: |
           kubectl create namespace ${{ env.NAMESPACE }}
           kubectl apply -f deploy/dependencies/mongo.yaml -n ${{ env.NAMESPACE }}
           kubectl apply -f deploy/dependencies/redis.yaml -n ${{ env.NAMESPACE }}
 
+      - name: Deploy "${{ matrix.directory }}" chart
+        run: |
           if [ "${{ matrix.directory }}" == tyk-headless ]; then
             helm install ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
           elif [ "${{ matrix.directory }}" == tyk-hybrid ]; then

@@ -27,7 +27,8 @@ spec:
         app: dashboard-{{ include "tyk-pro.fullname" . }}
         release: {{ .Release.Name }}
       annotations:
-      {{- if .Values.enableIstioIngress }}
+      # Enable backward compatibility to chart 0.8.1.
+      {{- if or .Values.gateway.enableIstioIngress .Values.enableIstioIngress }}
         traffic.sidecar.istio.io/excludeInboundPorts: "{{ .Values.dash.containerPort }}"
         traffic.sidecar.istio.io/includeInboundPorts: ""
       {{- end }}
@@ -60,52 +61,69 @@ spec:
         env:
           - name: TYK_DB_LISTENPORT
             value: "{{ .Values.dash.containerPort }}"
+          # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
-            value: "{{ .Values.redis.shardCount }}"
+            value: "128"
           - name: TYK_DB_HOSTCONFIG_HOSTNAME
             value: "{{ .Values.dash.hostName }}"
           - name: TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME
             value: "{{ .Values.gateway.hostName }}"
-          - name: TYK_DB_TYKAPI_HOST
-            value: "{{ include "tyk-pro.gwproto" . }}://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
-          - name: TYK_DB_TYKAPI_PORT
-            value: "{{ .Values.gateway.service.port }}"
           {{- if .Values.gateway.control.enabled }}
           - name: TYK_DB_TYKAPI_HOST
             value: "{{ include "tyk-pro.gwproto" . }}://gateway-control-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
           - name: TYK_DB_TYKAPI_PORT
             value: "{{ .Values.gateway.control.containerPort }}"
+          {{- else }}
+          - name: TYK_DB_TYKAPI_HOST
+            value: "{{ include "tyk-pro.gwproto" . }}://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
+          - name: TYK_DB_TYKAPI_PORT
+            value: "{{ .Values.gateway.service.port }}"
           {{- end }}
           - name: TYK_DB_TYKAPI_SECRET
-            value: "{{ .Values.secrets.APISecret }}"
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                key: APISecret
           - name: TYK_DB_REDISADDRS
-            value: {{include "tyk-pro.redis_url" . | quote}}
+            value: {{ include "tyk-pro.redis_url" . | quote }}
           - name: TYK_DB_ENABLECLUSTER
             value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_DB_REDISPASSWORD
-            value: "{{ .Values.redis.pass }}"
+            valueFrom:
+              secretKeyRef:
+                name:{{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                key: redisPass
           - name: TYK_DB_REDISUSESSL
-            value: "{{ .Values.redis.useSSL }}"
+            value: "{{ default "false" .Values.redis.useSSL }}"
           - name: TYK_DB_REDISSSLINSECURESKIPVERIFY
             value: "true"
           - name: TYK_DB_MONGOURL
-            value: {{ include "tyk-pro.mongo_url" . | quote }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                key: mongoURL
           - name: TYK_DB_MONGOUSESSL
-            value: "{{ .Values.mongo.useSSL }}"
+            value: "{{ default "false" .Values.mongo.useSSL }}"
           - name: TYK_DB_ADMINSECRET
-            value: "{{ .Values.secrets.AdminSecret }}"
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                key: AdminSecret
           - name: TYK_DB_NODESECRET
-            value: "{{ .Values.secrets.APISecret }}"
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                key: APISecret
           - name: TYK_DB_LICENSEKEY
-            value: {{ .Values.dash.license | quote }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                key: DashLicense
           - name: TYK_DB_HOSTCONFIG_PORTALROOTPATH
             value:  {{ .Values.portal.path }}
-        {{- if .Values.dash.extraEnvs }}
-        {{- range $env := .Values.dash.extraEnvs }}
-          - name: {{ $env.name }}
-            value: {{ $env.value | quote }}
-        {{- end }}
-        {{- end }}
+          {{- if .Values.dash.extraEnvs }}
+          {{- toYaml .Values.dash.extraEnvs| nindent 10 }}
+          {{- end }}
         resources:
 {{ toYaml .Values.dash.resources | indent 12 }}
         command: ["/opt/tyk-dashboard/tyk-analytics", "--conf=/etc/tyk-dashboard/tyk_analytics.conf"]

@@ -3,35 +3,37 @@
 # Declare variables to be passed into your templates.
 
 nameOverride: ""
-fullnameOverride: "tyk-headless"
+fullnameOverride: tyk-headless
 
 secrets:
-  APISecret: "CHANGEME"
+  APISecret: CHANGEME
   OrgID: "1"
+  # If you don't want to store plaintext secrets in the Helm value file and would rather provide the k8s Secret externally please populate the value below
+  useSecretName: ""
 
 redis:
     shardCount: 128
     addrs:
-      - "redis.tyk.svc.cluster.local:6379"
+      - redis.tyk.svc.cluster.local:6379
     useSSL: false
     #If you're using Bitnami Redis chart please input the correct host to your installation in the field below
     #addrs:
-      #- "tyk-redis-master.tyk.svc.cluster.local:6379"
+      #- tyk-redis-master.tyk.svc.cluster.local:6379
     #If you're using Bitnami Redis chart please input your password in the field below
       #pass: ""
 
 mongo:
   enabled: false
-#    mongoURL: "mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics"
+#    mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
 #    #If you're using Bitnami MongoDB chart please input your password below
-#    #mongoURL: "mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk-dashboard?authSource=admin"
+#    #mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk-dashboard?authSource=admin
 #    useSSL: false
 
 gateway:
   kind: DaemonSet
-  replicaCount: 2
-  hostName: "gateway.tykbeta.com"
-  tls: true
+  replicaCount: 1
+  hostName: tyk-gw.local
+  tls: false
   containerPort: 8080
   tags: ""
   image:
@@ -44,7 +46,7 @@ gateway:
     externalTrafficPolicy: Local
     annotations: {}
   control:
-    enabled: false
+    enabled: true
     containerPort: 9696
     port: 9696
     type: ClusterIP
@@ -82,8 +84,8 @@ gateway:
 # If pump is enabled the Gateway will create and collect analytics data to send to a data store of your choice
 # These can be set up in the pump config. The possible pump configs can be found here: https://github.com/TykTechnologies/tyk-pump#configuration
 pump:
-  enabled: true
-  replicaCount: 2
+  enabled: false
+  replicaCount: 1
   image:
     repository: tykio/tyk-pump-docker-pub
     tag: v1.4.0

@@ -38,3 +38,14 @@ https
 http
 {{- end -}}
 {{- end -}}
+
+{{- define "tyk-hybrid.redis_url" -}}
+{{- if .Values.redis.addrs -}}
+{{ join "," .Values.redis.addrs }}
+{{/* Adds support for older charts with the host and port options */}}
+{{- else if and .Values.redis.host .Values.redis.port -}}
+{{ .Values.redis.host }}:{{ .Values.redis.port }}
+{{- else -}}
+redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+{{- end -}}
+{{- end -}}

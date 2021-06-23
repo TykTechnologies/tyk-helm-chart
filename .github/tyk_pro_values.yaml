@@ -6,33 +6,43 @@ nameOverride: ""
 fullnameOverride: ""
 
 # Used to shard the gateways. If you enable it make sure you have at least one gateway that is not sharded and also tag the APIs accordingly
-enableSharding: true
+enableSharding: false
 
 # Set to true to use Tyk as the Ingress gateway to an Istio Service Mesh
 # We apply some exceptions to the Istio IPTables so inbound calls to the
 # Gateway and Dashboard are exposed to the outside world - see the deployment templates for implementation
-enableIstioIngress: true
+enableIstioIngress: false
+
+# Master switch for enabling/disabling bootstraing job batch, role binding, role, and account service.
+bootstrap: true
 
 secrets:
-  APISecret: "CHANGEME"
+  APISecret: CHANGEME
   AdminSecret: "12345"
+  # If you don't want to store plaintext secrets in the Helm value file and would rather provide the k8s Secret externally please populate the value below
+  useSecretName: ""
 
 redis:
-    shardCount: 128
-    #If you're using Bitnami Redis chart please input the correct host to your instalaltion in the field below
-    #addrs:
-    #- "tyk-redis-master.tyk.svc.cluster.local:6379"
-    # addrs:
-    #   - "redis.tyk.svc.cluster.local:6379"
-    useSSL: false
-    #If you're using Bitnami Redis chart please input your password in the field below
-    #pass: ""
+  shardCount: 128
+  # addrs:
+  #   - redis.tyk.svc.cluster.local:6379
+  useSSL: false
+#    #If you're using Bitnami Redis chart please input the correct host to your installation in the field below
+#    addrs:
+#      - tyk-redis-master.tyk.svc.cluster.local:6379
+#   #If you're using Bitnami Redis chart please input your password in the field below
+#    pass: ""
+#   #If you are using Redis cluster, enable it here.
+#    enableCluster: false
+#   #By default the database index is 0. Setting the database index is not supported with redis cluster. As such, if you have enableCluster: true, then this value should be omitted or explicitly set to 0.
+  storage:
+    database: 0
 
 mongo:
-    # mongoURL: "mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics"
-    #If you're using Bitnami MongoDB chart please input your password below
-    #mongoURL: "mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk-dashboard?authSource=admin"
-    useSSL: false
+  # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+  # If you're using Bitnami MongoDB chart please input your password below
+  # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk-dashboard?authSource=admin
+  useSSL: false
 
 mdcb:
   enabled: true
@@ -43,7 +53,7 @@ mdcb:
   license: ""
   forwardAnalyticsToPump: true
   image:
-    repository: tykio/tyk-mdcb-docker #requires credential
+    repository: tykio/tyk-mdcb-docker    # requires credential
     tag: v1.8.0
     pullPolicy: Always
   service:
@@ -65,9 +75,8 @@ mdcb:
   affinity: {}
   extraEnvs: []
 
-
 tib:
-  enabled: true
+  enabled: false
   useSSL: true
   replicaCount: 1
   containerPort: 3010
@@ -82,7 +91,7 @@ tib:
     enabled: false
     annotations: {}
       # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
+      # kubernetes.io/tls-acme: true
     path: /
     hosts:
       - tib.local
@@ -106,12 +115,15 @@ tib:
   affinity: {}
   extraEnvs: []
   configMap:
-    #Create a configMap to store profiles json
+    # Create a configMap to store profiles json
     profiles: tyk-tib-profiles-conf
 
 dash:
+  enabled: true
+  # Dashboard will only bootstrap if the master bootstrap option is set to true
+  bootstrap: true
   replicaCount: 1
-  hostName: "localhost"
+  hostName: tyk-dashboard.local
   license: ""
   containerPort: 3000
   image:
@@ -158,9 +170,10 @@ dash:
   org:
     name: Default Org
     # Set this value to the domain of your developer portal
-    cname: "localhost"
+    cname: tyk-portal.local
 
 portal:
+  # Portal will only bootstrap if both the Master and Dashboard bootstrap options are set to true
   # Only set this to false if you're not planning on using developer portal
   bootstrap: true
   path: /
@@ -177,11 +190,13 @@ portal:
     #      - chart-example.local
 
 gateway:
+  enabled: true
   kind: DaemonSet
   replicaCount: 2
-  hostName: "gateway.tykbeta.com"
-  tags: "ingress"
-  tls: true
+  hostName: tyk-gw.local
+  # if enableSharding set to true then you must define a tag to load APIs to these gateways i.e. "ingress"
+  tags: ""
+  tls: false
   containerPort: 8080
   image:
     repository: tykio/tyk-gateway
@@ -191,6 +206,12 @@ gateway:
     type: NodePort
     port: 8080
     externalTrafficPolicy: Local
+    annotations: {}
+  control:
+    enabled: true
+    containerPort: 9696
+    port: 9696
+    type: ClusterIP
     annotations: {}
   ingress:
     enabled: false
@@ -223,7 +244,8 @@ gateway:
   extraEnvs: []
 
 pump:
-  replicaCount: 2
+  enabled: true
+  replicaCount: 1
   image:
     repository: tykio/tyk-pump-docker-pub
     tag: v1.4.0

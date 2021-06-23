@@ -43,10 +43,6 @@ spec:
 {{- end }}
       containers:
       - image: "{{ .Values.mdcb.image.repository }}:{{ .Values.mdcb.image.tag }}"
-        {{- with .Values.mdcb.image.pullSecrets }}
-        imagePullSecrets:
-        {{- toYaml . | nindent 12 }}
-        {{- end }}
         imagePullPolicy: {{ .Values.mdcb.image.pullPolicy }}
         name: dashboard-{{ .Chart.Name }}
         securityContext:
@@ -59,35 +55,43 @@ spec:
               - all
         env:
           - name: TYK_MDCB_SERVEROPTIONS_USESSL
-            value: "{{ .Values.mdcb.useSSL }}"
+          # Enable backward compatibility to chart 0.8.1.
+            value: "{{ or .Values.mdcb.tls .Values.mdcb.useSSL }}"
           - name: TYK_MDCB_LISTENPORT
             value: "{{ .Values.mdcb.containerPort }}"
+          # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
-            value: "{{ .Values.redis.shardCount }}"
+            value: "128"
           - name: TYK_MDCB_HEALTHCHECKPORT
             value: "{{ .Values.mdcb.healthcheckport }}"
           - name: TYK_MDCB_STORAGE_ADDRS
-            value: {{include "tyk-pro.redis_url" . |quote}}
+            value: {{ include "tyk-pro.redis_url" . | quote }}
           - name: TYK_MDCB_STORAGE_PASSWORD
-            value: "{{ .Values.redis.pass }}"
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                key: redisPass
           - name: TYK_MDCB_STORAGE_REDISUSESSL
-            value: "{{ .Values.redis.useSSL }}"
+            value: "{{ default "false" .Values.redis.useSSL }}"
           - name: TYK_MDCB_STORAGE_REDISSSLINSECURESKIPVERIFY
             value: "true"
           - name: TYK_MDCB_ANALYTICSCONFIG_MONGOURL
-            value: {{ include "tyk-pro.mongo_url" . | quote }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                key: mongoURL
           - name: TYK_MDCB_ANALYTICSCONFIG_MONGOUSESSL
-            value: "{{ .Values.mongo.useSSL }}"
+            value: "{{ default "false" .Values.mongo.useSSL }}"
           - name: TYK_MDCB_FORWARDANALYTICSTOPUMP
             value: "{{ .Values.mdcb.forwardAnalyticsToPump }}"
           - name: TYK_MDCB_LICENSE
-            value: {{ .Values.mdcb.license | quote }}
-        {{- if .Values.mdcb.extraEnvs }}
-        {{- range $env := .Values.mdcb.extraEnvs }}
-          - name: {{ $env.name }}
-            value: {{ $env.value | quote }}
-        {{- end }}
-        {{- end }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                key: MDCBLicense
+          {{- if .Values.mdcb.extraEnvs }}
+          {{- toYaml .Values.mdcb.extraEnvs| nindent 10 }}
+          {{- end }}
         resources:
         {{ toYaml .Values.mdcb.resources | indent 12 }}
         command: ["/opt/tyk-sink/tyk-sink", "--c=/etc/tyk-sink/tyk_sink.conf"]
@@ -115,6 +119,10 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
+      {{- with .Values.mdcb.image.pullSecrets }}
+      imagePullSecrets:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
       securityContext:
         runAsUser: 1000
         fsGroup: 2000
