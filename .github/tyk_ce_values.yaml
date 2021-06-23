@@ -86,7 +86,7 @@ pump:
   replicaCount: 2
   image:
     repository: tykio/tyk-pump-docker-pub
-    tag: v1.3.0
+    tag: v1.4.0
     pullPolicy: IfNotPresent
   annotations: {}
   resources: {}

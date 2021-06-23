@@ -126,7 +126,7 @@ dash:
   containerPort: 3000
   image:
     repository: tykio/tyk-dashboard
-    tag: v3.2.0
+    tag: v3.2.1
     pullPolicy: Always
   service:
     type: NodePort
@@ -246,7 +246,7 @@ pump:
   replicaCount: 1
   image:
     repository: tykio/tyk-pump-docker-pub
-    tag: v1.3.0
+    tag: v1.4.0
     pullPolicy: Always
   annotations: {}
   resources: {}
