@@ -36,3 +36,9 @@ NB: tyk-k8s has been deprecated. For reference, old documentation may be found h
 
 For further detail on how to configure Tyk as an Ingress Gateway, or how to manage APIs in Tyk using the Kubernetes API, please refer to our [Tyk Operator documentation](https://github.com/TykTechnologies/tyk-operator/). The Tyk operator can be installed along this chart and works with all installation types.
 
+## Mounting Files
+To mount files to any of the Tyk stack components, add the following to the mounts array in the section of that component:
+
+    - name: aws-mongo-ssl-cert
+      filename: rds-combined-ca-bundle.pem
+      mountPath: /etc/certs

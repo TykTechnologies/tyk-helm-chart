@@ -112,6 +112,7 @@ mdcb:
   tolerations: []
   affinity: {}
   extraEnvs: []
+  mounts: []
 
 tib:
   # Determines whither or not the tib component should be installed.
@@ -165,6 +166,7 @@ tib:
   configMap:
     # Create a configMap to store profiles json
     profiles: tyk-tib-profiles-conf
+  mounts: []
 
 dash:
   # Determines whither or not the dashboard component should be installed.
@@ -227,6 +229,7 @@ dash:
   tolerations: []
   affinity: {}
   extraEnvs: []
+  mounts: []
 
 portal:
   # Portal will only bootstrap if both the Master and Dashboard bootstrap
@@ -317,6 +320,7 @@ gateway:
       effect: NoSchedule
   affinity: {}
   extraEnvs: []
+  mounts: []
 
 pump:
   # Determines whither or not the pump component should be installed.
@@ -344,5 +348,6 @@ pump:
   tolerations: []
   affinity: {}
   extraEnvs: []
+  mounts: []
 
 rbac: true

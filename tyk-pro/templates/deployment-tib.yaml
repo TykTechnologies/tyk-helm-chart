@@ -98,6 +98,12 @@ spec:
             mountPath: /opt/tyk-identity-broker/profiles.json
             subPath: profiles.json
             readOnly: true
+          {{- if .Values.tib.mounts }}
+          {{- range $secret := .Values.tib.mounts }}
+          - name: {{ $.Release.Name }}-tib-secret-{{ $secret.name }}
+            mountPath: {{ $secret.mountPath }}
+          {{- end }}
+          {{- end }}
         livenessProbe:
           httpGet:
             scheme: "HTTP"
@@ -126,4 +132,11 @@ spec:
         - name: tyk-tib-profiles-conf-volume
           configMap:
             name: {{ .Values.tib.configMap.profiles }}
+        {{- if .Values.tib.mounts }}
+        {{- range $secret := .Values.tib.mounts }}
+        - name: {{ $.Release.Name }}-tib-secret-{{ $secret.name }}
+          secret:
+            secretName: {{ $.Release.Name }}-tib-secret-{{ $secret.name }}
+        {{- end }}
+        {{- end }}
 {{- end }}

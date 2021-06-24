@@ -124,6 +124,7 @@ gateway:
       effect: NoSchedule
   affinity: {}
   extraEnvs: []
+  mounts: []
 
 rbac: true
 

@@ -119,6 +119,7 @@ gateway:
       effect: NoSchedule
   affinity: {}
   extraEnvs: []
+  mounts: []
 
 # If pump is enabled the Gateway will create and collect analytics data to send
 # to a data store of your choice. These can be set up in the pump config. The
@@ -150,5 +151,6 @@ pump:
   tolerations: []
   affinity: {}
   extraEnvs: []
+  mounts: []
 
 rbac: true

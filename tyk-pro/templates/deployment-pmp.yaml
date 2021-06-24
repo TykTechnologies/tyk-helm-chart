@@ -86,6 +86,12 @@ spec:
         volumeMounts:
           - name: tyk-pump-conf
             mountPath: /etc/tyk-pump
+          {{- if .Values.pump.mounts }}
+          {{- range $secret := .Values.pump.mounts }}
+          - name: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
+            mountPath: {{ $secret.mountPath }}
+          {{- end }}
+          {{- end }}
         resources:
 {{ toYaml .Values.pump.resources | indent 12 }}
       securityContext:
@@ -98,4 +104,11 @@ spec:
             items:
               - key: pump.conf
                 path: pump.conf
+        {{- if .Values.pump.mounts }}
+        {{- range $secret := .Values.pump.mounts }}
+        - name: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
+          secret:
+            secretName: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
+        {{- end }}
+        {{- end }}
 {{- end}}
