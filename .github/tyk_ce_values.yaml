@@ -38,7 +38,7 @@ gateway:
   tags: ""
   image:
     repository: tykio/tyk-gateway
-    tag: v3.0.5
+    tag: v3.2.1
     pullPolicy: IfNotPresent
   service:
     type: NodePort
@@ -88,7 +88,7 @@ pump:
   replicaCount: 1
   image:
     repository: tykio/tyk-pump-docker-pub
-    tag: v1.2.0
+    tag: v1.4.0
     pullPolicy: IfNotPresent
   annotations: {}
   resources: {}
