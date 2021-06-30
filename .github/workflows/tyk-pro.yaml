@@ -48,6 +48,6 @@ jobs:
           command: 'push'
           format: 'helm'
           owner: 'tyk'
-          repo: 'tyk-helm'
+          repo: 'helm'
           version: ${{ env.RELEASE_VERSION }}
           file: './tyk-pro-${{ env.RELEASE_VERSION }}.tgz'

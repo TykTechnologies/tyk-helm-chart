@@ -49,6 +49,6 @@ jobs:
           command: 'push'
           format: 'helm'
           owner: 'tyk'
-          repo: 'tyk-helm'
+          repo: 'helm'
           version: ${{ env.RELEASE_VERSION }}
           file: './tyk-hybrid-${{ env.RELEASE_VERSION }}.tgz'
