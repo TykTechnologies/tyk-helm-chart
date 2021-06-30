@@ -6,7 +6,9 @@ Provides a Tyk Installation for Hybrid Gateways connected to Tyk Cloud or MDCB H
 	helm repo update
 
 Before we proceed with installation of the chart we need to set some custom values. To see what options are configurable on a chart use:
+```
 	helm show values tyk-helm/tyk-hybrid
+```
 
 *For Tyk-hybrid chart we need to set custom values as per list below:*
 1. Add your dashboard users organisation ID in `gateway.rpc.rpcKey` value
