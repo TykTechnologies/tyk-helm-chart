@@ -57,8 +57,8 @@ jobs:
           kubectl create namespace ${{ env.NAMESPACE }}
           
           # Do not change the name
-          helm install mongo simple-mongodb --repo 'https://dl.cloudsmith.io/public/tyk/mongo-ci/helm/charts/' -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
-          helm install redis simple-redis --repo 'https://dl.cloudsmith.io/public/tyk/redis-ci/helm/charts/' -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
+          helm install mongo simple-mongodb --repo 'https://helm.tyk.io/public/helm/charts/' -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
+          helm install redis simple-redis --repo 'https://helm.tyk.io/public/helm/charts/' -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
 
           helm install tyk-ce ./tyk-headless -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
 
