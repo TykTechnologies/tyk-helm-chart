@@ -12,7 +12,7 @@ Before we proceed with installation of the chart we need to set some custom valu
 helm show values tyk-helm/tyk-hybrid > values.yaml
 ```
 
-*For Tyk-hybrid chart we need to set custom values. Please modify your custom values.yaml file as follows:*
+*For Tyk-hybrid chart we need to modify following values in your custom values.yaml file:*
 1. Add your dashboard users organisation ID in `gateway.rpc.rpcKey` value
 2. Add your dashboard users API key in `gateway.rpc.apiKey` value
 3. Add your connection string to allow the Hybrid gateway to connect to your control plane in `gateway.rpc.connString`. On the Tyk Cloud Console find this value in the endpoints panel for your control plane deployment.

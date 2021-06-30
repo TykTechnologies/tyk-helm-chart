@@ -10,7 +10,7 @@ Before we proceed with installation of the chart we need to set some custom valu
 ```
 helm show values tyk-helm/tyk-pro > values.yaml
 ```
-*For Tyk-pro chart we need to set custom values. Please modify your custom values.yaml file as follows:*
+*For Tyk-pro chart we need to modify following value in your custom values.yaml file:*
 1. Add your dashboard license in `dash.license` value
 
 Then we can install the chart using our custom values:
