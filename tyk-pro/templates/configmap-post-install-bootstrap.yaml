@@ -7,5 +7,3 @@ data:
 {{ .Files.Get "scripts/init.sh" | indent 4 }}
   bootstrap.sh: |-
 {{ .Files.Get "scripts/bootstrap.sh" | indent 4 }}
-  wait-for-it.sh: |-
-{{ .Files.Get "scripts/wait-for-it.sh" | indent 4 }}
