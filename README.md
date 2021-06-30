@@ -6,17 +6,9 @@ Tyk provides 3 different helm charts in this repo. Please visit the respective p
 
 ## Redis and MongoDB
 - Redis is required for all of the Tyk installations it must be installed in the cluster or reachable from inside K8s.
-- MongoDB is only required for the tyk-pro installation and must be installed in the cluster, or reachable from inside K8s. If you are using the mongo pumps in the tyk-headless installation you will require mongo installed for that as well. 
+- MongoDB is only required for the tyk-pro installation and must be installed in the cluster, or reachable from inside K8s. If you are using the mongo pumps in the tyk-headless installation you will require mongo installed for that as well.
 
-To get started quickly, you can use mongo.yaml and redis.yaml manifests to install MongoDB and Redis inside your kubernetes cluster.
-**Please note that these provided manifests must not ever be used in production and for anything but a quick start evaluation only, use external DBs or Official Helm charts for MongoDB and Redis in any other case.**
-We provide these manifests so you can quickly have Tyk running however they are not meant for long term storage of data for example.
-
-	kubectl create namespace tyk
-	kubectl apply -f deploy/dependencies/mongo.yaml -n tyk
-	kubectl apply -f deploy/dependencies/redis.yaml -n tyk
-
-Another option for Redis and MongoDB could be charts provided by Bitnami:
+For Redis and MongoDB you can use these rather excellent charts provided by Bitnami:
 
 	helm repo add bitnami https://charts.bitnami.com/bitnami
 	helm repo update
@@ -27,6 +19,16 @@ Another option for Redis and MongoDB could be charts provided by Bitnami:
 	(follow notes from the installation output to get connection details and update them in `values.yaml` file)
 
 *Important Note regarding MongoDB:* This helm chart enables the PodDisruptionBudget for MongoDB with an arbiter replica-count of 1.  If you intend to perform system maintenance on the node where the MongoDB pod is running and this maintenance requires for the node to be drained, this action will be prevented due the replica count being 1.  Increase the replica count in the helm chart deployment to a minimum of 2 to remedy this issue.
+
+Another option for Redis and MongoDB, if you want to get started quickly is to use mongo.yaml and redis.yaml manifests located inside deploy/dependencies folder in this repository.
+**Please note that these provided manifests must not ever be used in production and for anything but a quick start evaluation only, use external DBs or Official Helm charts for MongoDB and Redis in any other case.**
+We provide these manifests so you can quickly have Tyk running however they are not meant for long term storage of data for example.
+
+	kubectl create namespace tyk
+	kubectl apply -f deploy/dependencies/mongo.yaml -n tyk
+	kubectl apply -f deploy/dependencies/redis.yaml -n tyk
+
+
 
 ## TLS
 You can turn on the tls option under the gateway section in the values.yaml files which will make the gateways listen on port 443 and load up a dummy certificate. You can set your own default certificate by replacing the files in the certs/ folder.
