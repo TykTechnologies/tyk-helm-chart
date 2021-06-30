@@ -6,17 +6,13 @@ Provides a full Tyk Installation API Management Dashboard and API Gateways with 
 helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
 helm repo update
 ```
-Before we proceed with installation of the chart we need to set some custom values. To see what options are configurable on a chart use:
+Before we proceed with installation of the chart we need to set some custom values. To see what options are configurable on a chart and save that options to a custom values.yaml file run:
 ```
-helm show values tyk-helm/tyk-pro
+helm show values tyk-helm/tyk-pro > values.yaml
 ```
-For Tyk-pro chart we need to set custom value as per list below:
+*For Tyk-pro chart we need to set custom values. Please modify your custom values.yaml file as follows:*
 1. Add your dashboard license in `dash.license` value
 
-You can then override this setting in a YAML formatted file, and then pass that file during installation.
-```
-echo '{dash.license: example-license}' > values.yaml
-```
 Then we can install the chart using our custom values:
 ```
 helm install tyk-pro tyk-helm/tyk-pro -f values.yaml -n tyk --wait
