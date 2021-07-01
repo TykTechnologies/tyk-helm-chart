@@ -20,14 +20,14 @@ For Redis and MongoDB you can use these rather excellent charts provided by Bitn
 
 *Important Note regarding MongoDB:* This helm chart enables the PodDisruptionBudget for MongoDB with an arbiter replica-count of 1.  If you intend to perform system maintenance on the node where the MongoDB pod is running and this maintenance requires for the node to be drained, this action will be prevented due the replica count being 1.  Increase the replica count in the helm chart deployment to a minimum of 2 to remedy this issue.
 
-Another option for Redis and MongoDB, if you want to get started quickly is to use mongo.yaml and redis.yaml manifests located inside deploy/dependencies folder in this repository.
-**Please note that these provided manifests must not ever be used in production and for anything but a quick start evaluation only, use external DBs or Official Helm charts for MongoDB and Redis in any other case.**
-We provide these manifests so you can quickly have Tyk running however they are not meant for long term storage of data for example.
+Another option for Redis and MongoDB, if you want to get started quickly is to use our simple charts. **Please note that these provided charts must not ever be used in production and for anything but a quick start evaluation only, use external DBs or Official Helm charts for MongoDB and Redis in any other case.**
+We provide these charts so you can quickly have Tyk running however they are not meant for long term storage of data for example.
 
 	kubectl create namespace tyk
-	kubectl apply -f deploy/dependencies/mongo.yaml -n tyk
-	kubectl apply -f deploy/dependencies/redis.yaml -n tyk
-
+	helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
+	helm repo update
+	helm install redis tyk-helm/simple-redis -n tyk
+	helm install mongo tyk-helm/simple-mongodb -n tyk
 
 
 ## TLS

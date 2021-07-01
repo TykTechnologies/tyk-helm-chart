@@ -15,7 +15,7 @@ helm show values tyk-helm/tyk-pro > values.yaml
 
 Then we can install the chart using our custom values:
 ```
-helm install tyk-pro tyk-helm/tyk-pro -f values.yaml -n tyk --wait
+helm install tyk-pro tyk-helm/tyk-pro --version 0.9.0 -f values.yaml -n tyk --wait
 ```
 > Please note the --wait argument is important for successful dashboard bootstrap.
 
