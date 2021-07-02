@@ -64,14 +64,14 @@ jobs:
               # Both MDCB and Dashbaord license keys will expire on 07-04-21
               yq eval '.dash.license = "${{ secrets.DASH_LICENSE }}"' -i tyk-pro/values.yaml
               yq eval '.mdcb.license = "${{ secrets.MDCB_LICENSE }}"' -i tyk-pro/values.yaml
-              yq eval '.dependencies += [{"name": "simple-redis","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/redis-ci/helm/charts/"},{"name": "simple-mongodb","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/mongo-ci/helm/charts/"}]' -i tyk-pro/Chart.yaml
+              yq eval '.dependencies += [{"name": "simple-redis","version": "0.1.0","repository": "https://helm.tyk.io/public/helm/charts/"},{"name": "simple-mongodb","version": "0.1.0","repository": "https://helm.tyk.io/public/helm/charts/"}]' -i tyk-pro/Chart.yaml
             elif [ "$chart" == "tyk-hybrid" ]; then
               yq eval '.gateway.rpc.connString = "${{ secrets.HYBRID_MDCB_HOST }}"' -i tyk-hybrid/values.yaml
               yq eval '.gateway.rpc.rpcKey = "${{ secrets.HYBRID_RPC_KEY }}"' -i tyk-hybrid/values.yaml
               yq eval '.gateway.rpc.apiKey = "${{ secrets.HYBRID_API_KEY }}"' -i tyk-hybrid/values.yaml
-              yq eval '.dependencies += [{"name": "simple-redis","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/redis-ci/helm/charts/"}]' -i tyk-hybrid/Chart.yaml
+              yq eval '.dependencies += [{"name": "simple-redis","version": "0.1.0","repository": "https://helm.tyk.io/public/helm/charts/"}]' -i tyk-hybrid/Chart.yaml
             else
-              yq eval '.dependencies += [{"name": "simple-redis","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/redis-ci/helm/charts/"},{"name": "simple-mongodb","version": "0.1.0","repository": "https://dl.cloudsmith.io/public/tyk/mongo-ci/helm/charts/"}]' -i tyk-headless/Chart.yaml
+              yq eval '.dependencies += [{"name": "simple-redis","version": "0.1.0","repository": "https://helm.tyk.io/public/helm/charts/"},{"name": "simple-mongodb","version": "0.1.0","repository": "https://helm.tyk.io/public/helm/charts/"}]' -i tyk-headless/Chart.yaml
             fi
           done
 
