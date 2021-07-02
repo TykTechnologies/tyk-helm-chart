@@ -121,6 +121,8 @@ spec:
                 key: DashLicense
           - name: TYK_DB_HOSTCONFIG_PORTALROOTPATH
             value:  {{ .Values.portal.path }}
+          - name: TYK_DB_HTTPSERVEROPTIONS_USESSL
+            value: "{{ .Values.dash.tls }}"
           {{- if .Values.dash.extraEnvs }}
           {{- toYaml .Values.dash.extraEnvs| nindent 10 }}
           {{- end }}
@@ -141,7 +143,7 @@ spec:
           {{- end }}
         livenessProbe:
           httpGet:
-            scheme: "HTTP"
+            scheme: "HTTP{{ if .Values.dash.tls }}S{{ end }}"
             path: /
             port: {{ .Values.dash.containerPort }}
           initialDelaySeconds: 5
@@ -150,7 +152,7 @@ spec:
           failureThreshold: 2
         readinessProbe:
           httpGet:
-            scheme: "HTTP"
+            scheme: "HTTP{{ if .Values.dash.tls }}S{{ end }}"
             path: /
             port: {{ .Values.dash.containerPort }}
           initialDelaySeconds: 1

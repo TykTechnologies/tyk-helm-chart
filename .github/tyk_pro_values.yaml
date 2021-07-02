@@ -124,6 +124,7 @@ dash:
   bootstrap: true
   replicaCount: 1
   hostName: tyk-dashboard.local
+  tls: false
   license: ""
   containerPort: 3000
   image:
