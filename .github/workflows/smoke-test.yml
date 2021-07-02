@@ -114,7 +114,7 @@ jobs:
           if [ "${{ matrix.directory }}" == tyk-headless ]; then
             helm install ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
           elif [ "${{ matrix.directory }}" == tyk-hybrid ]; then
-            helm install --set gateway.rpc.rpcKey=${{ secrets.HYBRID_RPC_KEY }} --set gateway.rpc.apiKey=${{ secrets.HYBRID_API_KEY }} --set gateway.rpc.connString=${{ secrets.HYBRID_MDCB_HOST }} ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
+            helm install --set gateway.rpc.rpcKey=${{ secrets.HYBRID_RPC_KEY }} --set gateway.rpc.apiKey=${{ secrets.HYBRID_API_KEY }} --set gateway.rpc.connString=${{ secrets.HYBRID_MDCB_HOST }} ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }} --debug
           elif [ "${{ matrix.directory }}" == tyk-pro ]; then
             helm install --set mdcb.license="${{ secrets.MDCB_LICENSE }}" --set dash.license="${{ secrets.DASH_LICENSE }}" ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }} --wait --debug
           fi
