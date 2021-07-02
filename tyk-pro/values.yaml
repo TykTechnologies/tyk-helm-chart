@@ -175,6 +175,8 @@ dash:
   bootstrap: true
   # The hostname to bind the Dashboard to.
   hostName: tyk-dashboard.local
+  # When true, sets the dashboard protocol to HTTPS.
+  tls: false
   # Dashboard license.
   license: ""
   # Dashboard admin information.

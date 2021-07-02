@@ -104,8 +104,10 @@ jobs:
       - name: Deploy "${{ matrix.directory }}" requisites
         run: |
           kubectl create namespace ${{ env.NAMESPACE }}
-          kubectl apply -f deploy/dependencies/mongo.yaml -n ${{ env.NAMESPACE }}
-          kubectl apply -f deploy/dependencies/redis.yaml -n ${{ env.NAMESPACE }}
+          helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
+          helm repo update
+          helm install mongo tyk-helm/simple-mongodb -n ${{ env.NAMESPACE }}
+          helm install redis tyk-helm/simple-redis -n ${{ env.NAMESPACE }}
 
       - name: Deploy "${{ matrix.directory }}" chart
         run: |
