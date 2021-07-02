@@ -175,7 +175,11 @@ dash:
   bootstrap: true
   # The hostname to bind the Dashboard to.
   hostName: tyk-dashboard.local
-  # When true, sets the dashboard protocol to HTTPS.
+  # If set to true the Dashboard will use SSL connection.
+  # You will also need to set the:
+  # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
+  # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
+  # variables in extraEnvs object array to define your SSL cert and key files.
   tls: false
   # Dashboard license.
   license: ""
