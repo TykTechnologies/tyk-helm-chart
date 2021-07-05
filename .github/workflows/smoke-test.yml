@@ -6,7 +6,7 @@ on:
       - master
 
 env:
-  TIMEOUT: 3m
+  TIMEOUT: 5m
   NAMESPACE: tyk-ci
   TYK_CE: .github/tyk_ce_values.yaml
   TYK_PRO: .github/tyk_pro_values.yaml
@@ -93,7 +93,7 @@ jobs:
       - name: Create Kind Cluster
         uses: engineerd/setup-kind@v0.5.0
         with:
-          version: "v0.10.0"
+          version: "v0.11.1"
           config: .github/kind-cluster-${{ matrix.k8s }}.yml
 
       - name: Install helm
@@ -106,11 +106,12 @@ jobs:
           kubectl create namespace ${{ env.NAMESPACE }}
           helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
           helm repo update
-          helm install mongo tyk-helm/simple-mongodb -n ${{ env.NAMESPACE }}
-          helm install redis tyk-helm/simple-redis -n ${{ env.NAMESPACE }}
+          helm install mongo tyk-helm/simple-mongodb -n ${{ env.NAMESPACE }} --wait
+          helm install redis tyk-helm/simple-redis -n ${{ env.NAMESPACE }} --wait
 
       - name: Deploy "${{ matrix.directory }}" chart
         run: |
+          kubectl get po -n tyk-ci
           if [ "${{ matrix.directory }}" == tyk-headless ]; then
             helm install ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
           elif [ "${{ matrix.directory }}" == tyk-hybrid ]; then
