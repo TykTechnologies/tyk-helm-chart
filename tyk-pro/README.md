@@ -22,7 +22,7 @@ helm install tyk-pro tyk-helm/tyk-pro --version 0.9.0 -f values.yaml -n tyk --wa
 Follow the instructions in the Notes that follow the installation to find your Tyk login credentials.
 
 ### Tyk Developer Portal
-You can enable the bootstrapping of the Developer Portal using the `portal.bootstrap` option in `values.yaml`.
+You can disable the bootstrapping of the Developer Portal using the `portal.bootstrap` option in `values.yaml`.
 
 ## Installing TIB
 TIB is not necessary to install for this chart as it's functionality is included in the Tyk Dashboard API Manager. However, if you want to run it separately from the Dashboard you can do so.
