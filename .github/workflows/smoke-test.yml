@@ -111,7 +111,6 @@ jobs:
 
       - name: Deploy "${{ matrix.directory }}" chart
         run: |
-          kubectl get po -n tyk-ci
           if [ "${{ matrix.directory }}" == tyk-headless ]; then
             helm install ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
           elif [ "${{ matrix.directory }}" == tyk-hybrid ]; then
