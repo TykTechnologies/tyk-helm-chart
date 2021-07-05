@@ -77,9 +77,7 @@ mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
 {{- end -}}
 {{- end -}}
 
-{{/*
-Create Sematic Version of gateway without prefix v
-*/}}
+{{/* Create Sematic Version of gateway without prefix v */}}
 {{- define "tyk-pro.gateway-version" -}}
 {{- printf "%s" .Values.gateway.image.tag | replace "v" "" -}}
 {{- end -}}
