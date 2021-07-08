@@ -1,12 +1,12 @@
-{{/* vim: set filetype=mustache: */}}
-{{/*
+{{- /* vim: set filetype=mustache: */}}
+{{- /*
 Expand the name of the chart.
 */}}
 {{- define "tyk-hybrid.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{/*
+{{- /*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
@@ -24,7 +24,7 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 {{- end -}}
 
-{{/*
+{{- /*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "tyk-hybrid.chart" -}}
@@ -42,7 +42,7 @@ http
 {{- define "tyk-hybrid.redis_url" -}}
 {{- if .Values.redis.addrs -}}
 {{ join "," .Values.redis.addrs }}
-{{/* Adds support for older charts with the host and port options */}}
+{{- /* Adds support for older charts with the host and port options */}}
 {{- else if and .Values.redis.host .Values.redis.port -}}
 {{ .Values.redis.host }}:{{ .Values.redis.port }}
 {{- else -}}
