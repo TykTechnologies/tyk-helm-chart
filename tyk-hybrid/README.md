@@ -19,6 +19,6 @@ helm show values tyk-helm/tyk-hybrid > values.yaml
 
 Then we can install the chart using our custom values file:
 ```
-helm install tyk-hybrid tyk-helm/tyk-hybrid --version 0.9.0 -f values.yaml -n tyk
+helm install tyk-hybrid tyk-helm/tyk-hybrid --version 0.9.1 -f values.yaml -n tyk
 ```
 > If you are using hybrid gateway with the Tyk Classic Cloud use the rpc settings block commented out in the `values.yaml`
