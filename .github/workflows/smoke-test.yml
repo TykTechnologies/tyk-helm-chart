@@ -6,7 +6,7 @@ on:
       - master
 
 env:
-  TIMEOUT: 5m
+  TIMEOUT: 8m
   NAMESPACE: tyk-ci
   TYK_CE: .github/tyk_ce_values.yaml
   TYK_PRO: .github/tyk_pro_values.yaml
