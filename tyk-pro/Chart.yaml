@@ -1,11 +1,24 @@
 apiVersion: v1
 appVersion: "1.0"
-description: |-
-  This chart deploys Tyk platform including Tyk Manager (Tyk dashboard), Tyk Gateway, Tyk pump and MDCB (Multi Data-centre Bridge).
-  It assumes Mongo and Redis have already been installed.
-
-  Tyk platform includes an open source Enterprise API Gateway, supporting REST, GraphQL, TCP and gRPC protocols.
-  Tyk provides you with all the analytics you need - view your data through the Tyk Manager, then export it to any BI tool with Tyk Pump. With the right data to hand, you have the power to make the right business and investment decisions.
 name: tyk-pro
 version: 0.9.1
 icon: https://tyk.io/wp-content/uploads/2021/07/tyk_logo_bg.jpg
+home: https://tyk.io/
+sources:
+  - https://github.com/TykTechnologies/tyk-helm-chart
+  - https://tyk.io/
+  - https://community.tyk.io/
+keywords:
+  - api gateway
+  - reverse proxy
+  - api management
+  - ingress
+  - ingress controller
+  - open source gateway
+  - edge gateway
+description: |-
+  This chart deploys Tyk platform including Tyk Manager (Tyk dashboard), Tyk Gateway, Tyk pump and MDCB (Multi Data-centre Bridge).
+  It assumes Mongo and Redis have already been installed.
+  Tyk platform includes an open source Enterprise API Gateway, supporting REST, GraphQL, TCP and gRPC protocols.
+  Tyk provides you with all the analytics you need - view your data through the Tyk Manager, then export it to any BI tool with Tyk Pump.
+  With the right data to hand, you have the power to make the right business and investment decisions.
