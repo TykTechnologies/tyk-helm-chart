@@ -1,6 +1,6 @@
 apiVersion: v1
-appVersion: "1.0"
 name: tyk-pro
+appVersion: "v3.2.1"
 version: 0.9.1
 icon: https://tyk.io/wp-content/uploads/2021/07/tyk_logo_bg.jpg
 home: https://tyk.io/
@@ -17,8 +17,7 @@ keywords:
   - open source gateway
   - edge gateway
 description: |-
-  This chart deploys Tyk platform including Tyk Manager (Tyk dashboard), Tyk Gateway, Tyk pump and MDCB (Multi Data-centre Bridge).
-  It assumes Mongo and Redis have already been installed.
-  Tyk platform includes an open source Enterprise API Gateway, supporting REST, GraphQL, TCP and gRPC protocols.
-  Tyk provides you with all the analytics you need - view your data through the Tyk Manager, then export it to any BI tool with Tyk Pump.
-  With the right data to hand, you have the power to make the right business and investment decisions.
+  This chart deploys full Tyk platform.
+  Tyk Gateway is a fully open source Enterprise API Gateway, supporting REST, GraphQL, TCP and gRPC protocols.
+  Tyk Gateway is provided ‘Batteries-included’, with no feature lockout. It enables organizations and businesses around
+  the world to protecte, secure, and processe APIs and well as review and audit the consumed apis.
