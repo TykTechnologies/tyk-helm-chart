@@ -56,7 +56,7 @@ redis:
   storage:
     database: 0
 
-mongo: {}
+mongo:
   # The mongoURL value will allow you to set your MongoDB address.
   # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
   # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
@@ -66,7 +66,7 @@ mongo: {}
 
   # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
   # Default value: false
-  # useSSL: true
+  useSSL: false
 
 mdcb:
   # Determines whither or not the mdcb component should be installed.
