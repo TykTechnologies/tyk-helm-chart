@@ -19,5 +19,5 @@ keywords:
 description: |-
   This chart deploys the open source Tyk Gateway with an Hybrid setup that connects to a management control plane.
   Tyk is a fully open source Enterprise API Gateway, supporting REST, GraphQL, TCP and gRPC protocols.
-  Tyk Gateway is provided ‘Batteries-included’, with no feature lockout. It enables organizations and businesses around
-  the world to protecte, secure, and processe APIs and well as review and audit the consumed apis.
+  Tyk Gateway is provided ‘Batteries-included’, with no feature lockout. It enables organisations and businesses around
+  the world to protect, secure, and process APIs and well as review and audit the consumed apis.

@@ -23,12 +23,18 @@ To see what options are configurable on a chart and save that options to a custo
 
     helm show values tyk-helm/tyk-pro > values.yaml
 
-For *Tyk Self-managed* chart we need to set the license key in your custom `values.yaml` file under `dash.license` 
-field or use `--set dash.license={YOUR-LICENSE_KEY}` with the helm install command.
+For *Tyk Self-managed* chart we need to set the following in `values.yaml` or with `--set {field-name}={field-value}`with the helm install command:
+
+|  | Description             | Field name          |
+|--|-------------------------|---------------------|
+|1.| License key             | `dash.license`      |
+|2.| Mongodb root password   | in `mongo.mongoURL` |
+|3.| Redis password          | `redis.pass`        |
+
 
 Then we can install the chart using our custom values:
 
-    helm install tyk-pro tyk-helm/tyk-pro --version 0.9.1 -f values.yaml -n tyk --wait
+    helm install tyk-pro tyk-helm/tyk-pro --version 0.9.1 -f values.yaml -n tyk --create-namespace --wait
 
 > Please note the --wait argument is important for successful dashboard bootstrap.
 

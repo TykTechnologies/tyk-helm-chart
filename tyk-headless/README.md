@@ -17,5 +17,5 @@ Check [Tyk OSS Helm chart Installation](https://tyk.io/docs/tyk-oss/ce-helm-char
 	helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
 	helm repo update
 	kubectl create namespace tyk
-	helm install tyk-ce tyk-helm/tyk-headless --version 0.9.1 -n tyk
+	helm install tyk-ce tyk-helm/tyk-headless --version 0.9.1 -n tyk --create-namespace
 
