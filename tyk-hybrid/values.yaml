@@ -55,7 +55,7 @@ gateway:
   # Also be sure to match API segmentation tags with the tags selected below.
   sharding:
     enabled: false
-    tag: ""
+    tags: ""
   # When true, sets the gateway protocol to HTTPS.
   tls: false
   # For on premise MDCB setups simply change the connection string to point to
