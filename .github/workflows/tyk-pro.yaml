@@ -1,0 +1,53 @@
+name: Tyk Pro Push Helm
+on: push
+jobs:
+  push:
+    name: Tyk Pro Push CS
+    runs-on: ubuntu-latest
+    branches:
+      - main
+      - release-**
+    tag: 'v*-pro'
+    paths:
+      - 'tyk-pro/**'
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set env
+        run: |
+          VER=$(sed 's/[^0-9.]//g' <<< GITHUB_REF##*/)
+          echo "RELEASE_VERSION=${VER}" >> $GITHUB_ENV
+
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm, create dirs
+        run: |
+          echo "Installing Helm..."
+          wget -q https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz
+          tar -zxf helm-v${HELM_VERSION}-linux-amd64.tar.gz
+          sudo mv linux-amd64/helm /usr/local/bin/helm
+          helm version
+          mkdir fixture
+        env:
+          HELM_VERSION: "3.4.2"
+
+      - name: Pack helm artifact
+        run: |
+          output=$(helm package ${CHART} --version ${{ env.RELEASE_VERSION }})
+        env:
+          CHART: tyk-pro
+
+      - name: Push
+        id: push
+        uses: cloudsmith-io/action@master
+        with:
+          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+          command: 'push'
+          format: 'helm'
+          owner: 'tyk'
+          repo: 'helm'
+          version: ${{ env.RELEASE_VERSION }}
+          file: './tyk-pro-${{ env.RELEASE_VERSION }}.tgz'
