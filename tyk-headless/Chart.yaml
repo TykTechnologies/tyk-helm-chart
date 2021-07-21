@@ -1,5 +1,4 @@
 apiVersion: v1
-appVersion: "1.0"
 name: tyk-headless
 version: 0.9.1
 icon: https://tyk.io/wp-content/uploads/2021/07/tyk_logo_bg.jpg
@@ -17,7 +16,7 @@ keywords:
   - open source gateway
   - edge gateway
 description: |-
-  This chart deploys the open source Tyk Gateway. It assumes Redis has already been installed.
-  Tyk is an open source Enterprise API Gateway, supporting REST, GraphQL, TCP and gRPC protocols.
-  Tyk Gateway is provided ‘Batteries-included’, with no feature lockout. Enabling your organization to control who accesses your APIs, when they access, and how they access it.
-  Tyk Technologies uses the same API Gateway for all it’s applications. Protecting, securing, and processing APIs for thousands of organizations and businesses around the world.
+  This chart deploys the open source Tyk Gateway.
+  Tyk Gateway is a fully open source Enterprise API Gateway, supporting REST, GraphQL, TCP and gRPC protocols.
+  Tyk Gateway is provided ‘Batteries-included’, with no feature lockout. It enables organisations and businesses around
+  the world to protect, secure, and process APIs and well as review and audit the consumed apis.
