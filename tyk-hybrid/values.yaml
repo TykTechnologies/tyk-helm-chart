@@ -1,6 +1,9 @@
-# Default values for tyk-hybrid chart
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+## Default values for tyk-hybrid chart
+## This is a YAML-formatted file.
+## Declare variables to be passed into your templates.
+## See Tyk Helm documentation for installation details:
+## https://tyk.io/docs/tyk-cloud/environments-deployments/hybrid-gateways/#hybrid-gateways-in-a-kubernetes-cluster
+## Registry for all Tyk images - https://hub.docker.com/u/tykio
 
 # Chart name override. Truncates to 63 characters.
 # Default value: tyk-hybrid.name

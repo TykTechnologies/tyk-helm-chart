@@ -1,6 +1,9 @@
-# Default values for tyk-headless chart.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+## Default values for tyk-headless chart.
+## This is a YAML-formatted file.
+## Declare variables to be passed into your templates.
+## See Tyk Helm documentation for installation details:
+## https://tyk.io/docs/tyk-oss/ce-helm-chart/
+## Registry for all Tyk images - https://hub.docker.com/u/tykio
 
 # Chart name override. Truncates to 63 characters.
 # Default value: tyk-headless.name
