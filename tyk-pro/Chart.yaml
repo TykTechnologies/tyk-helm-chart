@@ -1,7 +1,7 @@
 apiVersion: v1
 name: tyk-pro
 version: 0.9.1
-icon: https://tyk.io/wp-content/uploads/2021/07/tyk_logo_bg.jpg
+icon: https://tyk.io/wp-content/uploads/2021/07/tyk_logo_no_bg.png
 home: https://tyk.io/
 sources:
   - https://github.com/TykTechnologies/tyk-helm-chart
