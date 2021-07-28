@@ -31,8 +31,11 @@ redis:
   # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
   # addrs:
   #   - redis.tyk.svc.cluster.local:6379
+  #   This is the the DNS name of the redis as set when using Bitnami
+  #   - tyk-redis-master.tyk.svc.cluster.local:6379
 
   # Redis password
+  # If you're using Bitnami Redis chart please input your password in the field below
   # pass: ""
 
   # Enables SSL for Redis connection. Redis instance will have to support that.
