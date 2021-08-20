@@ -63,7 +63,7 @@ spec:
                 key: tibSecret
           - name: TYK_IB_HTTPSERVEROPTIONS_USESSL
           # Enable backward compatibility to chart 0.8.1.
-            value: "{{ or .Values.tib.tls .Values.tib.useSSL }}"
+            value: "{{ or .Values.tib.tls .Values.tib.useSSL false }}"
           - name: TYK_IB_TYKAPISETTINGS_DASHBOARDCONFIG_ADMINSECRET
             valueFrom:
               secretKeyRef:

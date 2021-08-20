@@ -56,7 +56,7 @@ spec:
         env:
           - name: TYK_MDCB_SERVEROPTIONS_USESSL
           # Enable backward compatibility to chart 0.8.1.
-            value: "{{ or .Values.mdcb.tls .Values.mdcb.useSSL }}"
+            value: "{{ or .Values.mdcb.tls .Values.mdcb.useSSL false }}"
           - name: TYK_MDCB_LISTENPORT
             value: "{{ .Values.mdcb.containerPort }}"
           # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
