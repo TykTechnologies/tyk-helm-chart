@@ -1,7 +1,0 @@
-Install the controller
-
-At this point, Tyk Hybrid is fully installed and should be accessible.
-
-You might want to install Tyk Operator next to manage Ingress resources or manage your APIs.
-
-[Tyk Operator](https://github.com/TykTechnologies/tyk-operator/)

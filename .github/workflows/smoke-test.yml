@@ -3,7 +3,7 @@ name: Smoke test
 on:
   push:
     branches:
-      - master
+      - refactor/chart-split
 
 env:
   TIMEOUT: 5m
