@@ -28,6 +28,6 @@ Before we proceed with installation of the chart we need to set some custom valu
 
 Then we can install the chart using our custom values file:
 
-    helm install tyk-hybrid tyk-helm/tyk-hybrid --version 0.9.2 -f values.yaml -n tyk --create-namespace
+    helm install tyk-hybrid tyk-helm/tyk-hybrid -f values.yaml -n tyk --create-namespace
 
 > If you are using hybrid gateway with the Tyk Classic Cloud use the rpc settings block commented out in the `values.yaml`
