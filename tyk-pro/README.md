@@ -34,7 +34,7 @@ For *Tyk Self-managed* chart we need to set the following in `values.yaml` or wi
 
 Then we can install the chart using our custom values:
 
-    helm install tyk-pro tyk-helm/tyk-pro --version 0.9.2 -f values.yaml -n tyk --create-namespace --wait
+    helm install tyk-pro tyk-helm/tyk-pro -f values.yaml -n tyk --create-namespace --wait
 
 > Please note the --wait argument is important for successful dashboard bootstrap.
 
