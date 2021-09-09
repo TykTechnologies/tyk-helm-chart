@@ -1,0 +1,9 @@
+apiVersion: v2
+name: dashboard
+description: Creates Tyk dashboard instance for kubernetes
+version: 0.1.0
+appVersion: "v3.0.7"
+kubeVersion: '>=v1.16.0-r0'
+maintainers:
+- name: DevOps
+  email: devops@tyk.io

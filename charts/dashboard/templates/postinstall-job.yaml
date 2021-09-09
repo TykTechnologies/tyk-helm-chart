@@ -1,0 +1,90 @@
+{{- if .Values.bootstrap -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "bootstrap-post-install-{{ include "tyk-pro.fullname" . }}"
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+
+    # Removed the use of appVersion since it's not accurate. We'll put it back in v1.0
+    # when every app will have its own a chart
+    # app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: “false”
+    spec:
+      serviceAccountName: k8s-bootstrap-role
+      containers:
+      - name: bootstrap-post-install
+        image: bash:5.1
+        imagePullPolicy: IfNotPresent
+        command: 
+        - sh
+        - -c
+        - /opt/scripts/init.sh
+        env:
+          - name: TYK_ADMIN_FIRST_NAME
+            value: {{ .Values.dash.adminUser.firstName | quote }}
+          - name: TYK_ADMIN_LAST_NAME
+            value: {{ .Values.dash.adminUser.lastName | quote }}
+          - name: TYK_ADMIN_EMAIL
+            value: {{ .Values.dash.adminUser.email | quote }}
+          - name: TYK_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-login-details
+                key: TYK_PASS
+          - name: TYK_POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: TYK_DASHBOARD_PROTO
+            value: {{ include "tyk-pro.dash_proto" . }}
+          - name: TYK_DASHBOARD_SVC
+            value: dashboard-svc-{{ include "tyk-pro.fullname" . }}
+          - name: TYK_DB_LISTENPORT
+            value: "{{ .Values.dash.containerPort }}"
+          - name: TYK_ADMIN_SECRET
+            value: {{ .Values.secrets.AdminSecret | quote }}
+          - name: TYK_ORG_NAME
+            value: {{ .Values.dash.org.name | quote }}
+          - name: TYK_ORG_CNAME
+            value: {{ .Values.dash.org.cname | quote }}
+          {{- if .Values.dash.enabled }}
+          - name: DASHBOARD_ENABLED
+            value: "true"
+          {{- end }}
+          {{- if .Values.dash.bootstrap }}
+          - name: BOOTSTRAP_DASHBOARD
+            value: "true"
+          {{- end }}
+          {{- if .Values.portal.bootstrap }}
+          - name: BOOTSTRAP_PORTAL
+            value: "true"
+          {{- end }}
+          - name: TYK_DASHBOARD_DEPLOY
+            value: dashboard-{{ include "tyk-pro.fullname" . }}
+        volumeMounts:
+          - name: bootstrap-config-volume
+            mountPath: /opt/scripts
+      volumes:
+        - name: bootstrap-config-volume
+          configMap:
+            name: bootstrap-post-install-configmap-{{ include "tyk-pro.fullname" . }}
+            defaultMode: 0777
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 0
+{{- end }}
+      
