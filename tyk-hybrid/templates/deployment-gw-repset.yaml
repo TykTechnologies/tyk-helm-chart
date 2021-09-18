@@ -128,7 +128,7 @@ spec:
             value: {{ $env.value | quote }}
         {{- end }}
         {{- end }}
-        command: ["/opt/tyk-gateway/tyk", "--conf=/opt/tyk-gateway/tyk.conf"]
+        command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
         workingDir: /opt/tyk-gateway
         ports:
         - containerPort: {{ .Values.gateway.containerPort }}
