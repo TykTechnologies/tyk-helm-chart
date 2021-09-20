@@ -59,6 +59,7 @@ spec:
           - name: TYK_DB_TYKAPI_PORT
             value: "{{ .Values.global.gateway.control.containerPort }}"
           {{- else }}
+          ## TODO: remove the replace after integrating with all other components.
           - name: TYK_DB_TYKAPI_HOST
             value: "{{ include "tyk-pro.gwproto" . }}://gateway-svc-{{ include "tyk-pro.fullname" . | replace "-dashboard" "" }}.{{ .Release.Namespace }}"
           - name: TYK_DB_TYKAPI_PORT
