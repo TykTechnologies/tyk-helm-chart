@@ -1,8 +1,8 @@
-{{- if .Values.bootstrap -}}
+{{- if .Values.bootstrap.enabled -}}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: k8s-bootstrap-role
+  name: bootstrap-post-install-{{ .Release.Namespace }}
 rules:
 #
 # Give here only the privileges you need
