@@ -2,12 +2,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: dashboard-conf-{{ include "tyk-pro.fullname" . }}
+  name: {{ include "dashboard.fullname" . }}
   labels:
-    app: dashboard-{{ include "tyk-pro.fullname" . }}
-    chart: {{ include "tyk-pro.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "dashboard.labels" . | nindent 4 }}
 data:
-  {{- (.Files.Glob "configs/tyk_analytics.conf").AsConfig | nindent 2 }}
+  {{- tpl (.Files.Glob "conf/tyk_analytics.conf").AsConfig . | nindent 2 }}
 {{- end }}
