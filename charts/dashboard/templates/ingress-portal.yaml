@@ -1,6 +1,6 @@
-{{- if .Values.ingress.enabled -}}
+{{- if .Values.portal.ingress.enabled -}}
 {{- $fullName := include "dashboard.fullname" . -}}
-{{- $ingressPath := .Values.dash.ingress.path -}}
+{{- $ingressPath := .Values.portal.path -}}
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1
 {{- else }}
@@ -8,19 +8,23 @@ apiVersion: networking.k8s.io/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: portal-{{ $fullName }}
   labels:
-    {{- include "dashboard.labels" . | nindent 4 }}
-{{- if .Values.ingress.annotations }}
+    app: portal-{{ $fullName }}
+    chart: {{ include "dashboard.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    app.kubernetes.io/component: "tyk-portal"
+{{- if .Values.portal.ingress.annotations }}
   annotations:
-  {{- range $key, $value := .Values.ingress.annotations }}
+  {{- range $key, $value := .Values.portal.ingress.annotations }}
     {{ $key }}: {{ $value | quote }}
   {{- end }}
 {{- end }}
 spec:
-{{- if .Values.ingress.tls }}
+{{- if .Values.portal.ingress.tls }}
   tls:
-  {{- range .Values.ingress.tls }}
+  {{- range .Values.portal.ingress.tls }}
     - hosts:
       {{- range .hosts }}
         - {{ . | quote }}
@@ -29,13 +33,13 @@ spec:
   {{- end }}
 {{- end }}
   rules:
-  {{- range .Values.ingress.hosts }}
+  {{- range .Values.portal.ingress.hosts }}
     - host: {{ . | quote }}
       http:
         paths:
           - path: {{ $ingressPath }}
             backend:
               serviceName: {{ include "dashboard.fullname" $ }}
-              servicePort: http
+              servicePort: {{ $.Values.service.port }}
   {{- end }}
 {{- end }}
