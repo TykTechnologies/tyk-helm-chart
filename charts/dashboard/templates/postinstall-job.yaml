@@ -19,9 +19,9 @@ spec:
       annotations:
         sidecar.istio.io/inject: "false"
     spec:
-      serviceAccountName: k8s-bootstrap-role
+      serviceAccountName: bootstrap-post-install-account
       containers:
-      - name: bootstrap-post-install
+      - name: bootstrap-post-install-{{ include "dashboard.fullname" . }}
         image: bash:5.1
         imagePullPolicy: IfNotPresent
         command:
@@ -49,9 +49,9 @@ spec:
           - name: TYK_DASHBOARD_SVC
             value: {{ include "dashboard.fullname" . }}
           - name: TYK_DB_LISTENPORT
-            value: "{{ .Values.dash.containerPort }}"
+            value: "{{ .Values.containerPort }}"
           - name: TYK_ADMIN_SECRET
-            value: {{ .Values.secrets.AdminSecret | quote }}
+            value: {{ .Values.global.secrets.AdminSecret | quote }}
           - name: TYK_ORG_NAME
             value: {{ .Values.bootstrap.org.name | quote }}
           - name: TYK_ORG_CNAME

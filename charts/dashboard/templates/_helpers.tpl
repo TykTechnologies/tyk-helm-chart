@@ -1,3 +1,5 @@
+{{/* vim: set filetype=mustache: */}}
+
 {{/*
 Expand the name of the chart.
 */}}
@@ -40,6 +42,7 @@ helm.sh/chart: {{ include "dashboard.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+app.kubernetes.io/component: "tyk-dashboard"
 {{- end }}
 
 {{/*
@@ -62,8 +65,8 @@ Create the name of the service account to use
 {{- end }}
 
 
-{{- define "tyk-pro.dash_proto" -}}
-{{- if .Values.dash.tls -}}
+{{- define "tyk-dashboard.proto" -}}
+{{- if .Values.tls -}}
 https
 {{- else -}}
 http
@@ -71,6 +74,6 @@ http
 {{- end -}}
 
 
-{{- define "tyk-pro.dash_url" -}}
-{{ include "tyk-pro.dash_proto" . }}://dashboard-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.dash.service.port }}
+{{- define "tyk-dashboard.url" -}}
+{{ include "tyk-dashboard.proto" . }}://{{ include "dashboard.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.dashboard.service.port }}
 {{- end -}}
