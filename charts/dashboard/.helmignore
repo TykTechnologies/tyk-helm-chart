@@ -23,3 +23,5 @@
 .vscode/
 
 values-copy.yaml
+docs
+ci
