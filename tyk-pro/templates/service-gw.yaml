@@ -19,6 +19,9 @@ spec:
   ports:
   - port: {{ .Values.gateway.service.port }}
     targetPort: {{ .Values.gateway.containerPort }}
+    {{- if .Values.gateway.service.nodePort }}
+    nodePort: {{ .Values.gateway.service.nodePort }}
+    {{- end }}
     protocol: TCP
     name: http
   selector:

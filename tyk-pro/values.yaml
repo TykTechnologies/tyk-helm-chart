@@ -213,6 +213,7 @@ dash:
   service:
     type: NodePort
     port: 3000
+    nodePort: 30001
   # Creates an ingress object in k8s. Will require an ingress-controller and
   # annotation to that ingress controller.
   ingress:
@@ -294,6 +295,7 @@ gateway:
   service:
     type: NodePort
     port: 8080
+    nodePort: 30002
     externalTrafficPolicy: Local
     annotations: {}
   control:

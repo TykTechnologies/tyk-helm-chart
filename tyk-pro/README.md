@@ -45,3 +45,28 @@ Please refer to Tyk official docs for details about installation and setting [*T
 [*Tyk Developer portal*](https://tyk.io/docs/tyk-self-managed/tyk-helm-chart/#tyk-developer-portal),
 [*MDCB*](https://tyk.io/docs/tyk-self-managed/tyk-helm-chart/#installing-tyk-self-managed-control-plane) and
 [*Istio*](https://tyk.io/docs/tyk-self-managed/istio/).
+
+### Kind as local k8s cluster
+If you decide to use [*KIND*](https://kind.sigs.k8s.io/) as local k8s cluster you can rely on the following configuration in order to reach Tyk Gateway and Tyk Dashboard:
+
+    cat << EOF > kind-config.yaml
+    kind: Cluster
+    name: tyk-pro-cluster
+    apiVersion: kind.x-k8s.io/v1alpha4
+    nodes:
+    - role: control-plane
+      extraPortMappings:
+      - containerPort: 30001
+        hostPort: 3000
+        listenAddress: "0.0.0.0"
+        protocol: TCP
+      - containerPort: 30002
+        hostPort: 8080
+        listenAddress: "0.0.0.0"
+        protocol: TCP
+    EOF
+
+When creating the cluster please specify the config file as following:
+    kind create cluster --config=kind-config.yaml
+
+Then you can access *Tyk-Gateway* on http://localhost:13000 and *Tyk-Dashboard* on http://localhost:18080

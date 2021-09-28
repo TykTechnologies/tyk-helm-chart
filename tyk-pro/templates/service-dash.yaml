@@ -12,6 +12,9 @@ spec:
   ports:
   - port: {{ .Values.dash.service.port }}
     targetPort: {{ .Values.dash.containerPort }}
+    {{- if .Values.dash.service.nodePort }}
+    nodePort: {{ .Values.dash.service.nodePort }}
+    {{- end }}
     protocol: TCP
     name: http
   type: {{ .Values.dash.service.type }}
