@@ -1,0 +1,151 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "tyk-gateway.fullname" . }}
+  labels:
+    {{- include "tyk-gateway.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "tyk-gateway.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "tyk-gateway.selectorLabels" . | nindent 8 }}
+    spec:
+{{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+{{- end }}
+{{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+{{- end }}
+{{- if .Values.affinity }}
+      affinity:
+{{ toYaml .Values.affinity | indent 8 }}
+{{- end }}
+      initContainers:
+      - name: "setup-directories"
+        image: busybox:1.32
+        command: ['sh','-c','mkdir -p apps middleware policies && touch policies/policies.json']
+        workingDir: /mnt/tyk-gateway
+        volumeMounts:
+          - name: tyk-scratch
+            mountPath: /mnt/tyk-gateway
+          {{- if .Values.mounts }}
+          {{- range $secret := .Values.mounts }}
+          - name: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
+            mountPath: {{ $secret.mountPath }}
+          {{- end }}
+          {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - all
+        env:
+          - name: TYK_GW_LISTENPORT
+            value: "{{ .Values.containerPort }}"
+          {{- if .Values.control.enabled }}
+          - name: TYK_GW_CONTROLAPIPORT
+            value: "{{ .Values.control.containerPort }}"
+          {{- end }}
+          - name: TYK_GW_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-gateway.fullname" . }} {{ end}}
+                key: APISecret
+          - name: TYK_GW_NODESECRET
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-gateway.fullname" . }} {{ end}}
+                key: APISecret
+          - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
+            value: "{{ .Values.tls }}"
+        {{- if .Values.extraEnvs }}
+        {{- range $env := .Values.extraEnvs }}
+          - name: {{ $env.name }}
+            value: {{ $env.value | quote }}
+        {{- end }}
+        {{- end }}
+        command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
+        workingDir: /opt/tyk-gateway
+        ports:
+        - containerPort: {{ .Values.containerPort }}
+        {{- if .Values.control.enabled }}
+        - containerPort: {{ .Values.control.containerPort }}
+        {{- end }}
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+        volumeMounts:
+          - name: tyk-mgmt-gateway-conf
+            mountPath: /etc/tyk-gateway
+          - name: {{ .Release.Name }}-default-cert
+            mountPath: /etc/certs
+          - name: tyk-scratch
+            mountPath: /mnt/tyk-gateway
+        livenessProbe:
+          httpGet:
+            scheme: "HTTP{{ if .Values.tls }}S{{ end }}"
+            path: /hello
+            {{- if and .Values.control.enabled }}
+            port: {{ .Values.control.containerPort }}
+            {{- else }}
+            port: {{ .Values.containerPort }}
+            {{- end }}
+          initialDelaySeconds: 5
+          periodSeconds: 2
+          timeoutSeconds: 3
+          failureThreshold: 2
+        readinessProbe:
+          httpGet:
+            scheme: "HTTP{{ if .Values.tls }}S{{ end }}"
+            path: /hello
+            {{- if and .Values.control.enabled }}
+            port: {{ .Values.control.containerPort }}
+            {{- else }}
+            port: {{ .Values.containerPort }}
+            {{- end }}
+          initialDelaySeconds: 1
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 2000
+      volumes:
+        - name: tyk-scratch
+          emptyDir: {}
+        - name: tyk-mgmt-gateway-conf
+          configMap:
+            name: conf-{{ include "tyk-gateway.fullname" . }}
+            labels:
+            items:
+              - key: tyk.conf
+                path: tyk.conf
+        - name: {{ .Release.Name }}-default-cert
+          secret:
+            secretName: {{ .Release.Name }}-default-cert
+        {{- if .Values.mounts }}
+        {{- range $secret := .Values.mounts }}
+        - name: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
+          secret:
+            secretName: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
+        {{- end }}
+        {{- end }}

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: conf-{{ include "tyk-gateway.fullname" . }}
+  labels:
+    {{- include "tyk-gateway.labels" . | nindent 4 }}
+data:
+  {{- (.Files.Glob "conf/tyk.conf").AsConfig | nindent 2 }}
