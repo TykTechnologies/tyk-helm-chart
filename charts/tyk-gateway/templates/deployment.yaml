@@ -66,6 +66,24 @@ spec:
           - name: TYK_GW_CONTROLAPIPORT
             value: "{{ .Values.control.containerPort }}"
           {{- end }}
+          # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
+          {{- if .Values.redis }}
+          - name: REDIGOCLUSTER_SHARDCOUNT
+            value: "128"
+          - name: TYK_GW_STORAGE_ADDRS
+            value: {{ .Values.redis.addrs }}
+          - name: TYK_GW_STORAGE_ENABLECLUSTER
+            value: "{{ default "false" .Values.redis.enableCluster }}"
+          - name: TYK_GW_STORAGE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-gateway.fullname" . }} {{ end}}
+                key: redisPass
+          - name: TYK_GW_STORAGE_DATABASE
+            value: "{{ default "0" .Values.redis.storage.database }}"
+          - name: TYK_GW_STORAGE_USESSL
+            value: "{{ default "false" .Values.redis.useSSL }}"
+          {{- end }}
           - name: TYK_GW_SECRET
             valueFrom:
               secretKeyRef:
