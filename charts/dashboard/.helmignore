@@ -21,7 +21,9 @@
 .idea/
 *.tmproj
 .vscode/
+.editorconfig
 
 values-copy.yaml
-docs
-ci
+docs/
+*.tgz
+test

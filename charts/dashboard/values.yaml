@@ -1,4 +1,8 @@
+# Determines whither or not the dashboard component should be installed.
+enabled: true
+
 nameOverride: ""
+
 fullnameOverride: ""
 
 podAnnotations: {}
@@ -12,21 +16,96 @@ securityContext:
   allowPrivilegeEscalation: false
   privileged: false
   readOnlyRootFilesystem: true
-  capabilities:
+  capabilities: # +doc-gen:break
     drop:
       - all
 
+secrets:
+  # tyk_analytics.conf tyk_api_config.secret
+  # tyk_analytics.conf shared_node_secret
+  APISecret: CHANGEME
+
+  # tyk_analytics.conf admin_secret
+  AdminSecret: "12345"
+
+  # If you don't want to store plaintext secrets in the Helm value file and would
+  # rather provide the k8s Secret externally please populate the value below
+  # it should contain secrets with following keys
+  # redisPass, mongoURL, AdminSecret, APISecret, DashLicense, MDCBLicense, tibSecret
+  useSecretName: ""
+
+# The hostname to bind the Dashboard to.
+hostName: tyk-dashboard.local
+
+# If set to true the Dashboard will use SSL connection.
+# You will also need to set the:
+# - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
+# - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
+# variables in extraEnvs object array to define your SSL cert and key files.
+tls: false
+
+# Dashboard license.
+license: ""
+
+# Dashboard will only bootstrap if the master bootstrap option is set to true.
+bootstrap:
+  enabled: true
+
+  adminUser: # +doc-gen:break
+    firstName: admin
+    lastName: user
+    email: default@exmaple.com
+    # Set a password or a random one will be assigned.
+    password: ""
+
+  # Dashboard Organisation information.
+  org: # +doc-gen:break
+    name: Default Org
+    # The hostname to bind the Portal to.
+    cname: tyk-portal.local
+
+replicaCount: 1
+
+containerPort: 3000
+
+image:
+  repository: tykio/tyk-dashboard
+
+  tag: v3.2.1
+
+  pullPolicy: Always
+
+service:
+  type: NodePort
+
+  port: 3000
+
+autoscaling: # +doc-gen:break
+  enabled: false
+
+  minReplicas: 1
+
+  maxReplicas: 20
+
+  targetCPUUtilizationPercentage: 80
+
+  # targetMemoryUtilizationPercentage: 80
+
 # Creates an ingress object in k8s. Will require an ingress-controller and
 # annotation to that ingress controller.
-ingress:
+ingress: # +doc-gen:break
   enabled: false
+
   annotations:
     {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
+
   path: /
+
   hosts:
     - tyk-dashboard.local
+
   tls:
     []
     #  - secretName: chart-example-tls
@@ -34,20 +113,30 @@ ingress:
     #      - chart-example.local
 
 portal:
-  ingress:
+  # Portal will only bootstrap if both the enabled and bootstrap.enabled
+  # keys are set to true. Only set this to false if you're not planning
+  # on using developer portal
+  enabled: true
+
+  path: /
+
+  ingress: # +doc-gen:break
     enabled: false
+
     annotations:
       {}
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
+
     hosts:
       - tyk-portal.local
+
     tls: []
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
 
-resources:
+resources: # +doc-gen:break
   {}
   # We usually recommend not to specify default resources and to leave this
   # as a conscious choice for the user. This also increases chances charts
@@ -70,3 +159,63 @@ affinity: {}
 extraEnvs: []
 
 mounts: []
+
+redis:
+  # The addrs value will allow you to set your Redis addresses. If you are
+  # using a redis cluster, you can list the endpoints of the redis instances
+  # or use the cluster configuration endpoint.
+  # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+  # addrs:
+  #   - redis.tyk.svc.cluster.local:6379
+  #   This is the the DNS name of the redis as set when using Bitnami
+  #   - tyk-redis-master.tyk.svc.cluster.local:6379
+
+  # Redis password
+  # If you're using Bitnami Redis chart please input your password in the field below
+  # pass: ""
+
+  # Enables SSL for Redis connection. Redis instance will have to support that.
+  # Default value: false
+  # useSSL: true
+
+  # The enableCluster value will allow you to indicate to Tyk whither you are
+  # running a Redis cluster or not.
+  # Default value: false
+  # enableCluster: true
+
+  # By default the database index is 0. Setting the database index is not
+  # supported with redis cluster. As such, if you have enableCluster: true,
+  # then this value should be omitted or explicitly set to 0.
+  storage:
+    database: 0
+
+mongo:
+  # The mongoURL value will allow you to set your MongoDB address.
+  # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
+  # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+
+  # If your MongoDB has a password you can add the username and password to the url
+  # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
+
+  # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
+  # Default value: false
+  useSSL: false
+
+gateway:
+  # Determines whither or not the gateway component should be installed.
+  enabled: true
+
+  # The hostname to bind the Gateway to.
+  hostName: tyk-gw.local
+
+  # Gatewaty service endpoint to connect to
+  endpoint: http://gateway-svc.tyk.svc
+
+  # Gatway service port to be used when connecting
+  port: 8080
+
+  # Determines whither or not the gateway control api should run on different port.
+  control: # +doc-gen:break
+    enabled: false
+    endpoint: http://gateway-control-svc.tyk.svc
+    containerPort: 9696

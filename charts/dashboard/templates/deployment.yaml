@@ -45,65 +45,64 @@ spec:
         {{- end }}
         env:
           - name: TYK_DB_LISTENPORT
-            value: "{{ .Values.containerPort }}"
+            value: {{ .Values.containerPort | quote }}
           # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
           - name: TYK_DB_HOSTCONFIG_HOSTNAME
             value: "{{ .Values.hostName }}"
           - name: TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME
-            value: "{{ .Values.global.gateway.hostName }}"
-          {{- if .Values.global.gateway.control.enabled }}
+            value: "{{ .Values.gateway.hostName }}"
+          {{- if .Values.gateway.control.enabled }}
           - name: TYK_DB_TYKAPI_HOST
-            value: "{{ include "tyk-pro.gwproto" . }}://gateway-control-svc-{{ include "tyk-pro.fullname" . | replace "-dashboard" "" }}.{{ .Release.Namespace }}"
+            value: "{{.Values.gateway.control.endpoint }}"
           - name: TYK_DB_TYKAPI_PORT
-            value: "{{ .Values.global.gateway.control.containerPort }}"
+            value: "{{ .Values.gateway.control.containerPort }}"
           {{- else }}
-          ## TODO: remove the replace after integrating with all other components.
           - name: TYK_DB_TYKAPI_HOST
-            value: "{{ include "tyk-pro.gwproto" . }}://gateway-svc-{{ include "tyk-pro.fullname" . | replace "-dashboard" "" }}.{{ .Release.Namespace }}"
+            value: "{{ .Values.gateway.endpoint }}"
           - name: TYK_DB_TYKAPI_PORT
-            value: "{{ .Values.global.gateway.service.port }}"
+            value: "{{ .Values.gateway.port }}"
           {{- end }}
           - name: TYK_DB_TYKAPI_SECRET
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . | replace "-dashboard" "" }} {{ end }}
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} {{.Values.secrets.APISecret | quote }} {{ end }}
                 key: APISecret
           - name: TYK_DB_REDISADDRS
-            value: {{ include "tyk-pro.redis_url" . | quote }}
+            value: {{ include "tyk-dashboard.redis_url" . | quote }}
           - name: TYK_DB_ENABLECLUSTER
-            value: "{{ default "false" .Values.global.redis.enableCluster }}"
+            value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_DB_REDISPASSWORD
             valueFrom:
               secretKeyRef:
-                name:{{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . | replace "-dashboard" "" }} {{ end }}
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} {{ .Values.redis.pass | quote }} {{ end }}
                 key: redisPass
           - name: TYK_DB_REDISUSESSL
-            value: "{{ default "false" .Values.global.redis.useSSL }}"
+            value: "{{ default "false" .Values.redis.useSSL }}"
           - name: TYK_DB_REDISSSLINSECURESKIPVERIFY
             value: "true"
           - name: TYK_DB_MONGOURL
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . | replace "-dashboard" "" }} {{ end }}
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} {{ include "tyk-dashboard.mongo_url" . | quote }} {{ end }}
                 key: mongoURL
           - name: TYK_DB_MONGOUSESSL
-            value: "{{ default "false" .Values.global.mongo.useSSL }}"
+            value: "{{ default "false" .Values.mongo.useSSL }}"
           - name: TYK_DB_ADMINSECRET
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . | replace "-dashboard" "" }} {{ end }}
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} {{ .Values.secrets.AdminSecret | quote }} {{ end }}
                 key: AdminSecret
           - name: TYK_DB_NODESECRET
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . | replace "-dashboard" "" }} {{ end }}
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} {{ .Values.secrets.APISecret | quote }} {{ end }}
                 key: APISecret
           - name: TYK_DB_LICENSEKEY
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.global.secrets.useSecretName }} {{ .Values.global.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . | replace "-dashboard" "" }} {{ end }}
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} {{ .Values.license | quote }} {{ end }}
                 key: DashLicense
           - name: TYK_DB_HOSTCONFIG_PORTALROOTPATH
             value:  {{ .Values.portal.path }}

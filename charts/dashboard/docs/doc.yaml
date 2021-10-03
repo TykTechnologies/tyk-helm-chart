@@ -4,7 +4,7 @@ project:
   description: This chart deploys a Tyk Dashboard on a Kubernetes cluster using the Helm package manager.
   app: Tyk dashboard automation for K8s
 repository:
-  url: https://cloudsmith.io/~tyk/repos/helm/packages/
+  url: https://helm.tyk.io/public/helm/charts/
   name: dashboard
 chart:
   name: dashboard

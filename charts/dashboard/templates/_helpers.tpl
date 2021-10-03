@@ -77,3 +77,27 @@ http
 {{- define "tyk-dashboard.url" -}}
 {{ include "tyk-dashboard.proto" . }}://{{ include "dashboard.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.dashboard.service.port }}
 {{- end -}}
+
+
+{{- define "tyk-dashboard.redis_url" -}}
+{{- if .Values.redis.addrs -}}
+{{ join "," .Values.redis.addrs }}
+{{- /* Adds support for older charts with the host and port options */}}
+{{- else if and .Values.redis.host .Values.redis.port -}}
+{{ .Values.redis.host }}:{{ .Values.redis.port }}
+{{- else -}}
+redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+{{- end -}}
+{{- end -}}
+
+
+{{- define "tyk-dashboard.mongo_url" -}}
+{{- if .Values.mongo.mongoURL -}}
+{{ .Values.mongo.mongoURL }}
+{{- /* Adds support for older charts with the host and port options */}}
+{{- else if and .Values.mongo.host .Values.mongo.port -}}
+mongodb://{{ .Values.mongo.host }}:{{ .Values.mongo.port }}/tyk_analytics
+{{- else -}}
+mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
+{{- end -}}
+{{- end -}}

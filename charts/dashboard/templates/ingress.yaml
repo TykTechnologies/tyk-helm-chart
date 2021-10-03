@@ -33,9 +33,18 @@ spec:
     - host: {{ . | quote }}
       http:
         paths:
+          {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "dashboard.fullname" $ }}
+                port:
+                  name: http
+          {{- else }}
           - path: {{ $ingressPath }}
             backend:
               serviceName: {{ include "dashboard.fullname" $ }}
               servicePort: http
+          {{- end }}
   {{- end }}
 {{- end }}
