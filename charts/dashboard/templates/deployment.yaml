@@ -65,45 +65,69 @@ spec:
             value: "{{ .Values.gateway.port }}"
           {{- end }}
           - name: TYK_DB_TYKAPI_SECRET
+            {{- if .Values.secrets.useSecretName }}
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} {{.Values.secrets.APISecret | quote }} {{ end }}
+                name: {{ .Values.secrets.useSecretName }}
                 key: APISecret
+            {{- else }}
+            value: {{ .Values.secrets.APISecret | quote }}
+            {{- end }}
           - name: TYK_DB_REDISADDRS
             value: {{ include "tyk-dashboard.redis_url" . | quote }}
           - name: TYK_DB_ENABLECLUSTER
             value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_DB_REDISPASSWORD
+            {{- if .Values.secrets.useSecretName }}
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} {{ .Values.redis.pass | quote }} {{ end }}
+                name: {{ .Values.secrets.useSecretName }}
                 key: redisPass
+            {{- else }}
+            value: {{ .Values.redis.pass | quote }}
+            {{- end }}
           - name: TYK_DB_REDISUSESSL
             value: "{{ default "false" .Values.redis.useSSL }}"
           - name: TYK_DB_REDISSSLINSECURESKIPVERIFY
             value: "true"
           - name: TYK_DB_MONGOURL
+            {{- if .Values.secrets.useSecretName }}
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} {{ include "tyk-dashboard.mongo_url" . | quote }} {{ end }}
+                name: {{ .Values.secrets.useSecretName }}
                 key: mongoURL
+            {{- else }}
+            value: {{ include "tyk-dashboard.mongo_url" . | quote }}
+            {{- end }}
           - name: TYK_DB_MONGOUSESSL
             value: "{{ default "false" .Values.mongo.useSSL }}"
           - name: TYK_DB_ADMINSECRET
+            {{- if .Values.secrets.useSecretName }}
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} {{ .Values.secrets.AdminSecret | quote }} {{ end }}
+                name: {{ .Values.secrets.useSecretName }}
                 key: AdminSecret
+            {{- else }}
+            value: {{ .Values.secrets.AdminSecret | quote }}
+            {{- end }}
           - name: TYK_DB_NODESECRET
+            {{- if .Values.secrets.useSecretName }}
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} {{ .Values.secrets.APISecret | quote }} {{ end }}
+                name: {{ .Values.secrets.useSecretName }}
                 key: APISecret
+            {{- else }}
+            value: {{ .Values.secrets.APISecret | quote }}
+            {{- end }}
           - name: TYK_DB_LICENSEKEY
+            {{- if .Values.secrets.useSecretName }}
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} {{ .Values.license | quote }} {{ end }}
+                name: {{ .Values.secrets.useSecretName }}
                 key: DashLicense
+            {{- else }}
+            value: {{ .Values.license | quote }}
+            {{- end }}
           - name: TYK_DB_HOSTCONFIG_PORTALROOTPATH
             value:  {{ .Values.portal.path }}
           - name: TYK_DB_HTTPSERVEROPTIONS_USESSL

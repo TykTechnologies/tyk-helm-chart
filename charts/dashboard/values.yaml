@@ -80,6 +80,8 @@ service:
 
   port: 3000
 
+  nodePort:
+
 autoscaling: # +doc-gen:break
   enabled: false
 

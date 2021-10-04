@@ -51,7 +51,7 @@ spec:
           - name: TYK_DB_LISTENPORT
             value: "{{ .Values.containerPort }}"
           - name: TYK_ADMIN_SECRET
-            value: {{ .Values.global.secrets.AdminSecret | quote }}
+            value: {{ .Values.secrets.AdminSecret | quote }}
           - name: TYK_ORG_NAME
             value: {{ .Values.bootstrap.org.name | quote }}
           - name: TYK_ORG_CNAME
