@@ -16,3 +16,9 @@ verify-dashboard: gen fmt
 					echo "generated files are out of date, run make gen"; exit 1; \
 				fi
 .PHONY: verify-dashboard
+
+test-dashboard:
+				kind delete cluster --name=dashboard-test
+				kind create cluster --config=test/kind.yaml --name=dashboard-test
+				cd test && go test ./... -count=1 -v
+.PHONY: test-dashboard
