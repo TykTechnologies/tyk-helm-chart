@@ -19,6 +19,7 @@ spec:
   - port: {{ .Values.gateway.service.port }}
     targetPort: {{ .Values.gateway.containerPort }}
     protocol: TCP
+    name: http
   selector:
     app: gateway-{{ include "tyk-headless.fullname" . }}
     release: {{ .Release.Name }}
