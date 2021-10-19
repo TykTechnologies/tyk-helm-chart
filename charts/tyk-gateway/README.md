@@ -1,4 +1,4 @@
-# 
+#
 
 [Tyk Gateway](https://github.com/TykTechnologies/tyk-helm-chart) - This chart deploys the open source Tyk Gateway.
 
@@ -17,7 +17,7 @@ This chart deploys Tyk gateway automation for K8s on a [Kubernetes](http://kuber
 ## Prerequisites
 
 - Kubernetes v1.16+
-- Redis
+- Redis ([bitnami install](https://tyk.io/docs/tyk-oss/ce-helm-chart/#step-4---installing-redis))
 
 ## Installing the Chart
 
@@ -84,7 +84,7 @@ The following table lists the configurable parameters of the `tyk-gateway` chart
 | nodeSelector                               |                                                                                                                                                        | `{}`                |
 | affinity                                   |                                                                                                                                                        | `{}`                |
 | extraEnvs                                  |                                                                                                                                                        | `[]`                |
-| mounts                                     |                                                                                                                                                        | `[]`                |
+| ExtraMounts                                     |                                                                                                                                                        | `[]`                |
 
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example:
@@ -99,3 +99,5 @@ installing the chart. For example:
 ```console
 $ helm install tyk-gateway tyk-helm/tyk-gateway -n tyk --version=1.0.0 --values values.yaml
 ```
+
+If you want tyk to record analytics, please set enable_analytics field in `tyk.conf` file to true.
