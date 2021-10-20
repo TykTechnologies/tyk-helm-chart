@@ -1,6 +1,6 @@
 #
 
-[Tyk Gateway](https://github.com/TykTechnologies/tyk-helm-chart) - This chart deploys the open source Tyk Gateway.
+## Tyk Gateway - This chart deploys the open source Tyk Gateway.
 
 ## TL;DR;
 
@@ -84,7 +84,7 @@ The following table lists the configurable parameters of the `tyk-gateway` chart
 | nodeSelector                               |                                                                                                                                                        | `{}`                |
 | affinity                                   |                                                                                                                                                        | `{}`                |
 | extraEnvs                                  |                                                                                                                                                        | `[]`                |
-| ExtraMounts                                     |                                                                                                                                                        | `[]`                |
+| extraMounts                                     |                                                                                                                                                        | `[]`                |
 
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example:

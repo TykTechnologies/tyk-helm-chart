@@ -67,7 +67,7 @@ replicaCount: 1
 containerPort: 8080
 image:
   repository: tykio/tyk-gateway
-  tag: v3.2.1
+  tag: {}
   pullPolicy: Always
 service:
   type: NodePort
@@ -92,6 +92,7 @@ ingress:
   annotations: {}
   #  kubernetes.io/ingress.class: nginx
   #  kubernetes.io/tls-acme: "true"
+  path: /
   hosts:
     - host: tyk-gw.local
   tls: []

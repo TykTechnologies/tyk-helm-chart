@@ -1,7 +1,7 @@
 {{- if .Values.ingress.enabled -}}
-{{- $ingressSupportsIngressClassName := eq (include "ingress.supportsIngressClassName" .) "true" -}}
 {{- $fullName := include "tyk-gateway.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
+{{- $ingressPath := .Values.ingress.path -}}
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1
 {{- else -}}
@@ -17,7 +17,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- if and $ingressSupportsIngressClassName .Values.ingress.ingressClassName }}
+  {{- if .Values.ingress.ingressClassName }}
   ingressClassName: {{ .Values.ingress.ingressClassName }}
   {{- end }}
   {{- if .Values.ingress.tls }}
@@ -35,6 +35,7 @@ spec:
     - host: {{ .host | quote }}
       http:
         paths:
+          - path: {{ $ingressPath }}
           {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: Prefix
             backend:
@@ -43,7 +44,6 @@ spec:
                 port:
                   name: {{ $svcPort }}
           {{- else }}
-          - path: {{ .path }}
             backend:
               serviceName: {{ $fullName }}
               servicePort: {{ $svcPort }}
