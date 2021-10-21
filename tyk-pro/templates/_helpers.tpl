@@ -81,3 +81,13 @@ mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
 {{- define "tyk-pro.gateway-version" -}}
 {{- printf "%s" .Values.gateway.image.tag | replace "v" "" -}}
 {{- end -}}
+
+
+{{- /* Allow use of a pre-created default certificate */}}
+{{- define "tyke-pro.certSecret" -}}
+{{- if .Values.secrets.useCertSecretName -}}
+{{ .Values.secrets.useCertSecretName }}
+{{- else -}}
+{{ .Release.Name }}-default-cert
+{{- end -}}
+{{- end -}}

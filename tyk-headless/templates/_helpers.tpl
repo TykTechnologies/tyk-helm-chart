@@ -57,3 +57,12 @@ mongodb://{{ .Values.mongo.host }}:{{ .Values.mongo.port }}/tyk_analytics
 mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
 {{- end -}}
 {{- end -}}
+
+{{- /* Allow use of a pre-created default certificate */}}
+{{- define "tyke-headless.certSecret" -}}
+{{- if .Values.secrets.useCertSecretName -}}
+{{ .Values.secrets.useCertSecretName }}
+{{- else -}}
+{{ .Release.Name }}-default-cert
+{{- end -}}
+{{- end -}}

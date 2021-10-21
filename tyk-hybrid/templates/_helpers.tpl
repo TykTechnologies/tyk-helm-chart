@@ -49,3 +49,13 @@ http
 redis.{{ .Release.Namespace }}.svc.cluster.local:6379
 {{- end -}}
 {{- end -}}
+
+
+{{- /* Allow use of a pre-created default certificate */}}
+{{- define "tyke-hybrid.certSecret" -}}
+{{- if .Values.secrets.useCertSecretName -}}
+{{ .Values.secrets.useCertSecretName }}
+{{- else -}}
+{{ .Release.Name }}-default-cert
+{{- end -}}
+{{- end -}}

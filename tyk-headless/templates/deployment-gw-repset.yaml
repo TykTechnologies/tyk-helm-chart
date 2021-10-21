@@ -175,7 +175,7 @@ spec:
                 path: tyk.conf
         - name: {{ .Release.Name }}-default-cert
           secret:
-            secretName: {{ .Release.Name }}-default-cert
+            secretName: {{ include "tyke-headless.certSecret" . | quote }}
         {{- if .Values.gateway.mounts }}
         {{- range $secret := .Values.gateway.mounts }}
         - name: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}

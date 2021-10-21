@@ -141,7 +141,7 @@ spec:
                 path: tyk_sink.conf
         - name: {{ .Release.Name }}-default-cert
           secret:
-            secretName: {{ .Release.Name }}-default-cert
+            secretName: {{ include "tyke-pro.certSecret" . | quote }}
         {{- if .Values.mdcb.mounts }}
         {{- range $secret := .Values.mdcb.mounts }}
         - name: {{ $.Release.Name }}-mdcb-secret-{{ $secret.name }}

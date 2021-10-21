@@ -22,6 +22,9 @@ secrets:
   # If you don't want to store plaintext secrets in the Helm value file and would
   # rather provide the k8s Secret externally please populate the value below
   useSecretName: ""
+  # If you want to install a default cert other than the included self-signed cert
+  # set this value to the name of a secret containing cert.pem and cert.key values
+  useCertSecretName: ""
 
 redis:
   # The addrs value will allow you to set your Redis addresses. If you are
@@ -107,7 +110,8 @@ gateway:
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
-  resources: {}
+  resources:
+    {}
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
     # run on environments with little resources, such as Minikube. If you do
@@ -141,7 +145,8 @@ pump:
     tag: v1.4.0
     pullPolicy: IfNotPresent
   annotations: {}
-  resources: {}
+  resources:
+    {}
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
     # run on environments with little resources, such as Minikube. If you do

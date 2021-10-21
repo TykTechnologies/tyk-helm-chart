@@ -5,7 +5,6 @@
 ## https://tyk.io/docs/tyk-self-managed/tyk-helm-chart/
 ## Registry for all Tyk images - https://hub.docker.com/u/tykio
 
-
 # Chart name override. Truncates to 63 characters.
 # Default value: tyk-pro.name
 nameOverride: ""
@@ -33,6 +32,9 @@ secrets:
   # If you don't want to store plaintext secrets in the Helm value file and would
   # rather provide the k8s Secret externally please populate the value below
   useSecretName: ""
+  # If you want to install a default cert other than the included self-signed cert
+  # set this value to the name of a secret containing cert.pem and cert.key values
+  useCertSecretName: ""
 
 redis:
   # The addrs value will allow you to set your Redis addresses. If you are
@@ -43,7 +45,6 @@ redis:
   #   - redis.tyk.svc.cluster.local:6379
   #   This is the the DNS name of the redis as set when using Bitnami
   #   - tyk-redis-master.tyk.svc.cluster.local:6379
-
 
   # Redis password
   # If you're using Bitnami Redis chart please input your password in the field below
@@ -104,7 +105,8 @@ mdcb:
   service:
     type: LoadBalancer
     port: 9090
-  resources: {}
+  resources:
+    {}
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
     # run on environments with little resources, such as Minikube. If you do
@@ -145,7 +147,8 @@ tib:
     port: 3010
   ingress:
     enabled: false
-    annotations: {}
+    annotations:
+      {}
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: true
     path: /
@@ -155,7 +158,8 @@ tib:
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
-  resources: {}
+  resources:
+    {}
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
     # run on environments with little resources, such as Minikube. If you do
@@ -217,7 +221,8 @@ dash:
   # annotation to that ingress controller.
   ingress:
     enabled: false
-    annotations: {}
+    annotations:
+      {}
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
     path: /
@@ -227,7 +232,8 @@ dash:
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
-  resources: {}
+  resources:
+    {}
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
     # run on environments with little resources, such as Minikube. If you do
@@ -255,7 +261,8 @@ portal:
   # annotation to that ingress controller.
   ingress:
     enabled: false
-    annotations: {}
+    annotations:
+      {}
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
     hosts:
@@ -306,7 +313,8 @@ gateway:
   # annotation to that ingress controller.
   ingress:
     enabled: false
-    annotations: {}
+    annotations:
+      {}
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
     path: /
@@ -316,7 +324,8 @@ gateway:
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
-  resources: {}
+  resources:
+    {}
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
     # run on environments with little resources, such as Minikube. If you do
@@ -346,7 +355,8 @@ pump:
     tag: v1.4.0
     pullPolicy: Always
   annotations: {}
-  resources: {}
+  resources:
+    {}
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
     # run on environments with little resources, such as Minikube. If you do
