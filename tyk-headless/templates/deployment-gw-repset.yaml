@@ -1,29 +1,16 @@
 apiVersion: apps/v1
-kind: {{ .Values.gateway.kind }}
+kind: StatefulSet
 metadata:
   name: gateway-{{ include "tyk-headless.fullname" . }}
   labels:
     app: gateway-{{ include "tyk-headless.fullname" . }}
     chart: {{ include "tyk-headless.chart" . }}
-    release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-{{- if eq .Values.gateway.kind "Deployment" }}
-  replicas: {{ .Values.gateway.replicaCount }}
-{{- end }}
-  minReadySeconds: 5
-{{- if eq .Values.gateway.kind "Deployment" }}
-  strategy:
-{{- else }}
+  serviceName: gateway-{{ include "tyk-headless.fullname" . }}
   updateStrategy:
-{{- end }}
     # indicate which strategy we want for rolling update
     type: RollingUpdate
-    rollingUpdate:
-{{- if eq .Values.gateway.kind "Deployment" }}
-      maxSurge: 2
-{{- end }}
-      maxUnavailable: 1
   selector:
     matchLabels:
       app: gateway-{{ include "tyk-headless.fullname" . }}
@@ -54,7 +41,7 @@ spec:
         command: ['sh','-c','mkdir -p apps middleware policies && touch policies/policies.json']
         workingDir: /mnt/tyk-gateway
         volumeMounts:
-          - name: tyk-scratch
+          - name: tyk-data
             mountPath: /mnt/tyk-gateway
           {{- if .Values.gateway.mounts }}
           {{- range $secret := .Values.gateway.mounts }}
@@ -133,7 +120,7 @@ spec:
             mountPath: /etc/tyk-gateway
           - name: {{ .Release.Name }}-default-cert
             mountPath: /etc/certs
-          - name: tyk-scratch
+          - name: tyk-data
             mountPath: /mnt/tyk-gateway
         livenessProbe:
           httpGet:
@@ -165,8 +152,14 @@ spec:
         runAsUser: 1000
         fsGroup: 2000
       volumes:
-        - name: tyk-scratch
+        {{ if not .Values.gateway.persistence.enabled -}}
+        - name: "tyk-data"
           emptyDir: {}
+        {{- else if .Values.gateway.persistence.existingClaim -}}
+        - name: "tyk-data"
+          persistentVolumeClaim:
+            claimName: {{ .Values.gateway.persistence.existingClaim }}
+        {{- end -}}
         - name: tyk-mgmt-gateway-conf
           configMap:
             name: mgmt-gateway-conf-{{ include "tyk-headless.fullname" . }}
@@ -183,3 +176,24 @@ spec:
             secretName: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
         {{- end }}
         {{- end }}
+  {{- if and .Values.gateway.persistence.enabled (not .Values.gateway.persistence.existingClaim) }}
+  volumeClaimTemplates:
+  - metadata:
+      name: "tyk-data"
+      labels:
+        app: gateway-{{ include "tyk-headless.fullname" . }}
+        chart: {{ include "tyk-headless.chart" . }}
+        heritage: {{ .Release.Service }}
+    spec:
+      accessModes: [{{ .Values.gateway.persistence.persistentVolumeClaim.accessMode | quote }}]
+      {{- if .Values.gateway.persistence.persistentVolumeClaim.storageClass }}
+      {{- if (eq "-" .Values.gateway.persistence.persistentVolumeClaim.storageClass) }}
+      storageClassName: ""
+      {{- else }}
+      storageClassName: "{{ .Values.gateway.persistence.persistentVolumeClaim.storageClass }}"
+      {{- end }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.gateway.persistence.persistentVolumeClaim.size | quote }}
+  {{- end -}}

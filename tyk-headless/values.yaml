@@ -75,7 +75,6 @@ gateway:
   # When true, sets the gateway protocol to HTTPS.
   tls: false
 
-  kind: DaemonSet
   replicaCount: 1
   containerPort: 8080
   image:
@@ -126,6 +125,20 @@ gateway:
   affinity: {}
   extraEnvs: []
   mounts: []
+
+  persistence:
+    enabled: true
+    persistentVolumeClaim:
+      # Use the existing PVC which must be created manually before bound,
+      # and specify the "subPath" if the PVC is shared with other components
+      existingClaim: ""
+      # Specify the "storageClass" used to provision the volume. Or the default
+      # StorageClass will be used(the default).
+      # Set it to "-" to disable dynamic provisioning
+      storageClass: ""
+      subPath: ""
+      accessMode: ReadWriteOnce
+      size: 5Gi
 
 # If pump is enabled the Gateway will create and collect analytics data to send
 # to a data store of your choice. These can be set up in the pump config. The
