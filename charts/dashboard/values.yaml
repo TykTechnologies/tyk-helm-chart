@@ -71,7 +71,7 @@ containerPort: 3000
 image:
   repository: tykio/tyk-dashboard
 
-  tag: v3.2.1
+  tag: v3.2.2
 
   pullPolicy: Always
 
@@ -97,6 +97,9 @@ autoscaling: # +doc-gen:break
 # annotation to that ingress controller.
 ingress: # +doc-gen:break
   enabled: false
+
+  # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
+  # ingressClassName: nginx
 
   annotations:
     {}
@@ -124,6 +127,9 @@ portal:
 
   ingress: # +doc-gen:break
     enabled: false
+
+    # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
+    # ingressClassName: nginx
 
     annotations:
       {}
@@ -160,7 +166,11 @@ affinity: {}
 
 extraEnvs: []
 
-mounts: []
+## Additional mounts by specifying the k8s secret object and the mount path
+extraMounts:
+  []
+  # - name: <secretName>
+  #   mountPath: <mountPath>
 
 redis:
   # The addrs value will allow you to set your Redis addresses. If you are
