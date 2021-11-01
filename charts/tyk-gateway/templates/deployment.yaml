@@ -1,0 +1,169 @@
+apiVersion: apps/v1
+kind: {{ .Values.kind }}
+metadata:
+  name: {{ include "tyk-gateway.fullname" . }}
+  labels:
+    {{- include "tyk-gateway.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "tyk-gateway.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "tyk-gateway.selectorLabels" . | nindent 8 }}
+    spec:
+{{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+{{- end }}
+{{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+{{- end }}
+{{- if .Values.affinity }}
+      affinity:
+{{ toYaml .Values.affinity | indent 8 }}
+{{- end }}
+      initContainers:
+      - name: "setup-directories"
+        image: busybox:1.32
+        command: ['sh','-c','mkdir -p apps middleware policies && touch policies/policies.json']
+        workingDir: /mnt/tyk-gateway
+        volumeMounts:
+          - name: tyk-scratch
+            mountPath: /mnt/tyk-gateway
+          {{- if .Values.extraMounts }}
+          {{- range .Values.extraMounts }}
+          - name: {{ .Values.extraMounts.name }}
+            mountPath: {{ .Values.extraMounts.mountPath }}
+          {{- end }}
+          {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion}}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - all
+        env:
+          - name: TYK_GW_LISTENPORT
+            value: "{{ .Values.containerPort }}"
+          {{- if .Values.control.enabled }}
+          - name: TYK_GW_CONTROLAPIPORT
+            value: "{{ .Values.control.containerPort }}"
+          {{- end }}
+          {{- if .Values.redis }}
+          # Legacy support for Redis Cluster driver(REDIGOCLUSTER_SHARDCOUNT). Driver dropped in v3.0.0.
+          - name: REDIGOCLUSTER_SHARDCOUNT
+            value: "128"
+          - name: TYK_GW_STORAGE_ADDRS
+            value: {{ .Values.redis.addrs }}
+          - name: TYK_GW_STORAGE_ENABLECLUSTER
+            value: "{{ default "false" .Values.redis.enableCluster }}"
+          - name: TYK_GW_STORAGE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-gateway.fullname" . }} {{ end}}
+                key: redisPass
+          - name: TYK_GW_STORAGE_DATABASE
+            value: "{{ default "0" .Values.redis.storage.database }}"
+          - name: TYK_GW_STORAGE_USESSL
+            value: "{{ default "false" .Values.redis.useSSL }}"
+          {{- end }}
+          - name: TYK_GW_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-gateway.fullname" . }} {{ end}}
+                key: APISecret
+          - name: TYK_GW_NODESECRET
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-gateway.fullname" . }} {{ end}}
+                key: APISecret
+          - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
+            value: "{{ .Values.tls }}"
+        {{- if .Values.extraEnvs }}
+        {{- range $env := .Values.extraEnvs }}
+          - name: {{ $env.name }}
+            value: {{ $env.value | quote }}
+        {{- end }}
+        {{- end }}
+        command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
+        workingDir: /opt/tyk-gateway
+        ports:
+        - containerPort: {{ .Values.containerPort }}
+        {{- if .Values.control.enabled }}
+        - containerPort: {{ .Values.control.containerPort }}
+        {{- end }}
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+        volumeMounts:
+          - name: tyk-mgmt-gateway-conf
+            mountPath: /etc/tyk-gateway
+          - name: {{ .Release.Name }}-default-cert
+            mountPath: /etc/certs
+          - name: tyk-scratch
+            mountPath: /mnt/tyk-gateway
+        livenessProbe:
+          httpGet:
+            scheme: "HTTP{{ if .Values.tls }}S{{ end }}"
+            path: /hello
+            {{- if and .Values.control.enabled }}
+            port: {{ .Values.control.containerPort }}
+            {{- else }}
+            port: {{ .Values.containerPort }}
+            {{- end }}
+          initialDelaySeconds: 5
+          periodSeconds: 2
+          timeoutSeconds: 3
+          failureThreshold: 2
+        readinessProbe:
+          httpGet:
+            scheme: "HTTP{{ if .Values.tls }}S{{ end }}"
+            path: /hello
+            {{- if and .Values.control.enabled }}
+            port: {{ .Values.control.containerPort }}
+            {{- else }}
+            port: {{ .Values.containerPort }}
+            {{- end }}
+          initialDelaySeconds: 1
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 2000
+      volumes:
+        - name: tyk-scratch
+          emptyDir: {}
+        - name: tyk-mgmt-gateway-conf
+          configMap:
+            name: conf-{{ include "tyk-gateway.fullname" . }}
+            labels:
+            items:
+              - key: tyk.conf
+                path: tyk.conf
+        - name: {{ .Release.Name }}-default-cert
+          secret:
+            secretName: {{ .Release.Name }}-default-cert
+        {{- if .Values.extraMounts }}
+        {{- range .Values.extraMounts }}
+        - name: {{ .Values.extraMounts.name }}
+          secret:
+            secretName: {{ .Values.extraMounts.secretName }}
+        {{- end }}
+        {{- end }}

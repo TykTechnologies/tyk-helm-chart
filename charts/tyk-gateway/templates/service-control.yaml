@@ -1,0 +1,22 @@
+{{- if .Values.control.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: control-svc-{{ include "tyk-gateway.fullname" . }}
+  labels:
+    {{- include "tyk-gateway.labels" . | nindent 4 }}
+{{- if .Values.service.annotations }}
+  annotations:
+  {{- range $key, $value := .Values.control.annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}
+spec:
+  type: {{ .Values.control.type }}
+  ports:
+  - port: {{ .Values.control.port }}
+    targetPort: {{ .Values.control.containerPort }}
+    protocol: TCP
+  selector:
+    {{- include "tyk-gateway.selectorLabels" . | nindent 4 }}
+{{- end }}
