@@ -144,10 +144,10 @@ spec:
         volumeMounts:
           - name: tyk-dashboard-conf
             mountPath: /etc/tyk-dashboard
-          {{- if .Values.mounts }}
-          {{- range $secret := .Values.mounts }}
-          - name: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
-            mountPath: {{ $secret.mountPath }}
+          {{- if .Values.extraMounts }}
+          {{- range $_, $mount := .Values.extraMounts }}
+          - name: {{ $mount.name }}
+            mountPath: {{ $mount.mountPath }}
           {{- end }}
           {{- end }}
         livenessProbe:
@@ -178,11 +178,11 @@ spec:
             items:
               - key: tyk_analytics.conf
                 path: tyk_analytics.conf
-        {{- if .Values.mounts }}
-        {{- range $secret := .Values.mounts }}
-        - name: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
+        {{- if .Values.extraMounts }}
+        {{- range $_, $mount := .Values.extraMounts }}
+        - name: {{ $mount.name }}
           secret:
-            secretName: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
+            secretName: {{ $mount.name }}
         {{- end }}
         {{- end }}
 {{- end }}

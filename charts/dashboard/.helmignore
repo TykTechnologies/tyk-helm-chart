@@ -26,4 +26,4 @@
 values-copy.yaml
 docs/
 *.tgz
-test
+tests

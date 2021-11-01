@@ -14,9 +14,9 @@ This chart deploys Tyk dashboard automation for K8s on a [Kubernetes](http://kub
 To install the chart with the release name `tyk-dashboard`:
 
 ```console
-$ helm repo add dashboard https://helm.tyk.io/public/helm/charts/
+$ helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
 $ helm repo update
-$ helm install tyk-dashboard dashboard/dashboard -n tyk --version=0.1.0
+$ helm install tyk-dashboard tyk-helm/dashboard -n tyk --version=0.1.0
 ```
 
 ## Uninstalling the Chart
@@ -61,6 +61,7 @@ The following table lists the configurable parameters of the `dashboard` chart a
 | image.pullPolicy                         |                                                                                                                                                                                                                                                                                                 | `Always`                                                                                 |
 | service.type                             |                                                                                                                                                                                                                                                                                                 | `NodePort`                                                                               |
 | service.port                             |                                                                                                                                                                                                                                                                                                 | `3000`                                                                                   |
+| service.nodePort                         |                                                                                                                                                                                                                                                                                                 | ``                                                                                       |
 | autoscaling                              |                                                                                                                                                                                                                                                                                                 | `{"enabled":false,"maxReplicas":20,"minReplicas":1,"targetCPUUtilizationPercentage":80}` |
 | ingress                                  | Creates an ingress object in k8s. Will require an ingress-controller and annotation to that ingress controller.                                                                                                                                                                                 | `{"annotations":{},"enabled":false,"hosts":["tyk-dashboard.local"],"path":"/","tls":[]}` |
 | portal.enabled                           | Portal will only bootstrap if both the enabled and bootstrap.enabled keys are set to true. Only set this to false if you're not planning on using developer portal                                                                                                                              | `true`                                                                                   |
@@ -71,7 +72,7 @@ The following table lists the configurable parameters of the `dashboard` chart a
 | tolerations                              |                                                                                                                                                                                                                                                                                                 | `[]`                                                                                     |
 | affinity                                 |                                                                                                                                                                                                                                                                                                 | `{}`                                                                                     |
 | extraEnvs                                |                                                                                                                                                                                                                                                                                                 | `[]`                                                                                     |
-| mounts                                   |                                                                                                                                                                                                                                                                                                 | `[]`                                                                                     |
+| extraMounts                              | # Additional mounts by specifying the k8s secret object and the mount path                                                                                                                                                                                                                      | `[]`                                                                                     |
 | redis.storage.database                   |                                                                                                                                                                                                                                                                                                 | `0`                                                                                      |
 | mongo.useSSL                             | If your MongoDB has a password you can add the username and password to the url mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin Enables SSL for MongoDB connection. MongoDB instance will have to support that. Default value: false | `false`                                                                                  |
 | gateway.enabled                          | Determines whither or not the gateway component should be installed.                                                                                                                                                                                                                            | `true`                                                                                   |
@@ -84,12 +85,12 @@ The following table lists the configurable parameters of the `dashboard` chart a
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example:
 
 ```console
-$ helm install tyk-dashboard dashboard/dashboard -n tyk --version=0.1.0 --set securityContext.capabilities={"drop":["all"]}
+$ helm install tyk-dashboard tyk-helm/dashboard -n tyk --version=0.1.0 --set securityContext.capabilities={"drop":["all"]}
 ```
 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while
 installing the chart. For example:
 
 ```console
-$ helm install tyk-dashboard dashboard/dashboard -n tyk --version=0.1.0 --values values.yaml
+$ helm install tyk-dashboard tyk-helm/dashboard -n tyk --version=0.1.0 --values values.yaml
 ```
