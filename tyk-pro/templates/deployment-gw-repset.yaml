@@ -18,7 +18,7 @@ spec:
 {{- else }}
   updateStrategy:
 {{- end }}
-{{- if and .Values.gateway.strategy .Values.gateway.strategy.type }}
+{{- if ((.Values.gateway.strategy).type) }}
     type: {{ .Values.gateway.strategy.type }}
 {{- else }}
     # indicate which strategy we want for rolling update
