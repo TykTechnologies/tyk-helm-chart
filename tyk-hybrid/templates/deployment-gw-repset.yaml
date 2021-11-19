@@ -17,6 +17,9 @@ spec:
 {{- else }}
   updateStrategy:
 {{- end }}
+{{- if ((.Values.gateway.strategy).type) }}
+    type: {{ .Values.gateway.strategy.type }}
+{{- else }}
     # indicate which strategy we want for rolling update
     type: RollingUpdate
     rollingUpdate:
@@ -24,6 +27,7 @@ spec:
       maxSurge: 2
 {{- end }}
       maxUnavailable: 1
+{{- end }}
   selector:
     matchLabels:
       app: gateway-{{ include "tyk-hybrid.fullname" . }}
