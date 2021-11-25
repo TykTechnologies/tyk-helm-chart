@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "tyk-pump.fullname" . }}
+  labels:
+    {{- include "tyk-pump.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "tyk-pump.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "tyk-pump.selectorLabels" . | nindent 8 }}
+    spec:
+{{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+{{- end }}
+{{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+{{- end }}
+{{- if .Values.affinity }}
+      affinity:
+{{ toYaml .Values.affinity | indent 8 }}
+{{- end }}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion}}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        workingDir: "/opt/tyk-pump"
+        ports:
+        - containerPort: {{ .Values.containerPort }}
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - all
+        env:
+          # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
+          - name: REDIGOCLUSTER_SHARDCOUNT
+            value: "128"
+          {{- if .Values.mongo.enabled }}
+          - name: PMP_MONGO_MONGOURL
+            value: {{ include "tyk-pump.mongo_url" . | quote }}
+          - name: PMP_MONGO_MONGOUSESSL
+            value: "{{ default "false" .Values.mongo.useSSL }}"
+          - name: PMP_MONGOAGG_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pump.fullname" . }} {{ end}}
+                key: mongoURL
+          - name: PMP_MONGOAGG_MONGOUSESSL
+            value:  "{{ default "false" .Values.mongo.useSSL }}"
+          {{- end }}
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS
+            {{- if and .Values.redis.host .Values.redis.port }}
+            value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"
+            {{- else }}
+            value: "{{ join "," .Values.redis.addrs }}"
+            {{- end }}
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ENABLECLUSTER
+            value: "{{ default "false" .Values.redis.enableCluster }}"
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pump.fullname" . }} {{ end}}
+                key: redisPass
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISUSESSL
+            value: "{{ default "false" .Values.redis.useSSL }}"
+          {{- if .Values.extraEnvs }}
+          {{- toYaml .Values.extraEnvs| nindent 10 }}
+          {{- end }}
+        command: ["/opt/tyk-pump/tyk-pump", "-c", "/etc/tyk-pump/pump.conf"]
+        volumeMounts:
+          - name: tyk-pump-conf
+            mountPath: /etc/tyk-pump
+          {{- if .Values.extraMounts }}
+          {{- range $_, $mount := .Values.extraMounts }}
+          - name: {{ $mount.name }}
+            mountPath: {{ $mount.mountPath }}
+          {{- end }}
+          {{- end }}
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 2000
+      volumes:
+        - name: tyk-pump-conf
+          configMap:
+            name: conf-{{ include "tyk-pump.fullname" . }}
+            items:
+              - key: pump.conf
+                path: pump.conf
+        {{- if .Values.extraMounts }}
+        {{- range $_, $mount := .Values.extraMounts }}
+        - name: {{ $mount.name }}
+          mountPath: {{ $mount.mountPath }}
+        {{- end }}
+        {{- end }}

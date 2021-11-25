@@ -1,0 +1,117 @@
+# Default values for tyk-pump.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+
+# If pump is used the Gateway will create and collect analytics data to send
+# to a data store of your choice. These can be set up in the pump config. The
+# possible pump configs can be found here:
+# https://github.com/TykTechnologies/tyk-pump#configuration
+
+replicaCount: 1
+containerPort: 9090
+image:
+  repository: docker.tyk.io/tyk-pump/tyk-pump
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: v1.4.0
+
+service:
+  type: NodePort
+  port: 9090
+  externalTrafficPolicy: Local
+  annotations: {}
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+secrets:
+  # If you don't want to store plaintext secrets in the Helm value file and would
+  # rather provide the k8s Secret externally please populate the value below
+  useSecretName: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+extraEnvs: []
+
+extraMounts: []
+  # - name: <secretName>
+  #   mountPath: <mountPath>
+
+redis:
+  # The addrs value will allow you to set your Redis addresses. If you are
+  # using a redis cluster, you can list the endpoints of the redis instances
+  # or use the cluster configuration endpoint.
+  # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+  # addrs:
+  #   - redis.tyk.svc.cluster.local:6379
+  #   This is the the DNS name of the redis as set when using Bitnami
+  #   - tyk-redis-master.tyk.svc.cluster.local:6379
+
+  # Redis password
+  # If you're using Bitnami Redis chart please input your password in the field below
+  # pass: ""
+
+  # Enables SSL for Redis connection. Redis instance will have to support that.
+  # Default value: false
+  # useSSL: true
+
+  # The enableCluster value will allow you to indicate to Tyk whither you are
+  # running a Redis cluster or not.
+  # Default value: false
+  # enableCluster: true
+
+  # By default the database index is 0. Setting the database index is not
+  # supported with redis cluster. As such, if you have enableCluster: true,
+  # then this value should be omitted or explicitly set to 0.
+  storage:
+    database: 0
+
+mongo:
+  # The mongoURL value will allow you to set your MongoDB address.
+  # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
+  # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+
+  # If your MongoDB has a password you can add the username and password to the url
+  # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
+
+  # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
+  # Default value: false
+  useSSL: false
