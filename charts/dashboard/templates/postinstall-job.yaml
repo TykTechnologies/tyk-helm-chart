@@ -1,0 +1,83 @@
+{{- if .Values.bootstrap.enabled -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "bootstrap-post-install-{{ include "dashboard.fullname" . }}"
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    helm.sh/chart: {{ include "dashboard.chart" . }}
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      serviceAccountName: bootstrap-post-install-account
+      containers:
+      - name: bootstrap-post-install-{{ include "dashboard.fullname" . }}
+        image: bash:5.1
+        imagePullPolicy: IfNotPresent
+        command:
+        - sh
+        - -c
+        - /opt/scripts/init.sh
+        env:
+          - name: TYK_ADMIN_FIRST_NAME
+            value: {{ .Values.bootstrap.adminUser.firstName | quote }}
+          - name: TYK_ADMIN_LAST_NAME
+            value: {{ .Values.bootstrap.adminUser.lastName | quote }}
+          - name: TYK_ADMIN_EMAIL
+            value: {{ .Values.bootstrap.adminUser.email | quote }}
+          - name: TYK_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-login-details
+                key: TYK_PASS
+          - name: TYK_POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: TYK_DASHBOARD_PROTO
+            value: {{ include "tyk-dashboard.proto" . }}
+          - name: TYK_DASHBOARD_SVC
+            value: {{ include "dashboard.fullname" . }}
+          - name: TYK_DB_LISTENPORT
+            value: "{{ .Values.containerPort }}"
+          - name: TYK_ADMIN_SECRET
+            value: {{ .Values.secrets.AdminSecret | quote }}
+          - name: TYK_ORG_NAME
+            value: {{ .Values.bootstrap.org.name | quote }}
+          - name: TYK_ORG_CNAME
+            value: {{ .Values.bootstrap.org.cname | quote }}
+          {{- if .Values.enabled }}
+          - name: DASHBOARD_ENABLED
+            value: "true"
+          {{- end }}
+          {{- if .Values.bootstrap.enabled }}
+          - name: BOOTSTRAP_DASHBOARD
+            value: "true"
+          {{- end }}
+          {{- if .Values.portal.enabled }}
+          - name: BOOTSTRAP_PORTAL
+            value: "true"
+          {{- end }}
+          - name: TYK_DASHBOARD_DEPLOY
+            value: {{ include "dashboard.fullname" . }}
+        volumeMounts:
+          - name: bootstrap-config-volume
+            mountPath: /opt/scripts
+      volumes:
+        - name: bootstrap-config-volume
+          configMap:
+            name: bootstrap-post-install-configmap
+            defaultMode: 0777
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 0
+{{- end }}

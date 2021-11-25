@@ -1,0 +1,10 @@
+{{- if .Values.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "dashboard.fullname" . }}
+  labels:
+    {{- include "dashboard.labels" . | nindent 4 }}
+data:
+  {{- tpl (.Files.Glob "conf/tyk_analytics.conf").AsConfig . | nindent 2 }}
+{{- end }}

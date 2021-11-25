@@ -4,12 +4,5 @@ output.yaml
 tyk-pro/old_tpl
 values_real.yaml
 **/.DS_Store
-
-!tyk-pro/mounts/.gitkeep
-tyk-pro/mounts/*
-
-!tyk-hybrid/mounts/.gitkeep
-tyk-hybrid/mounts/*
-
-!tyk-headless/mounts/.gitkeep
-tyk-headless/mounts/*
+**copy.yaml
+*.tgz

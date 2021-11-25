@@ -1,0 +1,57 @@
+{{- if .Values.portal.ingress.enabled -}}
+{{- $fullName := include "dashboard.fullname" . -}}
+{{- $ingressPath := .Values.portal.path -}}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+apiVersion: networking.k8s.io/v1
+{{- else }}
+apiVersion: networking.k8s.io/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: portal-{{ $fullName }}
+  labels:
+    app: portal-{{ $fullName }}
+    chart: {{ include "dashboard.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    app.kubernetes.io/component: "tyk-portal"
+{{- if .Values.portal.ingress.annotations }}
+  annotations:
+  {{- range $key, $value := .Values.portal.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}
+spec:
+{{- if .Values.portal.ingress.ingressClassName }}
+  ingressClassName: {{ .Values.portal.ingress.ingressClassName }}
+{{- end }}
+{{- if .Values.portal.ingress.tls }}
+  tls:
+  {{- range .Values.portal.ingress.tls }}
+    - hosts:
+      {{- range .hosts }}
+        - {{ . | quote }}
+      {{- end }}
+      secretName: {{ .secretName }}
+  {{- end }}
+{{- end }}
+  rules:
+  {{- range .Values.portal.ingress.hosts }}
+    - host: {{ . | quote }}
+      http:
+        paths:
+          - path: {{ $ingressPath }}
+          {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "dashboard.fullname" $ }}
+                port:
+                  name: {{ $.Values.service.port }}
+          {{- else }}
+            backend:
+              serviceName: {{ include "dashboard.fullname" $ }}
+              servicePort: {{ $.Values.service.port }}
+          {{- end }}
+  {{- end }}
+{{- end }}

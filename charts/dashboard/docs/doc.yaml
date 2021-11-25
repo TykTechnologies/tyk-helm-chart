@@ -1,0 +1,21 @@
+project:
+  name: Tyk Dashboard
+  url: https://github.com/TykTechnologies/tyk-helm-chart
+  description: This chart deploys a Tyk Dashboard on a Kubernetes cluster using the Helm package manager.
+  app: Tyk dashboard automation for K8s
+repository:
+  url: https://helm.tyk.io/public/helm/charts/
+  name: tyk-helm
+chart:
+  name: dashboard
+  version: 0.1.0
+  appVersion: "v3.0.7"
+  values: "-- generate from values file --"
+prerequisites:
+  - "Kubernetes v1.16+"
+  - "Tyk Gateway"
+  - "Redis"
+  - "MongoDB"
+release:
+  name: tyk-dashboard
+  namespace: tyk

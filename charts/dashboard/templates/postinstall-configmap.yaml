@@ -1,0 +1,11 @@
+{{- if .Values.bootstrap.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bootstrap-post-install-configmap
+data:
+  init.sh: |-
+{{ tpl (.Files.Get "scripts/init.sh") . | indent 4 }}
+  bootstrap.sh: |-
+{{ tpl (.Files.Get "scripts/bootstrap.sh") . | indent 4 }}
+{{- end }}
