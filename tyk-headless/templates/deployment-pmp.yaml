@@ -70,8 +70,23 @@ spec:
             {{- else }}
             value: "{{ join "," .Values.redis.addrs }}"
             {{- end }}
+          {{ if .Values.redis.enableSentinel }}
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_SENTINELPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
+                key: redisSentinelPass
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_MASTERNAME
+            value: "{{- .Values.redis.masterName -}}"
+          {{ else if .Values.redis.enableCluster }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ENABLECLUSTER
-            value: "{{ default "false" .Values.redis.enableCluster }}"
+            value: "true"
+          {{ else }}
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_MASTERNAME
+            value: ""
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ENABLECLUSTER
+            value: "false"
+          {{ end }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_PASSWORD
             valueFrom:
               secretKeyRef:
