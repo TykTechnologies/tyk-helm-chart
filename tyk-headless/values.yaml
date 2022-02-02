@@ -171,10 +171,14 @@ pump:
   enabled: false
 
   replicaCount: 1
+  # containerPort: 9090
   image:
     repository: docker.tyk.io/tyk-pump/tyk-pump
     tag: v1.5.1
     pullPolicy: IfNotPresent
+  # service:
+  #   type: NodePort
+  #   port: 9090
   annotations: {}
   resources: {}
     # We usually recommend not to specify default resources and to leave this

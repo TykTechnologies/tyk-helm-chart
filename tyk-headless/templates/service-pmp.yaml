@@ -1,0 +1,21 @@
+{{- if .Values.pump.service -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: pump-svc-{{ include "tyk-headless.fullname" . }}
+  labels:
+    app: pump-svc-{{ include "tyk-headless.fullname" . }}
+    chart: {{ include "tyk-headless.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  ports:
+  - port: {{ .Values.pump.service.port }}
+    targetPort: {{ .Values.pump.containerPort }}
+    protocol: TCP
+    name: http
+  type: {{ .Values.pump.service.type }}
+  selector:
+    app: pump-{{ include "tyk-headless.fullname" . }}
+    release: {{ .Release.Name }}
+{{- end}} 
