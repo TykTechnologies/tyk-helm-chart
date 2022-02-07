@@ -13,7 +13,6 @@ spec:
   - port: {{ .Values.pump.service.port }}
     targetPort: {{ .Values.pump.containerPort }}
     protocol: TCP
-    name: http
   type: {{ .Values.pump.service.type }}
   selector:
     app: pump-{{ include "tyk-pro.fullname" . }}
