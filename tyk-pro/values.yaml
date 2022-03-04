@@ -195,7 +195,7 @@ dash:
   adminUser:
     firstName: admin
     lastName: user
-    email: default@exmaple.com
+    email: default@example.com
     # Set a password or a random one will be assigned.
     password: ""
   # Dashboard Organisation information.
