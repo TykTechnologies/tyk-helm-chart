@@ -84,8 +84,23 @@ spec:
             value: "128"
           - name: TYK_GW_STORAGE_ADDRS
             value: {{ include "tyk-headless.redis_url" . | quote }}
+          {{ if .Values.redis.enableSentinel }}
+          - name: TYK_GW_STORAGE_SENTINELPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
+                key: redisSentinelPass
+          - name: TYK_GW_STORAGE_MASTERNAME
+            value: "{{- .Values.redis.masterName -}}"
+         {{ else if .Values.redis.enableCluster }}
           - name: TYK_GW_STORAGE_ENABLECLUSTER
-            value: "{{ default "false" .Values.redis.enableCluster }}"
+            value: "true"
+         {{ else }}
+          - name: TYK_GW_STORAGE_MASTERNAME
+            value: ""
+          - name: TYK_GW_STORAGE_ENABLECLUSTER
+            value: "false"
+         {{ end }}
           - name: TYK_GW_STORAGE_DATABASE
             value: "{{ default "0" .Values.redis.storage.database }}"
           - name: TYK_GW_STORAGE_PASSWORD

@@ -41,10 +41,18 @@ redis:
   # Default value: false
   # useSSL: true
 
-  # The enableCluster value will allow you to indicate to Tyk whither you are
+  # The enableCluster value will allow you to indicate to Tyk whether you are
   # running a Redis cluster or not.
-  # Default value: false
   # enableCluster: true
+
+  # Enables sentinel connection mode for Redis. If enabled, sentinelPass and masterName values are required.
+  # enableSentinel: false
+
+  # Redis sentinel password, only required while enableSentinel is true.
+  # sentinelPass: ""
+
+  # Redis sentinel master name, only required while enableSentinel is true.
+  # masterName: ""
 
   # By default the database index is 0. Setting the database index is not
   # supported with redis cluster. As such, if you have enableCluster: true,
