@@ -21,6 +21,8 @@ spec:
         release: {{ .Release.Name }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap-pump.yaml") . | sha256sum }}
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9090'
       {{- range $key, $value := .Values.pump.annotations }}
         {{ $key }}: {{ $value | quote }}
       {{- end }}
