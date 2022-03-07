@@ -2,22 +2,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pump-{{ include "tyk-pro.fullname" . }}
+  name: pump-{{ include "tyk-hybrid.fullname" . }}
   labels:
-    app: pump-{{ include "tyk-pro.fullname" . }}
-    chart: {{ include "tyk-pro.chart" . }}
+    app: pump-{{ include "tyk-hybrid.fullname" . }}
+    chart: {{ include "tyk-hybrid.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.pump.replicaCount }}
   selector:
     matchLabels:
-      app: pump-{{ include "tyk-pro.fullname" . }}
+      app: pump-{{ include "tyk-hybrid.fullname" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: pump-{{ include "tyk-pro.fullname" . }}
+        app: pump-{{ include "tyk-hybrid.fullname" . }}
         release: {{ .Release.Name }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap-pump.yaml") . | sha256sum }}
@@ -55,27 +55,21 @@ spec:
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
           - name: PMP_MONGO_MONGOURL
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
-                key: mongoURL
+            value: ""
           - name: PMP_MONGO_MONGOUSESSL
-            value: "{{ default "false" .Values.mongo.useSSL }}"
+            value: "false"
           - name: PMP_MONGOAGG_MONGOURL
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
-                key: mongoURL
+            value: ""
           - name: PMP_MONGOAGG_MONGOUSESSL
-            value:  "{{ default "false" .Values.mongo.useSSL }}"
+            value:  "false"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS
-            value: {{ include "tyk-pro.redis_url" . | quote }}
+            value: {{ include "tyk-hybrid.redis_url" . | quote }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ENABLECLUSTER
             value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-hybrid.fullname" . }} {{ end}}
                 key: redisPass
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISUSESSL
             value: "{{ default "false" .Values.redis.useSSL }}"
@@ -100,7 +94,7 @@ spec:
       volumes:
         - name: tyk-pump-conf
           configMap:
-            name: pump-conf-{{ include "tyk-pro.fullname" . }}
+            name: pump-conf-{{ include "tyk-hybrid.fullname" . }}
             items:
               - key: pump.conf
                 path: pump.conf
