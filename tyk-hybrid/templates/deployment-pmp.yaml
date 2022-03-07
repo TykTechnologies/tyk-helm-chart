@@ -1,0 +1,114 @@
+{{- if .Values.pump.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pump-{{ include "tyk-pro.fullname" . }}
+  labels:
+    app: pump-{{ include "tyk-pro.fullname" . }}
+    chart: {{ include "tyk-pro.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.pump.replicaCount }}
+  selector:
+    matchLabels:
+      app: pump-{{ include "tyk-pro.fullname" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: pump-{{ include "tyk-pro.fullname" . }}
+        release: {{ .Release.Name }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-pump.yaml") . | sha256sum }}
+      {{- range $key, $value := .Values.pump.annotations }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+    spec:
+{{- if .Values.pump.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.pump.nodeSelector | indent 8 }}
+{{- end }}
+{{- if .Values.pump.tolerations }}
+      tolerations:
+{{ toYaml .Values.pump.tolerations | indent 8 }}
+{{- end }}
+{{- if .Values.pump.affinity }}
+      affinity:
+{{ toYaml .Values.pump.affinity | indent 8 }}
+{{- end }}
+      containers:
+      - name: pump-{{ .Chart.Name }}
+        image: "{{ .Values.pump.image.repository }}:{{ .Values.pump.image.tag }}"
+        imagePullPolicy: {{ .Values.pump.image.pullPolicy }}
+        workingDir: "/opt/tyk-pump"
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - all
+        env:
+          # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
+          - name: REDIGOCLUSTER_SHARDCOUNT
+            value: "128"
+          - name: PMP_MONGO_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                key: mongoURL
+          - name: PMP_MONGO_MONGOUSESSL
+            value: "{{ default "false" .Values.mongo.useSSL }}"
+          - name: PMP_MONGOAGG_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                key: mongoURL
+          - name: PMP_MONGOAGG_MONGOUSESSL
+            value:  "{{ default "false" .Values.mongo.useSSL }}"
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS
+            value: {{ include "tyk-pro.redis_url" . | quote }}
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ENABLECLUSTER
+            value: "{{ default "false" .Values.redis.enableCluster }}"
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                key: redisPass
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISUSESSL
+            value: "{{ default "false" .Values.redis.useSSL }}"
+          {{- if .Values.pump.extraEnvs }}
+          {{- toYaml .Values.pump.extraEnvs| nindent 10 }}
+          {{- end }}
+        command: ["/opt/tyk-pump/tyk-pump", "-c", "/etc/tyk-pump/pump.conf"]
+        volumeMounts:
+          - name: tyk-pump-conf
+            mountPath: /etc/tyk-pump
+          {{- if .Values.pump.mounts }}
+          {{- range $secret := .Values.pump.mounts }}
+          - name: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
+            mountPath: {{ $secret.mountPath }}
+          {{- end }}
+          {{- end }}
+        resources:
+{{ toYaml .Values.pump.resources | indent 12 }}
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 2000
+      volumes:
+        - name: tyk-pump-conf
+          configMap:
+            name: pump-conf-{{ include "tyk-pro.fullname" . }}
+            items:
+              - key: pump.conf
+                path: pump.conf
+        {{- if .Values.pump.mounts }}
+        {{- range $secret := .Values.pump.mounts }}
+        - name: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
+          secret:
+            secretName: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
+        {{- end }}
+        {{- end }}
+{{- end}}

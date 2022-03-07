@@ -1,0 +1,13 @@
+{{- if .Values.pump.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pump-conf-{{ include "tyk-pro.fullname" . }}
+  labels:
+    app: pump-{{ include "tyk-pro.fullname" . }}
+    chart: {{ include "tyk-pro.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  {{- (.Files.Glob "configs/pump.conf").AsConfig | nindent 2 }}
+{{- end }}
