@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: conf-{{ include "tyk-pump.fullname" . }}
+  labels:
+    {{- include "tyk-pump.labels" . | nindent 4 }}
+data:
+  {{- (.Files.Glob "conf/pump.conf").AsConfig | nindent 2 }}

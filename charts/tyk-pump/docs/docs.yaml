@@ -1,0 +1,21 @@
+project:
+  name: Tyk Pump
+  url: https://github.com/TykTechnologies/tyk-helm-chart
+  description: This chart deploys the open source Tyk Pump.
+  app: Tyk pump automation for K8s
+repository:
+  url: https://helm.tyk.io/public/helm/charts/
+  name: tyk-helm
+chart:
+  name: tyk-pump
+  version: 1.0.0
+  appVersion: "1.4"
+  values: "-- generate from values file --"
+prerequisites:
+  - "Kubernetes v1.16+"
+  - "Tyk Gateway"
+  - "Redis"
+  - "MongoDB"
+release:
+  name: tyk-pump
+  namespace: tyk
