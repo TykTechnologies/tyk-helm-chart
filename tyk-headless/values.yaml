@@ -97,7 +97,7 @@ gateway:
   # annotation to that ingress controller.
   ingress:
     enabled: false
-    #specify your ingress controller class name below 
+    # specify your ingress controller class name below 
     className: ""
     annotations: {}
       # kubernetes.io/ingress.class: nginx
