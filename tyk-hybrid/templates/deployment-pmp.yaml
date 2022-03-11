@@ -56,14 +56,6 @@ spec:
           # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
-          - name: PMP_MONGO_MONGOURL
-            value: ""
-          - name: PMP_MONGO_MONGOUSESSL
-            value: "false"
-          - name: PMP_MONGOAGG_MONGOURL
-            value: ""
-          - name: PMP_MONGOAGG_MONGOUSESSL
-            value:  "false"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS
             value: {{ include "tyk-hybrid.redis_url" . | quote }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ENABLECLUSTER
