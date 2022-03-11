@@ -15,5 +15,5 @@ tyk-hybrid/mounts/*
 !tyk-headless/mounts/.gitkeep
 tyk-headless/mounts/*
 **/.idea
-**/values-with*
+**/values-with-ingress-local.yaml
 

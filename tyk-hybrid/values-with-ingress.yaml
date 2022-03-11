@@ -103,6 +103,7 @@ gateway:
   ingress:
     enabled: true
     annotations:
+      kubernetes.io/ingress.allow-http: "false"
       kubernetes.io/ingress.global-static-ip-name: "platform-tyk-nginx"
     path: /*
     hosts:
