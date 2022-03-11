@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hybrid-gateway-middleware-{{ include "tyk-hybrid.fullname" . }}
+binaryData:
+  {{ range $path, $bytes := .Files.Glob (printf "middleware/ipRateLimiter.js")}}
+  {{ $name := base $path }}
+  {{- printf "%s" $name}}{{ print ": "}}{{ $.Files.Get $path | b64enc }}
+  {{ end }}
