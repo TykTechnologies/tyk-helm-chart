@@ -55,7 +55,7 @@ redis:
 
 gateway:
   # The hostname to bind the Gateway to.
-  hostName: tyk-gw.local
+  hostName: tyk-platform.paymentsense.tech
   # Sharding gateway allows you to selectively load APIs to specific gateways.
   # If enabled make sure you have at least one gateway that is not sharded.
   # Also be sure to match API segmentation tags with the tags selected below.
@@ -95,35 +95,30 @@ gateway:
     pullPolicy: Always
   service:
     type: ClusterIP
-    port: 80
+    port: 443
     externalTrafficPolicy: Local
     annotations: {}
   # Creates an ingress object in k8s. Will require an ingress-controller and
   # annotation to that ingress controller.
   ingress:
-    enabled: false
-    annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-    path: /
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.allow-http: "false"
+      kubernetes.io/ingress.global-static-ip-name: "platform-tyk-nginx"
+    path: /*
     hosts:
-      - tyk-gw.local
-    tls: []
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
-  resources: {}
-    # We usually recommend not to specify default resources and to leave this
-    # as a conscious choice for the user. This also increases chances charts
-    # run on environments with little resources, such as Minikube. If you do
-    # want to specify resources, uncomment the following lines, adjust them
-    # as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #  cpu: 100m
-    #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
+      - tyk-platform.paymentsense.tech
+    tls:
+      - secretName: paymentsense-tech-tls
+        hosts:
+          - tyk-platform.paymentsense.tech
+  resources:
+    limits:
+      cpu: 500m
+      memory: 900Mi
+    requests:
+      cpu: 250m
+      memory: 500Mi
   nodeSelector: {}
   tolerations:
     - key: node-role.kubernetes.io/master
@@ -154,7 +149,7 @@ pump:
     #  cpu: 100m
     #  memory: 128Mi
     # requests:
-  #  cpu: 100m
+    #  cpu: 100m
   #  memory: 128Mi
   nodeSelector: {}
   tolerations: []

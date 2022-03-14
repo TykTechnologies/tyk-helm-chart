@@ -13,6 +13,8 @@ metadata:
   {{- with .Values.gateway.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header X-Real-IP $remote_addr;
   {{- end }}
 spec:
 {{- if .Values.gateway.ingress.tls }}

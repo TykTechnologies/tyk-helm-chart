@@ -151,6 +151,8 @@ spec:
             mountPath: {{ $secret.mountPath }}
           {{- end }}
           {{- end }}
+          - name: hybrid-gateway-middleware
+            mountPath: /middleware
         livenessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.gateway.tls }}S{{ end }}"
@@ -179,6 +181,9 @@ spec:
             items:
               - key: tyk_hybrid.conf
                 path: tyk.conf
+        - name: hybrid-gateway-middleware
+          configMap:
+            name: hybrid-gateway-middleware-{{ include "tyk-hybrid.fullname" . }}
         - name: tyk-scratch
           emptyDir: {}
         - name: {{ .Release.Name }}-default-cert

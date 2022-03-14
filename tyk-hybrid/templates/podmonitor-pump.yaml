@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  labels:
+    grafana-cloud.io/pod.monitor: "true"
+  name: pump-monitor-{{ include "tyk-hybrid.fullname" . }}
+spec:
+  namespaceSelector:
+    any: true
+  podMetricsEndpoints:
+  - port: "9090"
+  - path: /metrics
+  selector: 
+    matchLabels:
+      app: pump-{{ include "tyk-hybrid.fullname" . }}
