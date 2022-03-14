@@ -26,7 +26,7 @@
                     ]
                 }
             },
-            "org_id": "53ac07777cbb8c2d53000002"
+            "org_id": "620e2a010200200001a77b3f"
         }
     
         TykSetKeyData(thisIP, JSON.stringify(keyDetails), 1)
