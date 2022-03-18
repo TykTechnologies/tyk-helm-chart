@@ -52,16 +52,16 @@ spec:
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
           {{- if .Values.mongo.enabled }}
-          - name: PMP_MONGO_MONGOURL
+          - name: TYK_PMP_PUMPS_MONGO_META_MONGOURL
             value: {{ include "tyk-headless.mongo_url" . | quote }}
-          - name: PMP_MONGO_MONGOUSESSL
+          - name: TYK_PMP_PUMPS_MONGO_META_MONGOUSESSL
             value: "{{ default "false" .Values.mongo.useSSL }}"
-          - name: PMP_MONGOAGG_MONGOURL
+          - name: TYK_PMP_PUMPS_MONGOAGG_META_MONGOURL
             valueFrom:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end}}
                 key: mongoURL
-          - name: PMP_MONGOAGG_MONGOUSESSL
+          - name: TYK_PMP_PUMPS_MONGOAGG_META_MONGOUSESSL
             value:  "{{ default "false" .Values.mongo.useSSL }}"
           {{- end }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS
@@ -94,12 +94,37 @@ spec:
                 key: redisPass
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISUSESSL
             value: "{{ default "false" .Values.redis.useSSL }}"
-        {{- if .Values.pump.extraEnvs }}
-        {{- range $env := .Values.pump.extraEnvs }}
-          - name: {{ $env.name }}
-            value: {{ $env.value | quote }}
-        {{- end }}
-        {{- end }}
+          # Default Settings
+          - name: TYK_PMP_OMITCONFIGFILE
+            value: "true"
+          - name: TYK_PMP_ANALYTICSSTORAGETYPE
+            value: "redis"
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_TYPE
+            value: "redis"
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_MAXIDLE
+            value: "2000"
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_MAXACTIVE
+            value: "4000"
+          - name: TYK_PMP_PURGEDELAY
+            value: "4"
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_COLLECTIONNAME
+            value: "tyk_uptime_analytics_headless"
+          - name: TYK_PMP_DONTPURGEUPTIMEDATA
+            value: "false"
+          - name: TYK_PMP_PUMPS_MONGO_NAME
+            value: "mongo"
+          - name: TYK_PMP_PUMPS_MONGO_META_COLLECTIONNAME
+            value: "tyk_analytics_headless"
+          - name: 
+          - name: TYK_PMP_PUMPS_MONGOAGG_NAME
+            value: "mongo-pump-aggregate"
+          - name: TYK_PMP_PUMPS_MONGOAGG_META_USEMIXEDCOLLECTION
+            value: "TRUE"
+          - name: TYK_PMP_PUMPS_MONGOAGG_META_MONGOURL
+            value: "tyk_analytics"
+          {{- if .Values.pump.extraEnvs }}
+          {{- toYaml .Values.pump.extraEnvs| nindent 10 }}
+          {{- end }}
         command: ["/opt/tyk-pump/tyk-pump", "-c", "/etc/tyk-pump/pump.conf"]
         volumeMounts:
           - name: tyk-pump-conf
