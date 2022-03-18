@@ -116,8 +116,6 @@ spec:
         ports:
         - containerPort: {{ .Values.mdcb.containerPort }}
         volumeMounts:
-          - name: tyk-mdcb-conf
-            mountPath: /etc/tyk-sink
           {{- if .Values.mdcb.mounts }}
           {{- range $secret := .Values.mdcb.mounts }}
           - name: {{ $.Release.Name }}-mdcb-secret-{{ $secret.name }}

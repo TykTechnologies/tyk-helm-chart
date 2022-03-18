@@ -135,9 +135,6 @@ spec:
         runAsUser: 1000
         fsGroup: 2000
       volumes:
-        - name: tyk-tib-conf-volume
-          configMap:
-            name: tyk-tib-conf
         - name: tyk-tib-profiles-conf-volume
           configMap:
             name: {{ .Values.tib.configMap.profiles }}
