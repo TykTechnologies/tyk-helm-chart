@@ -89,6 +89,23 @@ spec:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
                 key: MDCBLicense
+          # Default Settings
+          - name: TYK_MDCB_SERVEROPTIONS_MINVERSION
+            value: "771"
+          - name: TYK_MDCB_STORAGE_TYPE
+            value: "redis"
+          - name: TYK_MDCB_HASHKEYS
+            value: "true"
+          - name: TYK_MDCB_SESSIONTIMEOUT
+            value: "0"
+          - name: TYK_MDCB_FORWARDANALYTICSTOPUMP
+            value: "true"
+          - name: TYK_MDCB_DONTSTORESELECTIVE
+            value: "false"
+          - name: TYK_MDCB_DONTSTOREAGGREGATES
+            value: "false"
+          - name: TYK_MDCB_FORWARDANALYTICSTOPUMP
+            value: "true"
           {{- if .Values.mdcb.extraEnvs }}
           {{- toYaml .Values.mdcb.extraEnvs| nindent 10 }}
           {{- end }}
