@@ -54,19 +54,19 @@ spec:
           # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
-          - name: PMP_MONGO_MONGOURL
+          - name: TYK_PMP_PUMPS_MONGO_META_MONGOURL
             valueFrom:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
                 key: mongoURL
-          - name: PMP_MONGO_MONGOUSESSL
+          - name: TYK_PMP_PUMPS_MONGO_META_MONGOUSESSL
             value: "{{ default "false" .Values.mongo.useSSL }}"
-          - name: PMP_MONGOAGG_MONGOURL
+          - name: TYK_PMP_PUMPS_MONGOAGG_META_MONGOURL
             valueFrom:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
                 key: mongoURL
-          - name: PMP_MONGOAGG_MONGOUSESSL
+          - name: TYK_PMP_PUMPS_MONGOAGG_META_MONGOUSESSL
             value:  "{{ default "false" .Values.mongo.useSSL }}"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS
             value: {{ include "tyk-pro.redis_url" . | quote }}
@@ -79,6 +79,34 @@ spec:
                 key: redisPass
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISUSESSL
             value: "{{ default "false" .Values.redis.useSSL }}"
+          # Default Settings
+          - name: TYK_PMP_OMITCONFIGFILE
+            value: "true"
+          - name: TYK_PMP_ANALYTICSSTORAGETYPE
+            value: "redis"
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_TYPE
+            value: "redis"
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_MAXIDLE
+            value: "2000"
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_MAXACTIVE
+            value: "4000"
+          - name: TYK_PMP_PURGEDELAY
+            value: "4"
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_COLLECTIONNAME
+            value: "tyk_uptime_analytics"
+          - name: TYK_PMP_DONTPURGEUPTIMEDATA
+            value: "false"
+          - name: TYK_PMP_PUMPS_MONGO_NAME
+            value: "mongo"
+          - name: TYK_PMP_PUMPS_MONGO_META_COLLECTIONNAME
+            value: "tyk_analytics"
+          - name: 
+          - name: TYK_PMP_PUMPS_MONGOAGG_NAME
+            value: "mongo-pump-aggregate"
+          - name: TYK_PMP_PUMPS_MONGOAGG_META_USEMIXEDCOLLECTION
+            value: "TRUE"
+          - name: TYK_PMP_PUMPS_MONGOAGG_META_MONGOURL
+            value: "tyk_analytics"
           {{- if .Values.pump.extraEnvs }}
           {{- toYaml .Values.pump.extraEnvs| nindent 10 }}
           {{- end }}
