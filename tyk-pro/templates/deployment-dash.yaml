@@ -123,6 +123,47 @@ spec:
             value:  {{ .Values.portal.path }}
           - name: TYK_DB_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.dash.tls }}"
+          # Default Settings
+          - name: TYK_DB_MONGOSSLINSECURESKIPVERIFY
+            value: "false"
+          - name: TYK_DB_MONGOSSLALLOWINVALIDHOSTNAMES
+            value: "false"
+          - name: TYK_DB_NOTIFYONCHANGE
+            value: "true"
+          - name: TYK_DB_HASHKEYS
+            value: "true"
+          - name: TYK_DB_ENABLEDUPLICATESLUGS
+            value: "true"
+          - name: TYK_DB_SHOWORGID
+            value: "true"
+          - name: TYK_DB_HOSTCONFIG_ENABLEHOSTNAMES
+            value: "true"
+          - name: TYK_DB_HOSTCONFIG_DISABLEORGSLUGPREFIX
+            value: "true"
+          - name: TYK_DB_HOMEDIR
+            value: "/opt/tyk-dashboard"
+          - name: TYK_DB_USESHARDEDANLAYTICS
+            value: "false"
+          - name: TYK_DB_ENABLEAGGREGATELOOKUPS
+            value: "true"
+          - name: TYK_DB_ENABLEOWNERSHIP
+            value: "true"
+          - name: TYK_DB_NOTIFICATIONSLISTENPORT
+            value: "5000"
+          - name: TYK_DB_ALLOWEXPLICITPOLICYID
+            value: "true"
+          - name: TYK_DB_OAUTHREDIRECTURISEPARATOR
+            value: ";"
+          - name: TYK_DB_DASHBOARDSESSIONLIFETIME
+            value: "43200"
+          - name: TYK_DB_ENABLEDELETEKEYBYHASH
+            value: "true"
+          - name: TYK_DB_ENABLEUPDATEKEYBYHASH
+            value: "true"
+          - name: TYK_DB_ENABLEHASHEDKEYSLISTING
+            value: "true"
+          - name: TYK_DB_ENABLEMULTIORGUSERS
+            value: "true"
           {{- if .Values.dash.extraEnvs }}
           {{- toYaml .Values.dash.extraEnvs| nindent 10 }}
           {{- end }}
