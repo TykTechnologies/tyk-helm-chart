@@ -127,8 +127,6 @@ spec:
           {{- end }}
         command: ["/opt/tyk-pump/tyk-pump", "-c", "/etc/tyk-pump/pump.conf"]
         volumeMounts:
-          - name: tyk-pump-conf
-            mountPath: /etc/tyk-pump
           {{- if .Values.pump.mounts }}
           {{- range $secret := .Values.pump.mounts }}
           - name: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
