@@ -82,6 +82,15 @@ spec:
             value: "{{ include "tyk-pro.dash_proto" . }}://dashboard-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
           - name: TYK_IB_TYKAPISETTINGS_DASHBOARDCONFIG_PORT
             value: "{{ .Values.dash.service.port }}"
+          # Default Settings
+          - name: TYK_TIB_BACKEND_IDENTITYBACKENDSETTINGS_DATABASE
+            value: "0"
+          - name: TYK_TIB_BACKEND_IDENTITYBACKENDSETTINGS_MAXIDLE
+            value: "1000"
+          - name: TYK_TIB_BACKEND_IDENTITYBACKENDSETTINGS_MAXACTIVE
+            value: "2000"
+          - name: TYK_TIB_BACKEND_IDENTITYBACKENDSETTINGS_SSLINSECURESKIPVERIFY
+            value: "false"
           {{- if .Values.tib.extraEnvs }}
           {{- toYaml .Values.tib.extraEnvs| nindent 10 }}
           {{- end }}
