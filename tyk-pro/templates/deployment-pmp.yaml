@@ -101,7 +101,6 @@ spec:
             value: "mongo"
           - name: TYK_PMP_PUMPS_MONGO_META_COLLECTIONNAME
             value: "tyk_analytics"
-          - name: 
           - name: TYK_PMP_PUMPS_MONGOAGG_NAME
             value: "mongo-pump-aggregate"
           - name: TYK_PMP_PUMPS_MONGOAGG_META_USEMIXEDCOLLECTION
