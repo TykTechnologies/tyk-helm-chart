@@ -190,13 +190,13 @@ spec:
         resources:
 {{ toYaml .Values.gateway.resources | indent 12 }}
         volumeMounts:
+          - name: tyk-mgmt-gateway-conf
+            mountPath: /etc/tyk-gateway
           - name: tyk-scratch
             mountPath: /mnt/tyk-gateway
           - name: {{ .Release.Name }}-default-cert
             mountPath: /etc/certs
           {{- if .Values.gateway.certificates }}
-          - name: tyk-mgmt-gateway-conf
-            mountPath: /etc/tyk-gateway
           {{- range $certset := .Values.gateway.certificates }}
           - name: tyk-gateway-certs-{{ $certset.certSecret }}
             mountPath: /etc/certs/{{ $certset.certFilename }}
@@ -240,18 +240,18 @@ spec:
         runAsUser: 1000
         fsGroup: 2000
       volumes:
-        - name: tyk-scratch
-          emptyDir: {}
-        - name: {{ .Release.Name }}-default-cert
-          secret:
-            secretName: {{ .Release.Name }}-default-cert
-        {{- if .Values.gateway.certificates }}
         - name: tyk-mgmt-gateway-conf
           configMap:
             name: mgmt-gateway-conf-{{ include "tyk-headless.fullname" . }}
             items:
               - key: tyk_mgmt.conf
                 path: tyk.conf
+        - name: tyk-scratch
+          emptyDir: {}
+        - name: {{ .Release.Name }}-default-cert
+          secret:
+            secretName: {{ .Release.Name }}-default-cert
+        {{- if .Values.gateway.certificates }}
         {{- range $certset := .Values.gateway.certificates }}
         - name: {{ $certset.certSecret }}
           secret:

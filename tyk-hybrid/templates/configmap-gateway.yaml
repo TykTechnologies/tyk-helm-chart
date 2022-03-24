@@ -1,4 +1,3 @@
-{{- if .Values.gateway.certificates }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -23,4 +22,3 @@ data:
         ]
       }
     }  
-{{- end }}

@@ -1,4 +1,4 @@
-{{- if or .Values.dash.enabled .Values.dash.certificates }}
+{{- if .Values.dash.enabled }}
 ---
 apiVersion: v1
 kind: ConfigMap
