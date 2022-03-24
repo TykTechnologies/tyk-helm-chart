@@ -1,7 +1,18 @@
 {{- if and .Values.dash.enabled .Values.dash.ingress.enabled -}}
 {{- $fullName := include "tyk-pro.fullname" . -}}
-{{- $ingressPath := .Values.dash.ingress.path -}}
+{{- $svcPort := .Values.dash.service.port -}}
+{{- if and .Values.dash.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey .Values.dash.ingress.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.dash.ingress.annotations "kubernetes.io/ingress.class" .Values.dash.ingress.className}}
+  {{- end }}
+{{- end }}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
 kind: Ingress
 metadata:
   name: dash-ing-{{ $fullName }}
@@ -17,24 +28,39 @@ metadata:
   {{- end }}
 {{- end }}
 spec:
-{{- if .Values.dash.ingress.tls }}
-  tls:
-  {{- range .Values.dash.ingress.tls }}
-    - hosts:
-      {{- range .hosts }}
-        - {{ . | quote }}
-      {{- end }}
-      secretName: {{ .secretName }}
+{{- if and .Values.dash.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.dash.ingress.className }}
   {{- end }}
-{{- end }}
+  {{- if .Values.dash.ingress.tls }}
+  tls:
+    {{- range .Values.dash.ingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
   rules:
-  {{- range .Values.dash.ingress.hosts }}
-    - host: {{ . | quote }}
+    {{- range .Values.dash.ingress.hosts }}
+    - host: {{ .host | quote }}
       http:
         paths:
-          - path: {{ $ingressPath }}
+          {{- range .paths }}
+          - path: {{ .path }}
+            {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+            pathType: {{ .pathType }}
+            {{- end }}
             backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: dashboard-svc-{{ $fullName }}
+                port:
+                  number: {{ $svcPort }}
+              {{- else }}
               serviceName: dashboard-svc-{{ $fullName }}
-              servicePort: http
-  {{- end }}
+              servicePort: {{ $svcPort }}
+              {{- end }}
+          {{- end }}
+    {{- end }}
 {{- end }}
