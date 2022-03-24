@@ -106,11 +106,14 @@ spec:
           - name: TYK_PMP_PUMPS_MONGOAGG_META_USEMIXEDCOLLECTION
             value: "TRUE"
           - name: TYK_PMP_PUMPS_MONGOAGG_META_MONGOURL
-            value: "tyk_analytics"
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                key: mongoURL
           {{- if .Values.pump.extraEnvs }}
           {{- toYaml .Values.pump.extraEnvs| nindent 10 }}
           {{- end }}
-        command: ["/opt/tyk-pump/tyk-pump"]
+        command: ["/opt/tyk-pump/tyk-pump", "-c", "/opt/tyk-pump/pump.conf"]
         {{- if .Values.pump.mounts }}
         volumeMounts:
           {{- range $secret := .Values.pump.mounts }}
