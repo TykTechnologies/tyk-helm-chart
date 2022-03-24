@@ -76,6 +76,11 @@ gateway:
     rpcKey: ""
     # API key of your dashboard user
     apiKey: ""
+    # Group/cluster that this instance belongs.
+    # Required when running multiple isolated clusters each having their own Redis instance.
+    # Must be the same across all the gateways of a cluster which share a Redis.
+    # Must be unique per cluster.
+    groupId: ""
     #
     # For a classic cloud hybrid gateway use these settings:
     #
