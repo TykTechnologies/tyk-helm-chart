@@ -118,7 +118,10 @@ spec:
           - name: TYK_PMP_PUMPS_MONGOAGG_META_USEMIXEDCOLLECTION
             value: "TRUE"
           - name: TYK_PMP_PUMPS_MONGOAGG_META_MONGOURL
-            value: "tyk_analytics"
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end}}
+                key: mongoURL
           {{- if .Values.pump.extraEnvs }}
           {{- toYaml .Values.pump.extraEnvs| nindent 10 }}
           {{- end }}
