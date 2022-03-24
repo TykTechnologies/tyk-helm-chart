@@ -19,10 +19,11 @@ spec:
       labels:
         app: pump-{{ include "tyk-pro.fullname" . }}
         release: {{ .Release.Name }}
+      {{- if .Values.pump.annotations }}
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap-pump.yaml") . | sha256sum }}
       {{- range $key, $value := .Values.pump.annotations }}
         {{ $key }}: {{ $value | quote }}
+      {{- end }}
       {{- end }}
     spec:
 {{- if .Values.pump.nodeSelector }}

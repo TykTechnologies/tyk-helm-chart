@@ -26,8 +26,6 @@ spec:
       labels:
         app: tib-{{ include "tyk-pro.fullname" . }}
         release: {{ .Release.Name }}
-      annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap-tib.yaml") . | sha256sum }}
     spec:
 {{- if .Values.tib.nodeSelector }}
       nodeSelector:
