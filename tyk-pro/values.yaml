@@ -127,8 +127,8 @@ tib:
   enabled: false
   # If set to true TIB will use SSL connection. THIS IS RECOMMENDED.
   # You will also need to set the:
-  # - TYK_TIB_SERVEROPTIONS_CERTIFICATE_CERTFILE
-  # - TYK_TIB_SERVEROPTIONS_CERTIFICATE_KEYFILE
+  # - TYK_IB_SERVEROPTIONS_CERTIFICATE_CERTFILE
+  # - TYK_IB_SERVEROPTIONS_CERTIFICATE_KEYFILE
   # variables in extraEnvs object array to define your SSL cert and key files.
   tls: true
   # The REST API secret to configure the Tyk Identity Broker remotely
@@ -188,11 +188,14 @@ dash:
   # The hostname to bind the Dashboard to.
   hostName: tyk-dashboard.local
   # If set to true the Dashboard will use SSL connection.
-  # You will also need to set the:
-  # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
-  # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
-  # variables in extraEnvs object array to define your SSL cert and key files.
   tls: false
+  # Set you certs here if you want to enable TLS.
+  # - name: dashboard-cert
+  #   certSecret: dashboard-cert
+  #   certFilename: dashboard-crt.pem
+  #   keySecret: dashboard-key
+  #   keyFilename: dashboard-key.pem
+  certificates: []
   # Dashboard license.
   license: ""
   # Dashboard admin information.
@@ -284,6 +287,13 @@ gateway:
   hostName: tyk-gw.local
   # When true, sets the gateway protocol to HTTPS.
   tls: false
+  # Set you certs here if you want to enable TLS.
+  # - name: gateway-cert
+  #   certSecret: gateway-cert
+  #   certFilename: gateway-crt.pem
+  #   keySecret: gateway-key
+  #   keyFilename: gateway-key.pem
+  certificates: []
   # Sharding gateway allows you to selectively load APIs to specific gateways.
   # If enabled make sure you have at least one gateway that is not sharded.
   # Also be sure to match API segmentation tags with the tags selected below.

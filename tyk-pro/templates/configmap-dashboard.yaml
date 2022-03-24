@@ -1,4 +1,5 @@
-{{- if .Values.dash.enabled -}}
+{{- if or .Values.dash.enabled .Values.dash.certificates }}
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -9,5 +10,17 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
-  {{- (.Files.Glob "configs/tyk_analytics.conf").AsConfig | nindent 2 }}
+  tyk_analytics.conf: |
+    {
+      "http_server_options": {
+        "certificates": [
+        {{- range $i, $certset := .Values.dash.certificates }}
+          {
+            "cert_file": "/etc/certs/{{ $certset.certFilename }}",
+            "key_file": "/etc/certs/{{ $certset.keyFilename }}"
+          }{{- if lt $i (len .Values.dash.certificates) }},{{- end }}
+        {{- end }}
+        ]
+      }
+    }  
 {{- end }}

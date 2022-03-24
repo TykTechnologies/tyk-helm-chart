@@ -205,12 +205,20 @@ spec:
         resources:
 {{ toYaml .Values.gateway.resources | indent 12 }}
         volumeMounts:
-          - name: hybrid-gateway-conf
-            mountPath: /etc/tyk-gateway
-          - name: {{ .Release.Name }}-default-cert
-            mountPath: /etc/certs
           - name: tyk-scratch
             mountPath: /mnt/tyk-gateway
+          - name: {{ .Release.Name }}-default-cert
+            mountPath: /etc/certs
+          {{- if .Values.gateway.certificates }}
+          - name: hybrid-gateway-conf
+            mountPath: /etc/tyk-gateway
+          {{- range $certset := .Values.gateway.certificates }}
+          - name: tyk-gateway-certs-{{ $certset.certSecret }}
+            mountPath: /etc/certs/{{ $certset.certFilename }}
+          - name: tyk-gateway-certs-{{ $certset.keySecret }}
+            mountPath: /etc/certs/{{ $certset.keyFilename }}
+          {{- end }}
+          {{- end }}
           {{- if .Values.gateway.mounts }}
           {{- range $secret := .Values.gateway.mounts }}
           - name: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
@@ -239,17 +247,27 @@ spec:
         runAsUser: 1000
         fsGroup: 2000
       volumes:
+        - name: tyk-scratch
+          emptyDir: {}
+        - name: {{ .Release.Name }}-default-cert
+          secret:
+            secretName: {{ .Release.Name }}-default-cert
+        {{- if .Values.gateway.certificates }}
         - name: hybrid-gateway-conf
           configMap:
             name: hybrid-gateway-conf-{{ include "tyk-hybrid.fullname" . }}
             items:
               - key: tyk_hybrid.conf
                 path: tyk.conf
-        - name: tyk-scratch
-          emptyDir: {}
-        - name: {{ .Release.Name }}-default-cert
+        {{- range $certset := .Values.gateway.certificates }}
+        - name: {{ $certset.certSecret }}
           secret:
-            secretName: {{ .Release.Name }}-default-cert
+            secretName: {{ $certset.certSecret }}
+        - name: {{ $certset.keySecret }}
+          secret:
+            secretName: {{ $certset.keySecret }}
+        {{- end }}
+        {{- end }}
         {{- if .Values.gateway.mounts }}
         {{- range $secret := .Values.gateway.mounts }}
         - name: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
