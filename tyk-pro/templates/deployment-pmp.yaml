@@ -111,13 +111,13 @@ spec:
           {{- toYaml .Values.pump.extraEnvs| nindent 10 }}
           {{- end }}
         command: ["/opt/tyk-pump/tyk-pump"]
+        {{- if .Values.pump.mounts }}
         volumeMounts:
-          {{- if .Values.pump.mounts }}
           {{- range $secret := .Values.pump.mounts }}
           - name: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
             mountPath: {{ $secret.mountPath }}
           {{- end }}
-          {{- end }}
+        {{- end }}
         resources:
 {{ toYaml .Values.pump.resources | indent 12 }}
       securityContext:
