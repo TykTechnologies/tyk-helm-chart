@@ -82,6 +82,13 @@ gateway:
   hostName: tyk-gw.local
   # When true, sets the gateway protocol to HTTPS.
   tls: false
+  # Set you certs here if you want to enable TLS.
+  # - name: dashboard-cert
+  #   certSecret: dashboard-cert
+  #   certFilename: dashboard-crt.pem
+  #   keySecret: dashboard-key
+  #   keyFilename: dashboard-key.pem
+  certificates: []
 
   kind: DaemonSet
   replicaCount: 1

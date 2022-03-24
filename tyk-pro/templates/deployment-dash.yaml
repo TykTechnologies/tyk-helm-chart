@@ -173,15 +173,26 @@ spec:
         workingDir: /opt/tyk-dashboard
         ports:
         - containerPort: {{ .Values.dash.containerPort }}
+        # Only include volumes if there are certs or mounts
+        {{- if or .Values.dash.certificates .Values.dash.mounts }}
         volumeMounts:
+          {{- if .Values.dash.certificates }}
           - name: tyk-dashboard-conf
             mountPath: /etc/tyk-dashboard
+          {{- range $certset := .Values.dash.certificates }}
+          - name: tyk-dashboard-certs-{{ $certset.certSecret }}
+            mountPath: /etc/certs/{{ $certset.certFilename }}
+          - name: tyk-dashboard-certs-{{ $certset.keySecret }}
+            mountPath: /etc/certs/{{ $certset.keyFilename }}
+          {{- end }}
+          {{- end }}
           {{- if .Values.dash.mounts }}
           {{- range $secret := .Values.dash.mounts }}
           - name: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
             mountPath: {{ $secret.mountPath }}
           {{- end }}
           {{- end }}
+        {{- end }}
         livenessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.dash.tls }}S{{ end }}"
@@ -203,13 +214,25 @@ spec:
       securityContext:
         runAsUser: 1000
         fsGroup: 2000
+      # Only include volumes if there are certs or mounts
+      {{- if or .Values.dash.certificates .Values.dash.mounts }}
       volumes:
+        {{- if .Values.dash.certificates }}
         - name: tyk-dashboard-conf
           configMap:
             name: dashboard-conf-{{ include "tyk-pro.fullname" . }}
             items:
               - key: tyk_analytics.conf
                 path: tyk_analytics.conf
+        {{- range $certset := .Values.dash.certificates }}
+        - name: {{ $certset.certSecret }}
+          secret:
+            secretName: {{ $certset.certSecret }}
+        - name: {{ $certset.keySecret }}
+          secret:
+            secretName: {{ $certset.keySecret }}
+        {{- end }}
+        {{- end }}
         {{- if .Values.dash.mounts }}
         {{- range $secret := .Values.dash.mounts }}
         - name: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
@@ -217,4 +240,5 @@ spec:
             secretName: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
         {{- end }}
         {{- end }}
+      {{- end }}
 {{- end }}

@@ -64,6 +64,13 @@ gateway:
     tags: ""
   # When true, sets the gateway protocol to HTTPS.
   tls: false
+  # Set you certs here if you want to enable TLS.
+  # - name: dashboard-cert
+  #   certSecret: dashboard-cert
+  #   certFilename: dashboard-crt.pem
+  #   keySecret: dashboard-key
+  #   keyFilename: dashboard-key.pem
+  certificates: []
   # For on premise MDCB setups simply change the connection string to point to
   # your MDCB instance
   rpc:
