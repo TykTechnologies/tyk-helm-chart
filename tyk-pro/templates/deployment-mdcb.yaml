@@ -109,7 +109,7 @@ spec:
           {{- end }}
         resources:
         {{ toYaml .Values.mdcb.resources | indent 12 }}
-        command: ["/opt/tyk-sink/tyk-sink", "--c=/etc/tyk-sink/tyk_sink.conf"]
+        command: ["/opt/tyk-sink/tyk-sink"]
         workingDir: /opt/tyk-sink
         ports:
         - containerPort: {{ .Values.mdcb.containerPort }}
@@ -146,12 +146,6 @@ spec:
         runAsUser: 1000
         fsGroup: 2000
       volumes:
-        - name: tyk-mdcb-conf
-          configMap:
-            name: mdcb-conf-{{ include "tyk-pro.fullname" . }}
-            items:
-              - key: tyk_sink.conf
-                path: tyk_sink.conf
         - name: {{ .Release.Name }}-default-cert
           secret:
             secretName: {{ .Release.Name }}-default-cert

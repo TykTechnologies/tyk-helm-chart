@@ -97,10 +97,6 @@ spec:
         ports:
         - containerPort: {{ .Values.tib.containerPort }}
         volumeMounts:
-          - name: tyk-tib-conf-volume
-            mountPath: /opt/tyk-identity-broker/tib.conf
-            subPath: tib.conf
-            readOnly: true
           - name: tyk-tib-profiles-conf-volume
             mountPath: /opt/tyk-identity-broker/profiles.json
             subPath: profiles.json
