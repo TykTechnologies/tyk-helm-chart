@@ -114,6 +114,8 @@ spec:
         ports:
         - containerPort: {{ .Values.mdcb.containerPort }}
         volumeMounts:
+          - name: {{ .Release.Name }}-default-cert
+            mountPath: /etc/certs
           {{- if .Values.mdcb.mounts }}
           {{- range $secret := .Values.mdcb.mounts }}
           - name: {{ $.Release.Name }}-mdcb-secret-{{ $secret.name }}
