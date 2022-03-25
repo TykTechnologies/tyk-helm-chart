@@ -113,7 +113,7 @@ spec:
           {{- if .Values.pump.extraEnvs }}
           {{- toYaml .Values.pump.extraEnvs| nindent 10 }}
           {{- end }}
-        command: ["/opt/tyk-pump/tyk-pump", "-c", "/opt/tyk-pump/pump.conf"]
+        command: ["/opt/tyk-pump/tyk-pump"]
         {{- if .Values.pump.mounts }}
         volumeMounts:
           {{- range $secret := .Values.pump.mounts }}

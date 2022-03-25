@@ -102,8 +102,6 @@ spec:
             value: "false"
           - name: TYK_MDCB_DONTSTOREAGGREGATES
             value: "false"
-          - name: TYK_MDCB_FORWARDANALYTICSTOPUMP
-            value: "true"
           {{- if .Values.mdcb.extraEnvs }}
           {{- toYaml .Values.mdcb.extraEnvs| nindent 10 }}
           {{- end }}
