@@ -51,7 +51,10 @@ spec:
             value: "128"
           {{- if .Values.mongo.enabled }}
           - name: TYK_PMP_PUMPS_MONGO_META_MONGOURL
-            value: {{ include "tyk-headless.mongo_url" . | quote }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end}}
+                key: mongoURL
           - name: TYK_PMP_PUMPS_MONGO_META_MONGOUSESSL
             value: "{{ default "false" .Values.mongo.useSSL }}"
           - name: TYK_PMP_PUMPS_MONGOAGG_META_MONGOURL
@@ -117,33 +120,36 @@ spec:
             value: "mongo-pump-aggregate"
           - name: TYK_PMP_PUMPS_MONGOAGG_META_USEMIXEDCOLLECTION
             value: "TRUE"
-          - name: TYK_PMP_PUMPS_MONGOAGG_META_MONGOURL
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end}}
-                key: mongoURL
           {{- if .Values.pump.extraEnvs }}
           {{- toYaml .Values.pump.extraEnvs| nindent 10 }}
           {{- end }}
         command: ["/opt/tyk-pump/tyk-pump", "-c", "/etc/tyk-pump/pump.conf"]
-        {{- if .Values.pump.mounts }}
         volumeMounts:
+          - name: tyk-pump-conf
+            mountPath: /etc/tyk-pump
+          {{- if .Values.pump.mounts }}
           {{- range $secret := .Values.pump.mounts }}
           - name: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
             mountPath: {{ $secret.mountPath }}
           {{- end }}
-        {{- end }}
+          {{- end }}
         resources:
 {{ toYaml .Values.resources | indent 12 }}
       securityContext:
         runAsUser: 1000
         fsGroup: 2000
-      {{- if .Values.pump.mounts }}
       volumes:
+        - name: tyk-pump-conf
+          configMap:
+            name: pump-conf-{{ include "tyk-headless.fullname" . }}
+            items:
+              - key: pump.conf
+                path: pump.conf
+        {{- if .Values.pump.mounts }}
         {{- range $secret := .Values.pump.mounts }}
         - name: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
           secret:
             secretName: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
         {{- end }}
-      {{- end }}
+        {{- end }}
 {{- end }}

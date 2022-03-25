@@ -105,33 +105,36 @@ spec:
             value: "mongo-pump-aggregate"
           - name: TYK_PMP_PUMPS_MONGOAGG_META_USEMIXEDCOLLECTION
             value: "TRUE"
-          - name: TYK_PMP_PUMPS_MONGOAGG_META_MONGOURL
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
-                key: mongoURL
           {{- if .Values.pump.extraEnvs }}
           {{- toYaml .Values.pump.extraEnvs| nindent 10 }}
           {{- end }}
-        command: ["/opt/tyk-pump/tyk-pump"]
-        {{- if .Values.pump.mounts }}
+        command: ["/opt/tyk-pump/tyk-pump", "-c", "/etc/tyk-pump/pump.conf"]
         volumeMounts:
+          - name: tyk-pump-conf
+            mountPath: /etc/tyk-pump
+          {{- if .Values.pump.mounts }}
           {{- range $secret := .Values.pump.mounts }}
           - name: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
             mountPath: {{ $secret.mountPath }}
           {{- end }}
-        {{- end }}
+          {{- end }}
         resources:
 {{ toYaml .Values.pump.resources | indent 12 }}
       securityContext:
         runAsUser: 1000
         fsGroup: 2000
-      {{- if .Values.pump.mounts }}
       volumes:
+        - name: tyk-pump-conf
+          configMap:
+            name: pump-conf-{{ include "tyk-pro.fullname" . }}
+            items:
+              - key: pump.conf
+                path: pump.conf
+        {{- if .Values.pump.mounts }}
         {{- range $secret := .Values.pump.mounts }}
         - name: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
           secret:
             secretName: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
         {{- end }}
-      {{- end }}
+        {{- end }}
 {{- end}}

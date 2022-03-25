@@ -1,0 +1,14 @@
+{{- if .Values.pump.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pump-conf-{{ include "tyk-headless.fullname" . }}
+  labels:
+    app: pump-{{ include "tyk-headless.fullname" . }}
+    chart: {{ include "tyk-headless.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  pump.conf: |
+    {}
+{{- end }}
