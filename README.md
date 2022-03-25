@@ -44,3 +44,15 @@ To mount files to any of the Tyk stack components, add the following to the moun
     - name: aws-mongo-ssl-cert
       filename: rds-combined-ca-bundle.pem
       mountPath: /etc/certs
+
+## Applying SSL Certs to Gateway and Dashboard Services
+To apply SSL certs to the Gateway and Dashbiard servies you will need to create a k8s secret in the same namespace as these services and then provide that service with the list of certs you want to apply.
+
+```
+  certificates:
+    - name: tyk.local-cert
+      certSecret: tyk.local.secret
+      certFilename: tyk.local.crt
+      keySecret: tyk.local.secret
+      keyFilename: tyk.local.key
+```
