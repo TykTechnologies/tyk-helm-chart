@@ -164,6 +164,8 @@ spec:
             value: "true"
           - name: TYK_DB_ENABLEMULTIORGUSERS
             value: "true"
+          - name: TYK_DB_PAGESIZE
+            value: "10"
           {{- if .Values.dash.extraEnvs }}
           {{- toYaml .Values.dash.extraEnvs| nindent 10 }}
           {{- end }}
