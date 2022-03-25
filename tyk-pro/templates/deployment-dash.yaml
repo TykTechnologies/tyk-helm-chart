@@ -179,11 +179,11 @@ spec:
           - name: tyk-dashboard-conf
             mountPath: /etc/tyk-dashboard
           {{- if .Values.dash.certificates }}
-          {{- range $certset := .Values.dash.certificates }}
-          - name: tyk-dashboard-certs-{{ $certset.certSecret }}
-            mountPath: /etc/certs/{{ $certset.certFilename }}
-          - name: tyk-dashboard-certs-{{ $certset.keySecret }}
-            mountPath: /etc/certs/{{ $certset.keyFilename }}
+          {{- range $i, $certset := .Values.dash.certificates }}
+          - name: tyk-dash-certs-crt-{{ $i }}
+            mountPath: /etc/certs/crts
+          - name: tyk-dash-certs-key-{{ $i }}
+            mountPath: /etc/certs/keys
           {{- end }}
           {{- end }}
           {{- if .Values.dash.mounts }}
@@ -221,11 +221,11 @@ spec:
               - key: tyk_analytics.conf
                 path: tyk_analytics.conf
         {{- if .Values.dash.certificates }}
-        {{- range $certset := .Values.dash.certificates }}
-        - name: {{ $certset.certSecret }}
+        {{- range $i, $certset := .Values.dash.certificates }}
+        - name: tyk-dash-certs-crt-{{ $i }}
           secret:
             secretName: {{ $certset.certSecret }}
-        - name: {{ $certset.keySecret }}
+        - name: tyk-dash-certs-key-{{ $i }}
           secret:
             secretName: {{ $certset.keySecret }}
         {{- end }}

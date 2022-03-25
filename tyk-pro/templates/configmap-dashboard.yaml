@@ -14,11 +14,12 @@ data:
     {
       "http_server_options": {
         "certificates": [
+        {{- $length := len .Values.dash.certificates -}}
         {{- range $i, $certset := .Values.dash.certificates }}
           {
-            "cert_file": "/etc/certs/{{ $certset.certFilename }}",
-            "key_file": "/etc/certs/{{ $certset.keyFilename }}"
-          }{{- if lt $i (len .Values.dash.certificates) }},{{- end }}
+            "cert_file": "/etc/certs/crts/{{ $certset.certFilename }}",
+            "key_file": "/etc/certs/keys/{{ $certset.keyFilename }}"
+          }{{- if lt $i (sub $length 1) }},{{- end }}
         {{- end }}
         ]
       }

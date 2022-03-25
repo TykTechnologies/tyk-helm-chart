@@ -197,11 +197,11 @@ spec:
           - name: {{ .Release.Name }}-default-cert
             mountPath: /etc/certs
           {{- if .Values.gateway.certificates }}
-          {{- range $certset := .Values.gateway.certificates }}
-          - name: tyk-gateway-certs-{{ $certset.certSecret }}
-            mountPath: /etc/certs/{{ $certset.certFilename }}
-          - name: tyk-gateway-certs-{{ $certset.keySecret }}
-            mountPath: /etc/certs/{{ $certset.keyFilename }}
+          {{- range $i, $certset := .Values.gateway.certificates }}
+          - name: tyk-gw-certs-crt-{{ $i }}
+            mountPath: /etc/certs/crts
+          - name: tyk-gw-certs-key-{{ $i }}
+            mountPath: /etc/certs/keys
           {{- end }}
           {{- end }}
           {{- if .Values.gateway.mounts }}
@@ -252,11 +252,11 @@ spec:
           secret:
             secretName: {{ .Release.Name }}-default-cert
         {{- if .Values.gateway.certificates }}
-        {{- range $certset := .Values.gateway.certificates }}
-        - name: {{ $certset.certSecret }}
+        {{- range $i, $certset := .Values.gateway.certificates }}
+        - name: tyk-gw-certs-crt-{{ $i }}
           secret:
             secretName: {{ $certset.certSecret }}
-        - name: {{ $certset.keySecret }}
+        - name: tyk-gw-certs-key-{{ $i }}
           secret:
             secretName: {{ $certset.keySecret }}
         {{- end }}

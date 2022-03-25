@@ -13,11 +13,12 @@ data:
     {
       "http_server_options": {
         "certificates": [
+        {{- $length := len .Values.gateway.certificates -}}
         {{- range $i, $certset := .Values.gateway.certificates }}
           {
-            "cert_file": "/etc/certs/{{ $certset.certFilename }}",
-            "key_file": "/etc/certs/{{ $certset.keyFilename }}"
-          }{{- if lt $i (len .Values.gateway.certificates) }},{{- end }}
+            "cert_file": "/etc/certs/crts/{{ $certset.certFilename }}",
+            "key_file": "/etc/certs/keys/{{ $certset.keyFilename }}"
+          }{{- if lt $i (sub $length 1) }},{{- end }}
         {{- end }}
         ]
       }
