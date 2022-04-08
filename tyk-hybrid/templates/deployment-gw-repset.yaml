@@ -108,6 +108,10 @@ spec:
             value: "{{ default "false" .Values.gateway.rpc.bindToSlugs }}"
           - name: TYK_GW_SLAVEOPTIONS_SSLINSECURESKIPVERIFY
             value: "{{ .Values.gateway.rpc.sslInsecureSkipVerify }}"
+        {{- if .Values.gateway.rpc.groupId }}
+          - name: TYK_GW_SLAVEOPTIONS_GROUPID
+            value: "{{ .Values.gateway.rpc.groupId }}"
+        {{- end }}
         # Enable backward compatibility to chart 0.5.1.
         {{- if or .Values.gateway.sharding .Values.enableSharding}}
           - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
