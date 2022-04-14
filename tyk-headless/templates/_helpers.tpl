@@ -57,3 +57,7 @@ mongodb://{{ .Values.mongo.host }}:{{ .Values.mongo.port }}/tyk_analytics
 mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
 {{- end -}}
 {{- end -}}
+
+{{- define "tyk-headless.pg_connection_string" -}}
+user={{ default "postgres" .Values.postgres.user }} password={{ .Values.postgres.password }} host={{ default "tyk-postgres-postgresql.tyk.svc.cluster.local" .Values.postgres.host }} port={{ default "5432" .Values.postgres.port }} database={{ default "tyk_analytics" .Values.postgres.database }}
+{{- end -}}

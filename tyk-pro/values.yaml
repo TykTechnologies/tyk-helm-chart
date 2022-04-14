@@ -64,6 +64,8 @@ redis:
   storage:
     database: 0
 
+# Choose the backend for Tyk. [ "mongo", "postgres" ]
+backend: postgres
 mongo:
   # The mongoURL value will allow you to set your MongoDB address.
   # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
@@ -71,6 +73,21 @@ mongo:
 
   # If your MongoDB has a password you can add the username and password to the url
   # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
+
+  # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
+  # Default value: false
+  useSSL: false
+
+postgres:
+  # Default value: tyk-postgres-postgresql.{{ .Release.Namespace }}.svc.cluster.local
+  # host: tyk-postgres-postgresql.tyk.svc.cluster.local
+  # Default value: 5432
+  # port: 5432
+  # Default value: postgres
+  # user: postgres
+  # password: 
+  # Default value: tyk_analytics
+  # database: tyk_analytics
 
   # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
   # Default value: false

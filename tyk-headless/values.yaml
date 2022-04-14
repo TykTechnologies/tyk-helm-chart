@@ -60,6 +60,8 @@ redis:
   storage:
     database: 0
 
+# Choose the pumps backend for Tyk. [ "", "mongo", "postgres" ]
+backend: ""
 mongo:
   # If you want to collect analytics through the mongo pumps you can turn this
   # option on. Once on, Tyk Pump will assume that MongoDB is avaibale at
@@ -76,6 +78,21 @@ mongo:
   # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
   # Default value: false
   # useSSL: true
+
+postgres:
+  # Default value: tyk-postgres-postgresql.{{ .Release.Namespace }}.svc.cluster.local
+  # host: tyk-postgres-postgresql.tyk.svc.cluster.local
+  # Default value: 5432
+  # port: 5432
+  # Default value: postgres
+  # user: postgres
+  # password: 
+  # Default value: tyk_analytics
+  # database: tyk_analytics
+
+  # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
+  # Default value: false
+  useSSL: false
 
 gateway:
   # The hostname to bind the Gateway to.
