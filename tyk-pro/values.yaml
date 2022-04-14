@@ -65,7 +65,7 @@ redis:
     database: 0
 
 # Choose the backend for Tyk. [ "mongo", "postgres" ]
-backend: postgres
+backend: mongo
 mongo:
   # The mongoURL value will allow you to set your MongoDB address.
   # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics

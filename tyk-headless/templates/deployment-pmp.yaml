@@ -90,7 +90,8 @@ spec:
             value: "4000"
           - name: TYK_PMP_PURGEDELAY
             value: "4"
-{{ if and .Values.backend (eq "postgres" .Values.backend) }}
+{{ if .Values.backend }}
+{{ if eq .Values.backend "postgres" }}
           - name: TYK_PMP_PUMPS_MAIN_TYPE
             value: "sql"
           - name: TYK_PMP_PUMPS_MAIN_META_TYPE
@@ -98,7 +99,7 @@ spec:
           - name: TYK_PMP_PUMPS_MAIN_META_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
                 key: pgConnectionString
 
           - name: TYK_PMP_PUMPS_MAINAGG_TYPE
@@ -108,7 +109,7 @@ spec:
           - name: TYK_PMP_PUMPS_MAINAGG_META_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
                 key: pgConnectionString
 
           - name: TYK_PMP_UPTIMEPUMPCONFIG_UPTIMETYPE
@@ -118,9 +119,41 @@ spec:
           - name: TYK_PMP_UPTIMEPUMPCONFIG_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
                 key: pgConnectionString
-{{ else if or(and .Values.backend (eq "mongo" .Values.backend)) .Values.mongo.enabled }}
+{{ else if eq .Values.backend "mongo" }}
+          - name: TYK_PMP_PUMPS_MAIN_TYPE
+            value: "mongo"
+          - name: TYK_PMP_PUMPS_MAIN_META_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
+                key: mongoURL
+          - name: TYK_PMP_PUMPS_MAIN_META_MONGOUSESSL
+            value: "{{ default "false" .Values.mongo.useSSL }}"
+          - name: TYK_PMP_PUMPS_MAIN_META_COLLECTIONNAME
+            value: "tyk_analytics_headless"
+
+          - name: TYK_PMP_PUMPS_MAINAGG_TYPE
+            value: "mongo-pump-aggregate"
+          - name: TYK_PMP_PUMPS_MAINAGG_META_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
+                key: mongoURL
+          - name: TYK_PMP_PUMPS_MAINAGG_META_MONGOUSESSL
+            value:  "{{ default "false" .Values.mongo.useSSL }}"
+          - name: TYK_PMP_PUMPS_MAINAGG_META_USEMIXEDCOLLECTION
+            value: "true"
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_COLLECTIONNAME
+            value: "tyk_uptime_analytics_headless"
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
+                key: mongoURL
+{{ end }}
+{{ else if .Values.mongo.enabled }}
           - name: TYK_PMP_PUMPS_MAIN_TYPE
             value: "mongo"
           - name: TYK_PMP_PUMPS_MAIN_META_MONGOURL

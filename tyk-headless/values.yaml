@@ -63,12 +63,6 @@ redis:
 # Choose the pumps backend for Tyk. [ "", "mongo", "postgres" ]
 backend: ""
 mongo:
-  # If you want to collect analytics through the mongo pumps you can turn this
-  # option on. Once on, Tyk Pump will assume that MongoDB is avaibale at
-  # mongo.tyk.svc.cluster.local:27017 if it is not, please change the mongoURL
-  # value below.
-  enabled: false
-
   # The mongoURL value will allow you to set your MongoDB address.
   # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
   # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
@@ -77,7 +71,7 @@ mongo:
 
   # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
   # Default value: false
-  # useSSL: true
+  useSSL: false
 
 postgres:
   # Default value: tyk-postgres-postgresql.{{ .Release.Namespace }}.svc.cluster.local
