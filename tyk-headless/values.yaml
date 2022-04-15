@@ -73,7 +73,7 @@ mongo:
   # Default value: false
   useSSL: false
 
-# Postgres connection string parameters. 
+# Postgres connection string parameters.
 postgres:
   host: tyk-postgres-postgresql.tyk.svc.cluster.local
   port: 5432
