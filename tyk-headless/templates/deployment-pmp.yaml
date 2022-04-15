@@ -94,7 +94,7 @@ spec:
           - name: TYK_PMP_PUMPS_MONGO_META_MONGOURL
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end}}
                 key: mongoURL
           - name: TYK_PMP_PUMPS_MONGO_META_MONGOUSESSL
             value: "{{ default "false" .Values.mongo.useSSL }}"
@@ -105,7 +105,7 @@ spec:
           - name: TYK_PMP_PUMPS_MONGOAGG_META_MONGOURL
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end}}
                 key: mongoURL
           - name: TYK_PMP_PUMPS_MONGOAGG_META_MONGOUSESSL
             value:  "{{ default "false" .Values.mongo.useSSL }}"
@@ -116,7 +116,7 @@ spec:
           - name: TYK_PMP_UPTIMEPUMPCONFIG_MONGOURL
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end}}
                 key: mongoURL
           {{- end }}
           # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
