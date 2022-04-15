@@ -81,6 +81,18 @@ mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
 user={{ default "postgres" .Values.postgres.user }} password={{ .Values.postgres.password }} host={{ default "tyk-postgres-postgresql.tyk.svc.cluster.local" .Values.postgres.host }} port={{ default "5432" .Values.postgres.port }} database={{ default "tyk_analytics" .Values.postgres.database }}
 {{- end -}}
 
+{{- define "tyk-pro.backend" -}}
+{{- if .Values.backend -}}
+{{- if eq "postgres" .Values.backend -}}
+postgres
+{{- else if eq "mongo" .Values.backend -}}
+mongo
+{{- end -}}
+{{- else -}}
+mongo
+{{- end -}}
+{{- end -}}
+
 {{- /* Create Semantic Version of gateway without prefix v */}}
 {{- define "tyk-pro.gateway-version" -}}
 {{- printf "%s" .Values.gateway.image.tag | replace "v" "" -}}

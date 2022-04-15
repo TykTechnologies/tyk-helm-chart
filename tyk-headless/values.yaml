@@ -73,20 +73,13 @@ mongo:
   # Default value: false
   useSSL: false
 
-postgres:
-  # Default value: tyk-postgres-postgresql.{{ .Release.Namespace }}.svc.cluster.local
+postgres: {}
+  # Postgres connection string parameters. 
   # host: tyk-postgres-postgresql.tyk.svc.cluster.local
-  # Default value: 5432
   # port: 5432
-  # Default value: postgres
   # user: postgres
   # password: 
-  # Default value: tyk_analytics
   # database: tyk_analytics
-
-  # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
-  # Default value: false
-  useSSL: false
 
 gateway:
   # The hostname to bind the Gateway to.

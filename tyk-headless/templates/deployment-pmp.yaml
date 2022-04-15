@@ -90,8 +90,7 @@ spec:
             value: "4000"
           - name: TYK_PMP_PURGEDELAY
             value: "4"
-{{ if .Values.backend }}
-{{ if eq .Values.backend "postgres" }}
+{{ if eq "postgres" (include "tyk-headless.backend" .) }}
           - name: TYK_PMP_PUMPS_MAIN_TYPE
             value: "sql"
           - name: TYK_PMP_PUMPS_MAIN_META_TYPE
@@ -121,39 +120,7 @@ spec:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
                 key: pgConnectionString
-{{ else if eq .Values.backend "mongo" }}
-          - name: TYK_PMP_PUMPS_MAIN_TYPE
-            value: "mongo"
-          - name: TYK_PMP_PUMPS_MAIN_META_MONGOURL
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
-                key: mongoURL
-          - name: TYK_PMP_PUMPS_MAIN_META_MONGOUSESSL
-            value: "{{ default "false" .Values.mongo.useSSL }}"
-          - name: TYK_PMP_PUMPS_MAIN_META_COLLECTIONNAME
-            value: "tyk_analytics_headless"
-
-          - name: TYK_PMP_PUMPS_MAINAGG_TYPE
-            value: "mongo-pump-aggregate"
-          - name: TYK_PMP_PUMPS_MAINAGG_META_MONGOURL
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
-                key: mongoURL
-          - name: TYK_PMP_PUMPS_MAINAGG_META_MONGOUSESSL
-            value:  "{{ default "false" .Values.mongo.useSSL }}"
-          - name: TYK_PMP_PUMPS_MAINAGG_META_USEMIXEDCOLLECTION
-            value: "true"
-          - name: TYK_PMP_UPTIMEPUMPCONFIG_COLLECTIONNAME
-            value: "tyk_uptime_analytics_headless"
-          - name: TYK_PMP_UPTIMEPUMPCONFIG_MONGOURL
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
-                key: mongoURL
-{{ end }}
-{{ else if .Values.mongo.enabled }}
+{{ else if eq "mongo" (include "tyk-headless.backend" .) }}
           - name: TYK_PMP_PUMPS_MAIN_TYPE
             value: "mongo"
           - name: TYK_PMP_PUMPS_MAIN_META_MONGOURL
