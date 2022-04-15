@@ -78,13 +78,14 @@ mongo:
   # Default value: false
   useSSL: false
 
-postgres: {}
-  # Postgres connection string parameters.
-  # host: tyk-postgres-postgresql.tyk.svc.cluster.local
-  # port: 5432
-  # user: postgres
-  # password:
-  # database: tyk_analytics
+# Postgres connection string parameters.
+postgres:
+  host: tyk-postgres-postgresql.tyk.svc.cluster.local
+  port: 5432
+  user: postgres
+  password:
+  database: tyk_analytics
+  sslmode:
 
 mdcb:
   # Determines whither or not the mdcb component should be installed.

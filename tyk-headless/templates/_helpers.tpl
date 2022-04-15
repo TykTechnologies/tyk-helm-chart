@@ -59,7 +59,9 @@ mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
 {{- end -}}
 
 {{- define "tyk-headless.pg_connection_string" -}}
-user={{ default "postgres" .Values.postgres.user }} password={{ .Values.postgres.password }} host={{ default "tyk-postgres-postgresql.tyk.svc.cluster.local" .Values.postgres.host }} port={{ default "5432" .Values.postgres.port }} database={{ default "tyk_analytics" .Values.postgres.database }}
+{{- if .Values.postgres -}}
+{{- range $key, $value := .Values.postgres }}{{ print $key "=" $value " " }}{{- end }}
+{{- end -}}
 {{- end -}}
 
 {{- define "tyk-headless.backend" -}}
