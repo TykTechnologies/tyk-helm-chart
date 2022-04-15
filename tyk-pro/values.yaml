@@ -79,11 +79,11 @@ mongo:
   useSSL: false
 
 postgres: {}
-  # Postgres connection string parameters. 
+  # Postgres connection string parameters.
   # host: tyk-postgres-postgresql.tyk.svc.cluster.local
   # port: 5432
   # user: postgres
-  # password: 
+  # password:
   # database: tyk_analytics
 
 mdcb:
