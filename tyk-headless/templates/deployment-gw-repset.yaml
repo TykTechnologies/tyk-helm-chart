@@ -163,6 +163,8 @@ spec:
             value: "771"
           - name: TYK_GW_ALLOWINSECURECONFIGS
             value: "true"
+          - name: TYK_GW_ENABLEHASHEDKEYSLISTING
+            value: "true"
           - name: TYK_GW_COPROCESSOPTIONS_ENABLECOPROCESS
             value: "true"
           - name: TYK_GW_ENABLEBUNDLEDOWNLOADER
