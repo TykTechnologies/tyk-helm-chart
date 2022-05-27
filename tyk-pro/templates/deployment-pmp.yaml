@@ -91,7 +91,7 @@ spec:
                 key: pgConnectionString
 
           - name: TYK_PMP_PUMPS_MAINAGG_TYPE
-            value: "sql"
+            value: "sql_aggregate"
           - name: TYK_PMP_PUMPS_MAINAGG_META_TYPE
             value: "postgres"
           - name: TYK_PMP_PUMPS_MAINAGG_META_CONNECTIONSTRING
