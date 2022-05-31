@@ -28,7 +28,7 @@ For Mongo or PostgreSQL you can use these rather excellent charts provided by Bi
 
 *Important Note regarding MongoDB:* This helm chart enables the PodDisruptionBudget for MongoDB with an arbiter replica-count of 1.  If you intend to perform system maintenance on the node where the MongoDB pod is running and this maintenance requires for the node to be drained, this action will be prevented due the replica count being 1.  Increase the replica count in the helm chart deployment to a minimum of 2 to remedy this issue.
 
-Another option for Redis and MongoDB or PostgreSQL, if you want to get started quickly is to use our simple charts. **Please note that these provided charts must not ever be used in production and for anything but a quick start evaluation only, use external DBs or Official Helm charts for MongoDB or PostgreSQL and Redis in any other case.**
+Another option for Redis and MongoDB, if you want to get started quickly is to use our simple charts. **Please note that these provided charts must not ever be used in production and for anything but a quick start evaluation only, use external DBs or Official Helm charts for MongoDB and Redis in any other case.**
 We provide these charts so you can quickly have Tyk running however they are not meant for long term storage of data for example.
 
 	kubectl create namespace tyk
