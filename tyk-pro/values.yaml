@@ -374,7 +374,7 @@ gateway:
   mounts: []
 
 pump:
-  # Determines whither or not the pump component should be installed.
+  # Determines whether or not the pump component should be installed.
   enabled: true
 
   replicaCount: 1
