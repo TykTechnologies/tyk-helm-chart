@@ -96,8 +96,6 @@ spec:
             value: "true"
           - name: TYK_MDCB_SESSIONTIMEOUT
             value: "0"
-          - name: TYK_MDCB_FORWARDANALYTICSTOPUMP
-            value: "true"
           - name: TYK_MDCB_DONTSTORESELECTIVE
             value: "false"
           - name: TYK_MDCB_DONTSTOREAGGREGATES
