@@ -105,13 +105,23 @@ spec:
           {{- end }}
         resources:
         {{ toYaml .Values.mdcb.resources | indent 12 }}
-        command: ["/opt/tyk-sink/tyk-sink"]
+        command: ["/opt/tyk-sink/tyk-sink", "--c=/etc/tyk-sink/tyk_sink.conf"]
         workingDir: /opt/tyk-sink
         ports:
         - containerPort: {{ .Values.mdcb.containerPort }}
         volumeMounts:
+          - name: tyk-mdcb-conf
+            mountPath: /etc/tyk-sink
           - name: {{ .Release.Name }}-default-cert
             mountPath: /etc/certs
+          {{- if .Values.mdcb.certificates }}
+          {{- range $i, $certset := .Values.mdcb.certificates }}
+          - name: tyk-mdcb-certs-crt-{{ $i }}
+            mountPath: /etc/certs/crts
+          - name: tyk-mdcb-certs-key-{{ $i }}
+            mountPath: /etc/certs/keys
+          {{- end }}
+          {{- end }}
           {{- if .Values.mdcb.mounts }}
           {{- range $secret := .Values.mdcb.mounts }}
           - name: {{ $.Release.Name }}-mdcb-secret-{{ $secret.name }}
@@ -144,9 +154,23 @@ spec:
         runAsUser: 1000
         fsGroup: 2000
       volumes:
+        - name: tyk-mdcb-conf
+          configMap:
+            name: mdcb-conf-{{ include "tyk-pro.fullname" . }}
+            items:
+              - key: tyk_sink.conf
+                path: tyk_sink.conf
         - name: {{ .Release.Name }}-default-cert
           secret:
             secretName: {{ .Release.Name }}-default-cert
+        {{- if .Values.mdcb.certificates }}
+        {{- range $i, $certset := .Values.mdcb.certificates }}
+        - name: tyk-mdcb-certs-crt-{{ $i }}
+          mountPath: /etc/certs/crts
+        - name: tyk-mdcb-certs-key-{{ $i }}
+          mountPath: /etc/certs/keys
+        {{- end }}
+        {{- end }}
         {{- if .Values.mdcb.mounts }}
         {{- range $secret := .Values.mdcb.mounts }}
         - name: {{ $.Release.Name }}-mdcb-secret-{{ $secret.name }}

@@ -1,0 +1,27 @@
+{{- if .Values.mdcb.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mdcb-conf-{{ include "tyk-pro.fullname" . }}
+  labels:
+    app: mdcb-{{ include "tyk-pro.fullname" . }}
+    chart: {{ include "tyk-pro.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  tyk_analytics.conf: |
+    {
+      "http_server_options": {
+        "certificates": [
+        {{- $length := len .Values.mdcb.certificates -}}
+        {{- range $i, $certset := .Values.mdcb.certificates }}
+          {
+            "cert_file": "/etc/certs/crts/{{ $certset.certFilename }}",
+            "key_file": "/etc/certs/keys/{{ $certset.keyFilename }}"
+          }{{- if lt $i (sub $length 1) }},{{- end }}
+        {{- end }}
+        ]
+      }
+    }  
+{{- end }}
