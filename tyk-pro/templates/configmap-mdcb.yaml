@@ -10,7 +10,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
-  tyk_analytics.conf: |
+  tyk_sink.conf: |
     {
       "http_server_options": {
         "certificates": [
