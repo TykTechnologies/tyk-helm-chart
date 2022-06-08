@@ -100,18 +100,22 @@ spec:
             value: "false"
           - name: TYK_MDCB_DONTSTOREAGGREGATES
             value: "false"
+          {{- if .Values.mdcb.certificate }}
+          - name: TYK_MDCB_SERVEROPTIONS_CERTIFICATE_CERTFILE
+            value: "/etc/certs/crts/{{ .Values.mdcb.certificate.certFilename }}"
+          - name: TYK_MDCB_SERVEROPTIONS_CERTIFICATE_KEYFILE
+            value: "/etc/certs/keys/{{ .Values.mdcb.certificate.keyFilename }}"
+          {{- end }}
           {{- if .Values.mdcb.extraEnvs }}
           {{- toYaml .Values.mdcb.extraEnvs| nindent 10 }}
           {{- end }}
         resources:
         {{ toYaml .Values.mdcb.resources | indent 12 }}
-        command: ["/opt/tyk-sink/tyk-sink", "--c=/etc/tyk-sink/tyk_sink.conf"]
+        command: ["/opt/tyk-sink/tyk-sink"]
         workingDir: /opt/tyk-sink
         ports:
         - containerPort: {{ .Values.mdcb.containerPort }}
         volumeMounts:
-          - name: tyk-mdcb-conf
-            mountPath: /etc/tyk-sink
           - name: {{ .Release.Name }}-default-cert
             mountPath: /etc/certs
           {{- if .Values.mdcb.certificate }}
@@ -152,12 +156,6 @@ spec:
         runAsUser: 1000
         fsGroup: 2000
       volumes:
-        - name: tyk-mdcb-conf
-          configMap:
-            name: mdcb-conf-{{ include "tyk-pro.fullname" . }}
-            items:
-              - key: tyk_sink.conf
-                path: tyk_sink.conf
         - name: {{ .Release.Name }}-default-cert
           secret:
             secretName: {{ .Release.Name }}-default-cert
