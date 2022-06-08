@@ -105,12 +105,11 @@ mdcb:
   # and send to your own data sinks.
   forwardAnalyticsToPump: true
   # Set you certs here if you want to enable TLS.
-  # - name: mdcb-cert
   #   certSecret: mdcb-cert
   #   certFilename: mdcb-crt.pem
   #   keySecret: mdcb-key
   #   keyFilename: mdcb-key.pem
-  certificates: []
+  certificate: {}
 
   replicaCount: 1
   containerPort: 9090

@@ -12,16 +12,14 @@ metadata:
 data:
   tyk_sink.conf: |
     {
-      "http_server_options": {
-        "certificates": [
-        {{- $length := len .Values.mdcb.certificates -}}
-        {{- range $i, $certset := .Values.mdcb.certificates }}
+      "server_options": {
+        "certificate": 
+        {{- if .Values.mdcb.certificate }}
           {
-            "cert_file": "/etc/certs/crts/{{ $certset.certFilename }}",
-            "key_file": "/etc/certs/keys/{{ $certset.keyFilename }}"
-          }{{- if lt $i (sub $length 1) }},{{- end }}
+            "cert_file": "/etc/certs/crts/{{ .Values.mdcb.certificate.certFilename }}",
+            "key_file": "/etc/certs/keys/{{ .Values.mdcb.certificate.keyFilename }}"
+          }
         {{- end }}
-        ]
       }
     }  
 {{- end }}

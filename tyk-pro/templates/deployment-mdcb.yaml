@@ -114,13 +114,11 @@ spec:
             mountPath: /etc/tyk-sink
           - name: {{ .Release.Name }}-default-cert
             mountPath: /etc/certs
-          {{- if .Values.mdcb.certificates }}
-          {{- range $i, $certset := .Values.mdcb.certificates }}
-          - name: tyk-mdcb-certs-crt-{{ $i }}
+          {{- if .Values.mdcb.certificate }}
+          - name: tyk-mdcb-certs-crt
             mountPath: /etc/certs/crts
-          - name: tyk-mdcb-certs-key-{{ $i }}
+          - name: tyk-mdcb-certs-key
             mountPath: /etc/certs/keys
-          {{- end }}
           {{- end }}
           {{- if .Values.mdcb.mounts }}
           {{- range $secret := .Values.mdcb.mounts }}
@@ -163,15 +161,13 @@ spec:
         - name: {{ .Release.Name }}-default-cert
           secret:
             secretName: {{ .Release.Name }}-default-cert
-        {{- if .Values.mdcb.certificates }}
-        {{- range $i, $certset := .Values.mdcb.certificates }}
-        - name: tyk-mdcb-certs-crt-{{ $i }}
+        {{- if .Values.mdcb.certificate }}
+        - name: tyk-mdcb-certs-crt
           secret:
-            secretName: {{ $certset.certSecret }}
-        - name: tyk-mdcb-certs-key-{{ $i }}
+            secretName: {{ .Values.mdcb.certificate.certSecret }}
+        - name: tyk-mdcb-certs-key
           secret:
-            secretName: {{ $certset.keySecret }}
-        {{- end }}
+            secretName: {{ .Values.mdcb.certificate.keySecret }}
         {{- end }}
         {{- if .Values.mdcb.mounts }}
         {{- range $secret := .Values.mdcb.mounts }}
