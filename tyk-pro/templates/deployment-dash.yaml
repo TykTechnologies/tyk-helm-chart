@@ -160,8 +160,6 @@ spec:
             value: "true"
           - name: TYK_DB_ENABLEOWNERSHIP
             value: "true"
-          - name: TYK_DB_NOTIFICATIONSLISTENPORT
-            value: "5000"
           - name: TYK_DB_ALLOWEXPLICITPOLICYID
             value: "true"
           - name: TYK_DB_OAUTHREDIRECTURISEPARATOR
