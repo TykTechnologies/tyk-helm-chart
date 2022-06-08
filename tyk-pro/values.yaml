@@ -185,6 +185,12 @@ dash:
   enabled: true
   # Dashboard will only bootstrap if the master bootstrap option is set to true.
   bootstrap: true
+
+  # It creates a secret for Tyk Operator along with bootstraping dasboard. Operator Secret is only created if the dash.bootstrap
+  # and operatorSecret are set to true.
+  # Set false to disable creating a secret for Tyk Operator.
+  operatorSecret: true
+
   # The hostname to bind the Dashboard to.
   hostName: tyk-dashboard.local
   # If set to true the Dashboard will use SSL connection.

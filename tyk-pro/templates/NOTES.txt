@@ -1,4 +1,4 @@
-- If you enabled the Dashboard bootstraping option (.Value.dash.bootstrap), you can find the login details by running the following commands inside your {{ .Release.Namespace }} namespace:
+- If you enabled the Dashboard bootstraping option (.Values.dash.bootstrap), you can find the login details by running the following commands inside your {{ .Release.Namespace }} namespace:
 
 For the URL: (kubectl get nodes --selector=kubernetes.io/role!=master -o jsonpath='{.items[0].status.addresses[?(@.type=="ExternalIP")].address}'), if you're using Minikube then: (minikube ip) would be sufficient"
 For the port: (kubectl get --namespace tyk -o jsonpath="{.spec.ports[0].nodePort}" services dashboard-svc-tyk-pro)"
@@ -16,5 +16,5 @@ You might want to install Tyk Operator next to manage Ingress resources or manag
 
 [Tyk Operator](https://github.com/TykTechnologies/tyk-operator/)
 
-Inside tyk namespace there is secret named: "tyk-operator-conf", which is used by our Tyk Operator. 
-This is created by default and can be tuned off by setting the .Values.bootstrap to false.
+- If you enabled Tyk Operator secret bootstraping option (.Values.dash.operatorSecret), inside tyk namespace there is secret named: "tyk-operator-conf", which is used by our Tyk Operator. 
+This is created by default if you enabled the Dashboard bootstraping option (.Values.dash.bootstrap) and can be turned off by setting the .Values.dash.operatorSecret to false.

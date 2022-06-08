@@ -17,7 +17,7 @@ metadata:
     # job is considered part of the release.
     "helm.sh/hook": post-install
     "helm.sh/hook-weight": "-5"
-    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 spec:
   backoffLimit: 1
   template:
@@ -64,6 +64,10 @@ spec:
             value: {{ .Values.dash.org.cname | quote }}
           {{- if .Values.dash.enabled }}
           - name: DASHBOARD_ENABLED
+            value: "true"
+          {{- end }}
+          {{- if .Values.dash.operatorSecret }}
+          - name: OPERATOR_SECRET_ENABLED
             value: "true"
           {{- end }}
           {{- if .Values.dash.bootstrap }}
