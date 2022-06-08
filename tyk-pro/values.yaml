@@ -94,7 +94,8 @@ mdcb:
   # You will also need to set the:
   # - TYK_MDCB_SERVEROPTIONS_CERTIFICATE_CERTFILE
   # - TYK_MDCB_SERVEROPTIONS_CERTIFICATE_KEYFILE
-  # variables in extraEnvs object array to define your SSL cert and key files.
+  # variables in extraEnvs object array to define your SSL cert and key files,
+  # if you are mounting certificate/keys using `mounts` field
   tls: false
   # Sets the port of the health endpoint.
   healthcheckport: 8181
