@@ -166,9 +166,11 @@ spec:
         {{- if .Values.mdcb.certificates }}
         {{- range $i, $certset := .Values.mdcb.certificates }}
         - name: tyk-mdcb-certs-crt-{{ $i }}
-          mountPath: /etc/certs/crts
+          secret:
+            secretName: {{ $certset.certSecret }}
         - name: tyk-mdcb-certs-key-{{ $i }}
-          mountPath: /etc/certs/keys
+          secret:
+            secretName: {{ $certset.keySecret }}
         {{- end }}
         {{- end }}
         {{- if .Values.mdcb.mounts }}
