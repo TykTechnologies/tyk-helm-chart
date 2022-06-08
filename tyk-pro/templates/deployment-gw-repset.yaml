@@ -146,7 +146,7 @@ spec:
           - name: TYK_GW_ENABLEANALYTICS
             value: "true"
           - name: TYK_GW_ANALYTICSCONFIG_TYPE
-            value: "mongo"
+            value: ""
           - name: TYK_GW_STORAGE_TYPE
             value: "redis"
           - name: TYK_GW_ENABLENONTRANSACTIONALRATELIMITER
