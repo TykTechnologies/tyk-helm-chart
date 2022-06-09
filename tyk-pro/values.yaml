@@ -105,7 +105,7 @@ mdcb:
   # analytics to Redis. This will allow tyk-pump to pull analytics from Redis
   # and send to your own data sinks.
   forwardAnalyticsToPump: true
-  # Set you certs here if you want to enable TLS.
+  # Set your certs here if you want to enable TLS.
   #   certSecret: mdcb-cert
   #   certFilename: mdcb-crt.pem
   #   keySecret: mdcb-key
