@@ -167,17 +167,6 @@ kubectl create secret -n ${TYK_POD_NAMESPACE} generic tyk-operator-conf \
   --from-literal "TYK_ORG=${ORGID}" \
   --from-literal "TYK_MODE=pro" \
   --from-literal "TYK_URL=${DASHBOARD_HOSTNAME}"
-else
-  echo "Operator secret can be created as follows:"
-  echo "kubectl create secret -n ${TYK_POD_NAMESPACE} generic tyk-operator-conf \
-
-	  --from-literal \"TYK_AUTH=${USER_AUTH_CODE}\" \
-
-	  --from-literal \"TYK_ORG=${ORGID}\" \
-
-	  --from-literal \"TYK_MODE=pro\" \
-
-	  --from-literal \"TYK_URL=${DASHBOARD_HOSTNAME}\""
 fi
 
 if [ "$DASHBOARD_ENABLED" = "true" ]

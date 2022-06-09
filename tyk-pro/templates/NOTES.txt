@@ -16,5 +16,14 @@ You might want to install Tyk Operator next to manage Ingress resources or manag
 
 [Tyk Operator](https://github.com/TykTechnologies/tyk-operator/)
 
-- If you enabled Tyk Operator secret bootstraping option (.Values.dash.operatorSecret), inside tyk namespace there is secret named: "tyk-operator-conf", which is used by our Tyk Operator. 
+- If you enabled Tyk Operator secret bootstraping option (.Values.dash.operatorSecret), there is a secret named "tyk-operator-conf" used by our Tyk Operator in the namespace where you installed Tyk.
 This is created by default if you enabled the Dashboard bootstraping option (.Values.dash.bootstrap) and can be turned off by setting the .Values.dash.operatorSecret to false.
+
+If you have turned off "tyk-operator-conf" secret creation, you can create it as follows:
+kubectl create secret -n ${TYK_POD_NAMESPACE} generic tyk-operator-conf \
+	  --from-literal "TYK_AUTH=${USER_AUTH_CODE}" \
+	  --from-literal "TYK_ORG=${ORGID}" \
+	  --from-literal "TYK_MODE=pro" \
+	  --from-literal "TYK_URL=${DASHBOARD_HOSTNAME}"
+
+You can access credentials for this secret through the dasboard. ${USER_AUTH_CODE} corresponds to Tyk Dashboard API Access Credentials and ${ORGID} corresponds to Organisation ID. 
