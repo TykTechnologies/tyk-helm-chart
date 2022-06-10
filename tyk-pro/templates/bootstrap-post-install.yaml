@@ -56,6 +56,8 @@ spec:
             value: dashboard-svc-{{ include "tyk-pro.fullname" . }}
           - name: TYK_DB_LISTENPORT
             value: "{{ .Values.dash.containerPort }}"
+          - name: TYK_DB_LICENSEKEY
+            value: {{ .Values.dash.license | quote }}
           - name: TYK_ADMIN_SECRET
             value: {{ .Values.secrets.AdminSecret | quote }}
           - name: TYK_ORG_NAME
