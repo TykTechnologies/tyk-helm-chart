@@ -152,7 +152,7 @@ spec:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
                 key: mongoURL
 {{ end }}
-          # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
+          # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
           {{- if .Values.pump.extraEnvs }}
