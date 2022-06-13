@@ -136,7 +136,7 @@ spec:
           - name: TYK_GW_APPPATH
             value: "/mnt/tyk-gateway/apps"
           - name: TYK_GW_ANALYTICSCONFIG_TYPE
-            value: "mongo"
+            value: ""
           - name: TYK_GW_STORAGE_TYPE
             value: "redis"
           - name: TYK_GW_ENABLENONTRANSACTIONALRATELIMITER
