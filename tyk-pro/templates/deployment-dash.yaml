@@ -46,6 +46,19 @@ spec:
       affinity:
 {{ toYaml .Values.dash.affinity | indent 8 }}
 {{- end }}
+      initContainers:
+        - name: init-check-redis
+          image: busybox:1.32
+          {{ $redisPass := .Values.redis.pass }}
+          {{- with (first .Values.redis.addrs ) }}
+            {{ $redisAddr :=  (split ":"  .)._0 }}
+            {{ $redisPort :=  (split ":"  .)._1 }}
+            {{ if $redisPass }}
+          command: ["sh", "-c", 'while ready="$(printf "AUTH {{ $redisPass }} \r\n PING\r\n" | nc {{ $redisAddr }} {{ $redisPort }})"; [ -z "${ready##*\"PONG\"*}" ]; do echo "waiting for {{ $redisAddr }}:{{ $redisPort }} to be ready, err: ${ready}" && sleep 5; done && echo "DONE"']
+            {{ else }}
+          command: ["sh", "-c", 'while ready="$(printf "PING\r\n" | nc {{ $redisAddr }} {{ $redisPort }})"; [ -z "${ready##*\"PONG\"*}" ]; do echo "waiting for {{ $redisAddr }}:{{ $redisPort }} to be ready, err: ${ready}" && sleep 5; done && echo "DONE"']
+            {{ end }}
+          {{- end }}
       containers:
       - image: "{{ .Values.dash.image.repository }}:{{ .Values.dash.image.tag }}"
         imagePullPolicy: {{ .Values.dash.image.pullPolicy }}
@@ -61,7 +74,7 @@ spec:
         env:
           - name: TYK_DB_LISTENPORT
             value: "{{ .Values.dash.containerPort }}"
-          # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
+          # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
           - name: TYK_DB_HOSTCONFIG_HOSTNAME
