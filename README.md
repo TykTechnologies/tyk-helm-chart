@@ -61,11 +61,50 @@ To mount files to any of the Tyk stack components, add the following to the moun
 ## Applying SSL Certs to Gateway and Dashboard Services
 To apply SSL certs to the Gateway and Dashboard services you need to create a k8s secret in the same namespace as these services and then provide that service with the list of certs you want to apply.
 
+To create the specific k8s secret we can use the command in the certs folder of any of the 3 charts 
+```
+kubectl create secret tls tyk-headless-default-cert --cert cert.pem --key key.pem -n tyk
+```
+
+Then inside our values.yaml file under the gateway/dash we need to add the following block of code:
+
 ```
   certificates:
-    - name: tyk.local-cert
-      certSecret: tyk.local.secret
-      certFilename: tyk.local.crt
-      keySecret: tyk.local.secret
-      keyFilename: tyk.local.key
+    - name: gateway-cert
+      certSecret: tyk-headless-default-cert
+      keySecret: tyk-headless-default-cert
+      certFilename: tls.crt
+      keyFilename: tls.key
 ```
+
+Lastly, if using a self-signed certificate we need to also provide the CA file so that the bootstrap process
+will be done correctly and securely. This can be done using the command below with the appropriate CA filename:
+
+```
+kubectl -n tyk create configmap ca-pemstore --from-file=tykCA.pem
+```
+
+Furthermore, the name of the CA file should be also included in the values.yaml file
+under .Values.certificates.caBundleFilename
+
+NOTE: for the above to work, the self signed certificate should be created using the following ext file:
+
+```
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+extendedKeyUsage=serverAuth,clientAuth
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = tyk.local
+DNS.2 = dashboard.tyk.local
+DNS.3 = gateway.tyk.local
+DNS.4 = dashboard-svc-tyk-pro.tyk
+DNS.5 = gateway-svc-tyk-pro.tyk
+DNS.6 = dashboard-svc-tyk-pro.tyk.svc.cluster.local
+```
+
+For more details regarding how to generate a self signed certificate, please visit this
+[guide](https://github.com/TykTechnologies/tyk-k8s-integrations/tree/main/integrations/ssl)
+
+

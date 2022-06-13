@@ -34,6 +34,10 @@ secrets:
   # rather provide the k8s Secret externally please populate the value below
   useSecretName: ""
 
+# Here we will set variables that are related to the certificates in both the gateway and in the dashboard
+certificates:
+  caBundleFileName: ""
+
 redis:
   # The addrs value will allow you to set your Redis addresses. If you are
   # using a redis cluster, you can list the endpoints of the redis instances
