@@ -32,6 +32,6 @@ To configure mongo pump, do following changings in `values.yaml` file:
 
 
 ### Postgres Pump
-To configure postgres pump, do following changings in values.yaml file:
+To configure postgres pump, do following changings in `values.yaml` file:
 1. Set `backend` to `postgres`.
 2. Set connection string parameters in `postgres` section.
