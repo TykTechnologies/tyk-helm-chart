@@ -94,7 +94,8 @@ mdcb:
   # You will also need to set the:
   # - TYK_MDCB_SERVEROPTIONS_CERTIFICATE_CERTFILE
   # - TYK_MDCB_SERVEROPTIONS_CERTIFICATE_KEYFILE
-  # variables in extraEnvs object array to define your SSL cert and key files.
+  # variables in extraEnvs object array to define your SSL cert and key files,
+  # if you are mounting certificate/keys using `mounts` field
   tls: false
   # Sets the port of the health endpoint.
   healthcheckport: 8181
@@ -104,6 +105,12 @@ mdcb:
   # analytics to Redis. This will allow tyk-pump to pull analytics from Redis
   # and send to your own data sinks.
   forwardAnalyticsToPump: true
+  # Set your certs here if you want to enable TLS.
+  #   certSecret: mdcb-cert
+  #   certFilename: mdcb-crt.pem
+  #   keySecret: mdcb-key
+  #   keyFilename: mdcb-key.pem
+  certificate: {}
 
   replicaCount: 1
   containerPort: 9090

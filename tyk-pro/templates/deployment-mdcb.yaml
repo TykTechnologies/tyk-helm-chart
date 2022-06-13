@@ -100,6 +100,12 @@ spec:
             value: "false"
           - name: TYK_MDCB_DONTSTOREAGGREGATES
             value: "false"
+          {{- if .Values.mdcb.certificate }}
+          - name: TYK_MDCB_SERVEROPTIONS_CERTIFICATE_CERTFILE
+            value: "/etc/certs/crts/{{ .Values.mdcb.certificate.certFilename }}"
+          - name: TYK_MDCB_SERVEROPTIONS_CERTIFICATE_KEYFILE
+            value: "/etc/certs/keys/{{ .Values.mdcb.certificate.keyFilename }}"
+          {{- end }}
           {{- if .Values.mdcb.extraEnvs }}
           {{- toYaml .Values.mdcb.extraEnvs| nindent 10 }}
           {{- end }}
@@ -112,6 +118,12 @@ spec:
         volumeMounts:
           - name: {{ .Release.Name }}-default-cert
             mountPath: /etc/certs
+          {{- if .Values.mdcb.certificate }}
+          - name: tyk-mdcb-certs-crt
+            mountPath: /etc/certs/crts
+          - name: tyk-mdcb-certs-key
+            mountPath: /etc/certs/keys
+          {{- end }}
           {{- if .Values.mdcb.mounts }}
           {{- range $secret := .Values.mdcb.mounts }}
           - name: {{ $.Release.Name }}-mdcb-secret-{{ $secret.name }}
@@ -147,6 +159,14 @@ spec:
         - name: {{ .Release.Name }}-default-cert
           secret:
             secretName: {{ .Release.Name }}-default-cert
+        {{- if .Values.mdcb.certificate }}
+        - name: tyk-mdcb-certs-crt
+          secret:
+            secretName: {{ .Values.mdcb.certificate.certSecret }}
+        - name: tyk-mdcb-certs-key
+          secret:
+            secretName: {{ .Values.mdcb.certificate.keySecret }}
+        {{- end }}
         {{- if .Values.mdcb.mounts }}
         {{- range $secret := .Values.mdcb.mounts }}
         - name: {{ $.Release.Name }}-mdcb-secret-{{ $secret.name }}
