@@ -130,11 +130,73 @@ spec:
             value: "{{ .Values.gateway.tags }}"
             {{- end }}
         {{- end }}
+        # Default Settings
+          - name: TYK_GW_TEMPLATEPATH
+            value: "/opt/tyk-gateway/templates"
+          - name: TYK_GW_TYKJSPATH
+            value: "/opt/tyk-gateway/js/tyk.js"
+          - name: TYK_GW_MIDDLEWAREPATH
+            value: "/mnt/tyk-gateway/middleware"
+          - name: TYK_GW_USEDBAPPCONFIGS
+            value: "false"
+          - name: TYK_GW_APPPATH
+            value: "/mnt/tyk-gateway/apps"
+          - name: TYK_GW_ENABLEANALYTICS
+            value: "true"
+          - name: TYK_GW_ANALYTICSCONFIG_TYPE
+            value: "rpc"
+          - name: TYK_GW_STORAGE_TYPE
+            value: "redis"
+          - name: TYK_GW_AUTHOVERRIDE_FORCEAUTHPROVIDER
+            value: "true"
+          - name: TYK_GW_AUTHOVERRIDE_AUTHPROVIDER_STORAGEENGINE
+            value: "rpc"
+          - name: TYK_GW_SLAVEOPTIONS_USERPC
+            value: "true"
+          - name: TYK_GW_SLAVEOPTIONS_RPCPOOLSIZE
+            value: "20"
+          - name: TYK_GW_SLAVEOPTIONS_ENABLERPCCACHE
+            value: "true"
+          - name: TYK_GW_ENABLENONTRANSACTIONALRATELIMITER
+            value: "true"
+          - name: TYK_GW_ENABLESENTINELRATELIMITER
+            value: "false"
+          - name: TYK_GW_ALLOWMASTERKEYS
+            value: "false"
+          - name: TYK_GW_POLICIES_POLICYSOURCE
+            value: "rpc"
+          - name: TYK_GW_POLICIES_POLICYRECORDNAME
+            value: "tyk_policies"
+          - name: TYK_GW_HASHKEYS
+            value: "true"
+          - name: TYK_GW_HASHKEYFUNCTION
+            value: "murmur128"
+          - name: TYK_GW_CLOSECONNECTIONS
+            value: "false"
+          - name: TYK_GW_HTTPSERVEROPTIONS_ENABLEWEBSOCKETS
+            value: "true"
+          - name: TYK_GW_HTTPSERVEROPTIONS_SERVERNAME
+            value: "*"
+          - name: TYK_GW_HTTPSERVEROPTIONS_MINVERSION
+            value: "771"
+          - name: TYK_GW_ALLOWINSECURECONFIGS
+            value: "true"
+          - name: TYK_GW_COPROCESSOPTIONS_ENABLECOPROCESS
+            value: "true"
+          - name: TYK_GW_ENABLEBUNDLEDOWNLOADER
+            value: "false"
+          - name: TYK_GW_GLOBALSESSIONLIFETIME
+            value: "100"
+          - name: TYK_GW_FORCEGLOBALSESSIONLIFETIME
+            value: "false"
+          - name: TYK_GW_MAXIDLECONNSPERHOST
+            value: "500"
+          - name: TYK_GW_ENABLECUSTOMDOMAINS
+            value: "true"
+          - name: TYK_GW_PIDFILELOCATION
+            value: "/mnt/tyk-gateway/tyk.pid"
         {{- if .Values.gateway.extraEnvs }}
-        {{- range $env := .Values.gateway.extraEnvs }}
-          - name: {{ $env.name }}
-            value: {{ $env.value | quote }}
-        {{- end }}
+        {{- toYaml .Values.gateway.extraEnvs| nindent 8 }}
         {{- end }}
         command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
         workingDir: /opt/tyk-gateway
@@ -145,10 +207,18 @@ spec:
         volumeMounts:
           - name: hybrid-gateway-conf
             mountPath: /etc/tyk-gateway
-          - name: {{ .Release.Name }}-default-cert
-            mountPath: /etc/certs
           - name: tyk-scratch
             mountPath: /mnt/tyk-gateway
+          - name: {{ .Release.Name }}-default-cert
+            mountPath: /etc/certs
+          {{- if .Values.gateway.certificates }}
+          {{- range $i, $certset := .Values.gateway.certificates }}
+          - name: tyk-gw-certs-crt-{{ $i }}
+            mountPath: /etc/certs/crts
+          - name: tyk-gw-certs-key-{{ $i }}
+            mountPath: /etc/certs/keys
+          {{- end }}
+          {{- end }}
           {{- if .Values.gateway.mounts }}
           {{- range $secret := .Values.gateway.mounts }}
           - name: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
@@ -188,6 +258,16 @@ spec:
         - name: {{ .Release.Name }}-default-cert
           secret:
             secretName: {{ .Release.Name }}-default-cert
+        {{- if .Values.gateway.certificates }}
+        {{- range $i, $certset := .Values.gateway.certificates }}
+        - name: tyk-gw-certs-crt-{{ $i }}
+          secret:
+            secretName: {{ $certset.certSecret }}
+        - name: tyk-gw-certs-key-{{ $i }}
+          secret:
+            secretName: {{ $certset.keySecret }}
+        {{- end }}
+        {{- end }}
         {{- if .Values.gateway.mounts }}
         {{- range $secret := .Values.gateway.mounts }}
         - name: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}

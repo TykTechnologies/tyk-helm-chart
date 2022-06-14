@@ -34,6 +34,11 @@ secrets:
   # rather provide the k8s Secret externally please populate the value below
   useSecretName: ""
 
+# Here we will set variables that are related to the certificates in both the gateway and in the dashboard
+certificates:
+  caBundleFileName: ""
+  caConfigMapName: ""
+
 redis:
   # The addrs value will allow you to set your Redis addresses. If you are
   # using a redis cluster, you can list the endpoints of the redis instances
@@ -64,6 +69,8 @@ redis:
   storage:
     database: 0
 
+# Choose the backend for Tyk. [ "mongo", "postgres" ]
+backend: mongo
 mongo:
   # The mongoURL value will allow you to set your MongoDB address.
   # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
@@ -76,6 +83,15 @@ mongo:
   # Default value: false
   useSSL: false
 
+# Postgres connection string parameters.
+postgres:
+  host: tyk-postgres-postgresql.tyk.svc.cluster.local
+  port: 5432
+  user: postgres
+  password:
+  database: tyk_analytics
+  sslmode:
+
 mdcb:
   # Determines whither or not the mdcb component should be installed.
   enabled: false
@@ -83,7 +99,8 @@ mdcb:
   # You will also need to set the:
   # - TYK_MDCB_SERVEROPTIONS_CERTIFICATE_CERTFILE
   # - TYK_MDCB_SERVEROPTIONS_CERTIFICATE_KEYFILE
-  # variables in extraEnvs object array to define your SSL cert and key files.
+  # variables in extraEnvs object array to define your SSL cert and key files,
+  # if you are mounting certificate/keys using `mounts` field
   tls: false
   # Sets the port of the health endpoint.
   healthcheckport: 8181
@@ -93,6 +110,12 @@ mdcb:
   # analytics to Redis. This will allow tyk-pump to pull analytics from Redis
   # and send to your own data sinks.
   forwardAnalyticsToPump: true
+  # Set your certs here if you want to enable TLS.
+  #   certSecret: mdcb-cert
+  #   certFilename: mdcb-crt.pem
+  #   keySecret: mdcb-key
+  #   keyFilename: mdcb-key.pem
+  certificate: {}
 
   replicaCount: 1
   containerPort: 9090
@@ -127,8 +150,8 @@ tib:
   enabled: false
   # If set to true TIB will use SSL connection. THIS IS RECOMMENDED.
   # You will also need to set the:
-  # - TYK_TIB_SERVEROPTIONS_CERTIFICATE_CERTFILE
-  # - TYK_TIB_SERVEROPTIONS_CERTIFICATE_KEYFILE
+  # - TYK_IB_SERVEROPTIONS_CERTIFICATE_CERTFILE
+  # - TYK_IB_SERVEROPTIONS_CERTIFICATE_KEYFILE
   # variables in extraEnvs object array to define your SSL cert and key files.
   tls: true
   # The REST API secret to configure the Tyk Identity Broker remotely
@@ -188,11 +211,14 @@ dash:
   # The hostname to bind the Dashboard to.
   hostName: tyk-dashboard.local
   # If set to true the Dashboard will use SSL connection.
-  # You will also need to set the:
-  # - TYK_DB_SERVEROPTIONS_CERTIFICATE_CERTFILE
-  # - TYK_DB_SERVEROPTIONS_CERTIFICATE_KEYFILE
-  # variables in extraEnvs object array to define your SSL cert and key files.
   tls: false
+  # Set you certs here if you want to enable TLS.
+  # - name: dashboard-cert
+  #   certSecret: dashboard-cert
+  #   certFilename: dashboard-crt.pem
+  #   keySecret: dashboard-key
+  #   keyFilename: dashboard-key.pem
+  certificates: []
   # Dashboard license.
   license: ""
   # Dashboard admin information.
@@ -212,7 +238,7 @@ dash:
   containerPort: 3000
   image:
     repository: tykio/tyk-dashboard
-    tag: v3.2.1
+    tag: v4.0.0
     pullPolicy: Always
   service:
     type: NodePort
@@ -284,6 +310,13 @@ gateway:
   hostName: tyk-gw.local
   # When true, sets the gateway protocol to HTTPS.
   tls: false
+  # Set your certs here if you want to enable TLS.
+  # - name: gateway-cert
+  #   certSecret: gateway-cert
+  #   certFilename: gateway-crt.pem
+  #   keySecret: gateway-key
+  #   keyFilename: gateway-key.pem
+  certificates: []
   # Sharding gateway allows you to selectively load APIs to specific gateways.
   # If enabled make sure you have at least one gateway that is not sharded.
   # Also be sure to match API segmentation tags with the tags selected below.
@@ -301,7 +334,7 @@ gateway:
   containerPort: 8080
   image:
     repository: tykio/tyk-gateway
-    tag: v3.2.1
+    tag: v4.0.0
     pullPolicy: Always
   service:
     type: NodePort
@@ -353,13 +386,13 @@ gateway:
   mounts: []
 
 pump:
-  # Determines whither or not the pump component should be installed.
+  # Determines whether or not the pump component should be installed.
   enabled: true
 
   replicaCount: 1
   image:
     repository: tykio/tyk-pump-docker-pub
-    tag: v1.4.0
+    tag: v1.5.1
     pullPolicy: Always
   annotations: {}
   resources: {}

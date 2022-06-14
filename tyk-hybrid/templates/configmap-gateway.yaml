@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -8,4 +9,17 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
-  {{- (.Files.Glob "configs/tyk_hybrid.conf").AsConfig | nindent 2 }}
+  tyk_hybrid.conf: |
+    {
+      "http_server_options": {
+        "certificates": [
+        {{- $length := len .Values.gateway.certificates -}}
+        {{- range $i, $certset := .Values.gateway.certificates }}
+          {
+            "cert_file": "/etc/certs/crts/{{ $certset.certFilename }}",
+            "key_file": "/etc/certs/keys/{{ $certset.keyFilename }}"
+          }{{- if lt $i (sub $length 1) }},{{- end }}
+        {{- end }}
+        ]
+      }
+    }
