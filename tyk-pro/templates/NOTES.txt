@@ -16,8 +16,8 @@ You might want to install Tyk Operator next to manage Ingress resources or manag
 
 [Tyk Operator](https://github.com/TykTechnologies/tyk-operator/)
 
-- If you enabled Tyk Operator secret bootstraping option (.Values.dash.operatorSecret), there is a secret named "tyk-operator-conf" used by our Tyk Operator in the namespace where you installed Tyk.
-This is created by default if you enabled the Dashboard bootstraping option (.Values.dash.bootstrap) and can be turned off by setting the .Values.dash.operatorSecret to false.
+- If you enable (.Values.dash.operatorSecret) "tyk-operator-conf" secret, which is used by Tyk Operator, will be created in the {{ .Release.Namespace }} namespace.
+This is enabled by default if you have enabled the Dashboard bootstraping option (.Values.dash.bootstrap) and can be turned off by setting the .Values.dash.operatorSecret to false.
 {{ if not .Values.dash.operatorSecret }}
 You have turned off "tyk-operator-conf" secret creation. If you wish, you can create it as follows:
 kubectl create secret -n ${TYK_POD_NAMESPACE} generic tyk-operator-conf \
