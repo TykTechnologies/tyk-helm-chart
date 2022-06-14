@@ -186,6 +186,12 @@ spec:
         ports:
         - containerPort: {{ .Values.dash.containerPort }}
         volumeMounts:
+          {{- if .Values.dash.tls}}
+          - name: {{.Values.certificates.caConfigMapName}}
+            mountPath: /etc/ssl/certs/{{.Values.certificates.caBundleFileName}}
+            subPath: {{.Values.certificates.caBundleFileName}}
+            readOnly: false
+          {{- end }}
           - name: tyk-dashboard-conf
             mountPath: /etc/tyk-dashboard
           {{- if .Values.dash.certificates }}
@@ -224,6 +230,11 @@ spec:
         runAsUser: 1000
         fsGroup: 2000
       volumes:
+        {{- if .Values.dash.tls }}
+        - name: {{.Values.certificates.caConfigMapName}}
+          configMap:
+            name: {{.Values.certificates.caConfigMapName}}
+        {{- end }}
         - name: tyk-dashboard-conf
           configMap:
             name: dashboard-conf-{{ include "tyk-pro.fullname" . }}
