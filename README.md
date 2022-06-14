@@ -85,9 +85,9 @@ kubectl -n tyk create configmap ca-pemstore --from-file=tykCA.pem
 ```
 
 Furthermore, the name of the CA file should be also included in the values.yaml file
-under .Values.certificates.caBundleFilename
+under `.Values.certificates.caBundleFilename`
 
-NOTE: for the above to work, the self signed certificate should be created using the following ext file:
+> **_NOTE_**: For the above to work, the self signed certificate should be created using the following ext file:
 
 ```
 authorityKeyIdentifier=keyid,issuer
