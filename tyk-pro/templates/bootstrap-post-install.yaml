@@ -76,10 +76,25 @@ spec:
           {{- end }}
           - name: TYK_DASHBOARD_DEPLOY
             value: dashboard-{{ include "tyk-pro.fullname" . }}
+          {{- if or .Values.dash.tls .Values.gateway.tls }}
+          - name: CURL_CA_BUNDLE_TYK
+            value: /etc/ssl/certs/{{.Values.certificates.caBundleFileName}}
+          {{- end}}
         volumeMounts:
+          {{- if or .Values.dash.tls .Values.gateway.tls }}
+          - name: {{.Values.certificates.caConfigMapName}}
+            mountPath: /etc/ssl/certs/{{.Values.certificates.caBundleFileName}}
+            subPath: {{.Values.certificates.caBundleFileName}}
+            readOnly: false
+          {{- end }}
           - name: bootstrap-config-volume
             mountPath: /opt/scripts
       volumes:
+        {{- if or .Values.dash.tls .Values.gateway.tls }}
+        - name: {{.Values.certificates.caConfigMapName}}
+          configMap:
+            name: {{.Values.certificates.caConfigMapName}}
+        {{- end }}
         - name: bootstrap-config-volume
           configMap:
             name: bootstrap-post-install-configmap-{{ include "tyk-pro.fullname" . }}
