@@ -203,7 +203,7 @@ spec:
 {{ toYaml .Values.gateway.resources | indent 12 }}
         volumeMounts:
           {{- if .Values.dash.tls }}
-          - name: {{.Values.certificates.caVolumeName}}
+          - name: {{.Values.certificates.caConfigMapName}}
             mountPath: /etc/ssl/certs/{{.Values.certificates.caBundleFileName}}
             subPath: {{.Values.certificates.caBundleFileName}}
             readOnly: false
@@ -259,9 +259,9 @@ spec:
         fsGroup: 2000
       volumes:
         {{- if .Values.dash.tls }}
-        - name: {{.Values.certificates.caVolumeName}}
+        - name: {{.Values.certificates.caConfigMapName}}
           configMap:
-            name: {{.Values.certificates.caVolumeName}}
+            name: {{.Values.certificates.caConfigMapName}}
         {{- end }}
         - name: tyk-mgmt-gateway-conf
           configMap:

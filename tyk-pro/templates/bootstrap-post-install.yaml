@@ -82,7 +82,7 @@ spec:
           {{- end}}
         volumeMounts:
           {{- if or .Values.dash.tls .Values.gateway.tls }}
-          - name: {{.Values.certificates.caVolumeName}}
+          - name: {{.Values.certificates.caConfigMapName}}
             mountPath: /etc/ssl/certs/{{.Values.certificates.caBundleFileName}}
             subPath: {{.Values.certificates.caBundleFileName}}
             readOnly: false
@@ -91,9 +91,9 @@ spec:
             mountPath: /opt/scripts
       volumes:
         {{- if or .Values.dash.tls .Values.gateway.tls }}
-        - name: {{.Values.certificates.caVolumeName}}
+        - name: {{.Values.certificates.caConfigMapName}}
           configMap:
-            name: {{.Values.certificates.caVolumeName}}
+            name: {{.Values.certificates.caConfigMapName}}
         {{- end }}
         - name: bootstrap-config-volume
           configMap:
