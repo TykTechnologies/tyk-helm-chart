@@ -37,6 +37,7 @@ secrets:
 # Here we will set variables that are related to the certificates in both the gateway and in the dashboard
 certificates:
   caBundleFileName: ""
+  caVolumeName: ""
 
 redis:
   # The addrs value will allow you to set your Redis addresses. If you are

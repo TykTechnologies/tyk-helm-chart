@@ -187,7 +187,7 @@ spec:
         - containerPort: {{ .Values.dash.containerPort }}
         volumeMounts:
           {{- if .Values.dash.tls}}
-          - name: ca-pemstore
+          - name: {{.Values.certificates.caVolumeName}}
             mountPath: /etc/ssl/certs/{{.Values.certificates.caBundleFileName}}
             subPath: {{.Values.certificates.caBundleFileName}}
             readOnly: false
@@ -231,9 +231,9 @@ spec:
         fsGroup: 2000
       volumes:
         {{- if .Values.dash.tls }}
-        - name: ca-pemstore
+        - name: {{.Values.certificates.caVolumeName}}
           configMap:
-            name: ca-pemstore
+            name: {{.Values.certificates.caVolumeName}}
         {{- end }}
         - name: tyk-dashboard-conf
           configMap:

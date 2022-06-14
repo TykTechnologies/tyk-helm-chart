@@ -81,8 +81,12 @@ Lastly, if using a self-signed certificate we need to also provide the CA file s
 will be done correctly and securely. This can be done using the command below with the appropriate CA filename:
 
 ```
-kubectl -n tyk create configmap ca-pemstore --from-file=tykCA.pem
+kubectl -n tyk create configmap {{.Values.certificates.caVolumeName}} --from-file=tykCA.pem
 ```
+
+> **_NOTE_**: The name of the configmap must be replaced with the actual value set for .Values.certificates.caVolumeName
+> in the yaml file (e.g. ca-pemstore)
+
 
 Furthermore, the name of the CA file should be also included in the values.yaml file
 under `.Values.certificates.caBundleFilename`

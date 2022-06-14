@@ -82,7 +82,7 @@ spec:
           {{- end}}
         volumeMounts:
           {{- if or .Values.dash.tls .Values.gateway.tls }}
-          - name: ca-pemstore
+          - name: {{.Values.certificates.caVolumeName}}
             mountPath: /etc/ssl/certs/{{.Values.certificates.caBundleFileName}}
             subPath: {{.Values.certificates.caBundleFileName}}
             readOnly: false
@@ -91,9 +91,9 @@ spec:
             mountPath: /opt/scripts
       volumes:
         {{- if or .Values.dash.tls .Values.gateway.tls }}
-        - name: ca-pemstore
+        - name: {{.Values.certificates.caVolumeName}}
           configMap:
-            name: ca-pemstore
+            name: {{.Values.certificates.caVolumeName}}
         {{- end }}
         - name: bootstrap-config-volume
           configMap:
