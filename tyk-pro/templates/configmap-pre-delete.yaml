@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bootstrap-pre-delete-configmap-{{ include "tyk-pro.fullname" . }}
+data:
+  pre-delete.sh: |-
+{{ .Files.Get "scripts/pre-delete.sh" | indent 4 }}

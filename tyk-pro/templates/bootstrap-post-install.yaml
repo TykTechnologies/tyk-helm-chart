@@ -69,6 +69,8 @@ spec:
           {{- if .Values.dash.operatorSecret }}
           - name: OPERATOR_SECRET_ENABLED
             value: "true"
+          - name: OPERATOR_SECRET_NAME
+            value: "tyk-operator-conf"
           {{- end }}
           {{- if .Values.dash.bootstrap }}
           - name: BOOTSTRAP_DASHBOARD
