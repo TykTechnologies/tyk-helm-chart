@@ -27,7 +27,7 @@ jobs:
 
       - name: Read helm chart version
         id: chart-values
-        run: echo "::set-output name=version::$(awk '/version:/ {print $2}' {{ matrix.repo }}/Chart.yaml)"
+        run: echo "::set-output name=version::$(awk '/version:/ {print $2}' ${{ matrix.repo }}/Chart.yaml)"
 
       - name: Package Helm chart
         run: helm package {{ matrix.repo }} --version ${{ steps.chart-values.outputs.version }}
