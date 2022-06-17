@@ -28,12 +28,41 @@ check_expiry_date() {
     fi
 }
 
+wait_for_liveness () {
+  attempt_count=0
+  pass="pass"
+
+  echo "Waiting for Gateway, Dashboard and Redis to be up and running"
+
+  while true
+  do
+   attempt_count=$((attempt_count+1))
+
+   # Check Gateway, Redis and Dashboard status
+   local hello=$(CURL_CA_BUNDLE=$CURL_CA_BUNDLE_TYK curl "$GATEWAY_ADDRESS"/hello -s)
+   local gw_status=$(echo "$hello" | jq -r '.status')
+   local dash_status=$(echo "$hello" | jq -r '.details.dashboard.status')
+   local redis_status=$(echo "$hello" | jq -r '.details.redis.status')
+
+   if [[ "$gw_status" = "$pass" ]] && [[ "$dash_status" = "$pass" ]] && [[ "$redis_status" = "$pass" ]]
+   then
+     echo "Attempt $attempt_count succeeded: Gateway, Dashboard and Redis all running";
+     break
+   else
+     echo "Attempt $attempt_count unsuccessful: gw status = '$gw_status', dashboard status = '$dash_status', redis status = '$redis_status'"
+   fi
+
+   sleep 2
+  done
+}
+
 check_jwt_type $TYK_DB_LICENSEKEY
 check_expiry_date $TYK_DB_LICENSEKEY
 
 set -e
-
 apk --no-cache add curl
+wait_for_liveness
+
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 

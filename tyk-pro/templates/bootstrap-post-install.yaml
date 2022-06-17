@@ -71,6 +71,8 @@ spec:
           {{- if .Values.dash.bootstrap }}
           - name: BOOTSTRAP_DASHBOARD
             value: "true"
+          - name: GATEWAY_ADDRESS
+            value: {{ include "tyk-pro.gateway_url" . }}
           {{- end }}
           {{- if .Values.portal.bootstrap }}
           - name: BOOTSTRAP_PORTAL
