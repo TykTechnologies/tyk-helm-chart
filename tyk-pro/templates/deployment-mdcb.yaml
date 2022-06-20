@@ -153,8 +153,8 @@ spec:
       {{- toYaml . | nindent 8 }}
       {{- end }}
       securityContext:
-        runAsUser: 1000
-        fsGroup: 2000
+        runAsUser: {{ (.Values.mdcb.securityContext).runAsUser | default 1000  }}
+        fsGroup: {{ (.Values.mdcb.securityContext).fsGroup | default 2000  }}
       volumes:
         - name: {{ .Release.Name }}-default-cert
           secret:

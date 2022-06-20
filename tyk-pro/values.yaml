@@ -127,6 +127,9 @@ mdcb:
   service:
     type: LoadBalancer
     port: 9090
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 2000
   resources: {}
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
@@ -182,6 +185,9 @@ tib:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 2000
   resources: {}
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
@@ -212,7 +218,7 @@ dash:
   hostName: tyk-dashboard.local
   # If set to true the Dashboard will use SSL connection.
   tls: false
-  # Set you certs here if you want to enable TLS.
+  # Set your certs here if you want to enable TLS.
   # - name: dashboard-cert
   #   certSecret: dashboard-cert
   #   certFilename: dashboard-crt.pem
@@ -261,6 +267,9 @@ dash:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 2000
   resources: {}
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
@@ -365,6 +374,9 @@ gateway:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 2000
   resources: {}
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
@@ -395,6 +407,9 @@ pump:
     tag: v1.5.1
     pullPolicy: Always
   annotations: {}
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 2000
   resources: {}
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts

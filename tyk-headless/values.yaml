@@ -87,7 +87,7 @@ gateway:
   hostName: tyk-gw.local
   # When true, sets the gateway protocol to HTTPS.
   tls: false
-  # Set you certs here if you want to enable TLS.
+  # Set your certs here if you want to enable TLS.
   # - name: dashboard-cert
   #   certSecret: dashboard-cert
   #   certFilename: dashboard-crt.pem
@@ -132,6 +132,9 @@ gateway:
   #    hosts:
   #      - chart-example.local
 
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 2000
   resources: {}
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
@@ -166,6 +169,9 @@ pump:
     tag: v1.5.1
     pullPolicy: IfNotPresent
   annotations: {}
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 2000
   resources: {}
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts

@@ -255,8 +255,8 @@ spec:
           timeoutSeconds: 3
           failureThreshold: 3
       securityContext:
-        runAsUser: 1000
-        fsGroup: 2000
+        runAsUser: {{ (.Values.gateway.securityContext).runAsUser | default 1000  }}
+        fsGroup: {{ (.Values.gateway.securityContext).fsGroup | default 2000  }}
       volumes:
         {{- if .Values.dash.tls }}
         - name: {{.Values.certificates.caConfigMapName}}

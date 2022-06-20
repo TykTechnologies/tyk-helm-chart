@@ -160,8 +160,8 @@ spec:
         resources:
 {{ toYaml .Values.pump.resources | indent 12 }}
       securityContext:
-        runAsUser: 1000
-        fsGroup: 2000
+        runAsUser: {{ (.Values.pump.securityContext).runAsUser | default 1000  }}
+        fsGroup: {{ (.Values.pump.securityContext).fsGroup | default 2000  }}
       volumes:
         - name: tyk-pump-conf
           configMap:

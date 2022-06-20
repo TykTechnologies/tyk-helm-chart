@@ -126,8 +126,8 @@ spec:
           timeoutSeconds: 3
           failureThreshold: 3
       securityContext:
-        runAsUser: 1000
-        fsGroup: 2000
+        runAsUser: {{ (.Values.tib.securityContext).runAsUser | default 1000  }}
+        fsGroup: {{ (.Values.tib.securityContext).fsGroup | default 2000  }}
       volumes:
         - name: tyk-tib-profiles-conf-volume
           configMap:
