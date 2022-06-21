@@ -22,6 +22,31 @@ syntax_message(){
   exit 1
 }
 
+check_for_existing_organisations(){
+    EXISTING_ORGS=$(CURL_CA_BUNDLE=$CURL_CA_BUNDLE_TYK curl --silent --header "admin-auth: $TYK_ADMIN_SECRET" --header "Content-Type:application/json"  $DASHBOARD_HOSTNAME/admin/organisations 2>&1)
+    OWNER_NAMES=$(echo "$EXISTING_ORGS" | jq -r '.organisations | .[] | .owner_name | @base64')
+    if [[ -z "${OWNER_NAMES}" ]]
+    then
+      echo "No organisation present"
+    else
+      for row in $OWNER_NAMES; do
+        CURRENT_ORG_NAME=$(echo ${row} | base64 -d)
+        if [[ "$CURRENT_ORG_NAME" == "$TYK_ORG_NAME" ]]; then
+           echo "7"
+           return
+        fi
+      done
+      OWNERCNAMES=$(echo "$EXISTING_ORGS" | jq -r '.organisations | .[] | .cname | @base64')
+      for row in $OWNERCNAMES; do
+        CURRENT_ORG_CNAME=$(echo ${row} | base64 -d)
+        if [[ "$CURRENT_ORG_CNAME" == "$TYK_ORG_CNAME" ]]; then
+           echo "7"
+           return
+        fi
+      done
+    fi
+}
+
 generate_credentials(){
   error=0
   [[ -z "$1" ]] && return "6" || echo ""
@@ -56,6 +81,15 @@ exit_reason(){
       ;;
     "6")
       echo "ERROR: Hostname should not contain port number or protocol"
+      exit $1
+      ;;
+    "7")
+      echo "An organisation with this name already exists, please delete it or disable bootstrapping"
+      exit $1
+      ;;
+    "8")
+      echo "An organisation with this cname already exists, please delete it or disable bootstrapping"
+      exit $1
       ;;
     *)
       echo ""
@@ -157,6 +191,10 @@ log_ok(){
 
 if [ "$DASHBOARD_ENABLED" = "true" ] && [ "$BOOTSTRAP_DASHBOARD" = "true" ]
 then
+  echo "Checking if any organisations still exist"
+  ORG_EXISTS=$(check_for_existing_organisations)
+  exit_reason $ORG_EXISTS
+
   main $DASHBOARD_HOSTNAME
 fi
 
