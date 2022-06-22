@@ -40,7 +40,7 @@ check_for_existing_organisations(){
       for row in $OWNERCNAMES; do
         CURRENT_ORG_CNAME=$(echo ${row} | base64 -d)
         if [[ "$CURRENT_ORG_CNAME" == "$TYK_ORG_CNAME" ]]; then
-           echo "7"
+           echo "8"
            return
         fi
       done
@@ -84,11 +84,11 @@ exit_reason(){
       exit $1
       ;;
     "7")
-      echo "An organisation with this name already exists, please delete it or disable bootstrapping"
+      echo "An organisation with this name already exists, please delete it from Mongo/Postgress or disable bootstrapping"
       exit $1
       ;;
     "8")
-      echo "An organisation with this cname already exists, please delete it or disable bootstrapping"
+      echo "An organisation with this cname already exists, please delete it from Mongo/Postgress or disable bootstrapping"
       exit $1
       ;;
     *)
