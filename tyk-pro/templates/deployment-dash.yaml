@@ -58,127 +58,48 @@ spec:
           capabilities:
             drop:
               - all
+        envFrom:
+          - configMapRef:
+              name: mgmt-dashboard-env-conf-{{ include "tyk-pro.fullname" . }}
         env:
-          - name: TYK_DB_LISTENPORT
-            value: "{{ .Values.dash.containerPort }}"
-          # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
-          - name: REDIGOCLUSTER_SHARDCOUNT
-            value: "128"
-          - name: TYK_DB_HOSTCONFIG_HOSTNAME
-            value: "{{ .Values.dash.hostName }}"
-          - name: TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME
-            value: "{{ .Values.gateway.hostName }}"
-          {{- if .Values.gateway.control.enabled }}
-          - name: TYK_DB_TYKAPI_HOST
-            value: "{{ include "tyk-pro.gwproto" . }}://gateway-control-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
-          - name: TYK_DB_TYKAPI_PORT
-            value: "{{ .Values.gateway.control.containerPort }}"
-          {{- else }}
-          - name: TYK_DB_TYKAPI_HOST
-            value: "{{ include "tyk-pro.gwproto" . }}://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
-          - name: TYK_DB_TYKAPI_PORT
-            value: "{{ .Values.gateway.service.port }}"
-          {{- end }}
-          - name: TYK_DB_TYKAPI_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
-                key: APISecret
-          - name: TYK_DB_REDISADDRS
-            value: {{ include "tyk-pro.redis_url" . | quote }}
-          - name: TYK_DB_ENABLECLUSTER
-            value: "{{ default "false" .Values.redis.enableCluster }}"
-          - name: TYK_DB_REDISPASSWORD
-            valueFrom:
-              secretKeyRef:
-                name:{{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
-                key: redisPass
-          - name: TYK_DB_REDISUSESSL
-            value: "{{ default "false" .Values.redis.useSSL }}"
-          - name: TYK_DB_REDISSSLINSECURESKIPVERIFY
-            value: "true"
-{{ if eq "postgres" (include "tyk-pro.backend" .) }}
-          - name: TYK_DB_STORAGE_MAIN_TYPE
-            value: "postgres"
-          - name: TYK_DB_STORAGE_MAIN_CONNECTIONSTRING
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
-                key: pgConnectionString
-{{ else }}
-          - name: TYK_DB_STORAGE_MAIN_TYPE
-            value: "mongo"
-          - name: TYK_DB_STORAGE_MAIN_CONNECTIONSTRING
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
-                key: mongoURL
-          - name: TYK_DB_STORAGE_MAIN_MONGO_SSL_ENABLED
-            value: "{{ default "false" .Values.mongo.useSSL }}"
-          - name: TYK_DB_STORAGE_MAIN_MONGO_SSL_INSECURESKIPVERIFY
-            value: "false"
-          - name: TYK_DB_STORAGE_MAIN_MONGO_SSL_ALLOWINVALIDHOSTNAMES
-            value: "false"
-{{ end }}
-          - name: TYK_DB_ADMINSECRET
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
-                key: AdminSecret
-          - name: TYK_DB_NODESECRET
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
-                key: APISecret
-          - name: TYK_DB_LICENSEKEY
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
-                key: DashLicense
-          - name: TYK_DB_HOSTCONFIG_PORTALROOTPATH
-            value:  {{ .Values.portal.path }}
-          - name: TYK_DB_HTTPSERVEROPTIONS_USESSL
-            value: "{{ .Values.dash.tls }}"
-          # Default Settings
-          - name: TYK_DB_NOTIFYONCHANGE
-            value: "true"
-          - name: TYK_DB_HASHKEYS
-            value: "true"
-          - name: TYK_DB_ENABLEDUPLICATESLUGS
-            value: "true"
-          - name: TYK_DB_SHOWORGID
-            value: "true"
-          - name: TYK_DB_HOSTCONFIG_ENABLEHOSTNAMES
-            value: "true"
-          - name: TYK_DB_HOSTCONFIG_DISABLEORGSLUGPREFIX
-            value: "true"
-          - name: TYK_DB_HOMEDIR
-            value: "/opt/tyk-dashboard"
-          - name: TYK_DB_USESHARDEDANLAYTICS
-            value: "false"
-          - name: TYK_DB_ENABLEAGGREGATELOOKUPS
-            value: "true"
-          - name: TYK_DB_ENABLEOWNERSHIP
-            value: "true"
-          - name: TYK_DB_ALLOWEXPLICITPOLICYID
-            value: "true"
-          - name: TYK_DB_OAUTHREDIRECTURISEPARATOR
-            value: ";"
-          - name: TYK_DB_DASHBOARDSESSIONLIFETIME
-            value: "43200"
-          - name: TYK_DB_ENABLEDELETEKEYBYHASH
-            value: "true"
-          - name: TYK_DB_ENABLEUPDATEKEYBYHASH
-            value: "true"
-          - name: TYK_DB_ENABLEHASHEDKEYSLISTING
-            value: "true"
-          - name: TYK_DB_ENABLEMULTIORGUSERS
-            value: "true"
-          - name: TYK_DB_PAGESIZE
-            value: "10"
-          {{- if .Values.dash.extraEnvs }}
-          {{- toYaml .Values.dash.extraEnvs| nindent 10 }}
-          {{- end }}
+        - name: TYK_DB_ADMINSECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+              key: AdminSecret
+        - name: TYK_DB_NODESECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+              key: APISecret
+        - name: TYK_DB_TYKAPI_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+              key: APISecret
+        - name: TYK_DB_LICENSEKEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+              key: DashLicense
+        {{ if eq "postgres" (include "tyk-pro.backend" .) }}
+        - name: TYK_DB_STORAGE_MAIN_CONNECTIONSTRING
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
+              key: pgConnectionString
+        {{ else }}
+        - name: TYK_DB_STORAGE_MAIN_CONNECTIONSTRING
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+              key: mongoURL
+        {{ end }}
+        - name: TYK_DB_REDISPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name:{{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+              key: redisPass
         resources:
 {{ toYaml .Values.dash.resources | indent 12 }}
         command: ["/opt/tyk-dashboard/tyk-analytics", "--conf=/etc/tyk-dashboard/tyk_analytics.conf"]

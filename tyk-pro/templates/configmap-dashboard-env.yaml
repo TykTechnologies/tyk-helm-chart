@@ -1,0 +1,64 @@
+{{- if .Values.dash.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mgmt-dashboard-env-conf-{{ include "tyk-pro.fullname" . }}
+  labels:
+    app: dashboard-{{ include "tyk-pro.fullname" . }}
+    chart: {{ include "tyk-pro.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  TYK_DB_LISTENPORT: "{{ .Values.dash.containerPort }}"
+  # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
+  REDIGOCLUSTER_SHARDCOUNT: "128"
+  TYK_DB_HOSTCONFIG_HOSTNAME: "{{ .Values.dash.hostName }}"
+  TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME: "{{ .Values.gateway.hostName }}"
+  {{- if .Values.gateway.control.enabled }}
+  TYK_DB_TYKAPI_HOST: "{{ include "tyk-pro.gwproto" . }}://gateway-control-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
+  TYK_DB_TYKAPI_PORT: "{{ .Values.gateway.control.containerPort }}"
+  {{- else }}
+  TYK_DB_TYKAPI_HOST: "{{ include "tyk-pro.gwproto" . }}://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
+  TYK_DB_TYKAPI_PORT: "{{ .Values.gateway.service.port }}"
+  {{- end }}
+  TYK_DB_REDISADDRS: {{ include "tyk-pro.redis_url" . | quote }}
+  TYK_DB_ENABLECLUSTER: "{{ default "false" .Values.redis.enableCluster }}"
+  TYK_DB_REDISUSESSL: "{{ default "false" .Values.redis.useSSL }}"
+  TYK_DB_REDISSSLINSECURESKIPVERIFY: "true"
+  {{ if eq "postgres" (include "tyk-pro.backend" .) }}
+  TYK_DB_STORAGE_MAIN_TYPE: "postgres"
+  {{ else }}
+  TYK_DB_STORAGE_MAIN_TYPE: "mongo"
+  TYK_DB_STORAGE_MAIN_MONGO_SSL_ENABLED: "{{ default "false" .Values.mongo.useSSL }}"
+  TYK_DB_STORAGE_MAIN_MONGO_SSL_INSECURESKIPVERIFY: "false"
+  TYK_DB_STORAGE_MAIN_MONGO_SSL_ALLOWINVALIDHOSTNAMES: "false"
+  {{ end }}
+  TYK_DB_HOSTCONFIG_PORTALROOTPATH:  {{ .Values.portal.path }}
+  TYK_DB_HTTPSERVEROPTIONS_USESSL: "{{ .Values.dash.tls }}"
+  # Default Settings
+  TYK_DB_NOTIFYONCHANGE: "true"
+  TYK_DB_HASHKEYS: "true"
+  TYK_DB_ENABLEDUPLICATESLUGS: "true"
+  TYK_DB_SHOWORGID: "true"
+  TYK_DB_HOSTCONFIG_ENABLEHOSTNAMES: "true"
+  TYK_DB_HOSTCONFIG_DISABLEORGSLUGPREFIX: "true"
+  TYK_DB_HOMEDIR: "/opt/tyk-dashboard"
+  TYK_DB_USESHARDEDANLAYTICS: "false"
+  TYK_DB_ENABLEAGGREGATELOOKUPS: "true"
+  TYK_DB_ENABLEOWNERSHIP: "true"
+  TYK_DB_NOTIFICATIONSLISTENPORT: "5000"
+  TYK_DB_ALLOWEXPLICITPOLICYID: "true"
+  TYK_DB_OAUTHREDIRECTURISEPARATOR: ";"
+  TYK_DB_DASHBOARDSESSIONLIFETIME: "43200"
+  TYK_DB_ENABLEDELETEKEYBYHASH: "true"
+  TYK_DB_ENABLEUPDATEKEYBYHASH: "true"
+  TYK_DB_ENABLEHASHEDKEYSLISTING: "true"
+  TYK_DB_ENABLEMULTIORGUSERS: "true"
+  TYK_DB_PAGESIZE: "10"
+  {{- if .Values.dash.extraEnvs }}
+  {{- range $envVar := .Values.dash.extraEnvs }}
+  {{ $envVar.name }}: "{{ $envVar.value }}"
+  {{- end }} 
+  {{- end }}
+{{- end }}
