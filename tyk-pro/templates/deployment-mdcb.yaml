@@ -51,64 +51,25 @@ spec:
           capabilities:
             drop:
               - all
+        envFrom:
+        - configMapRef:
+            name: mdcb-env-conf-{{ include "tyk-pro.fullname" . }}
         env:
-          - name: TYK_MDCB_SERVEROPTIONS_USESSL
-          # Enable backward compatibility to chart 0.8.1.
-            value: "{{ or .Values.mdcb.tls .Values.mdcb.useSSL false }}"
-          - name: TYK_MDCB_LISTENPORT
-            value: "{{ .Values.mdcb.containerPort }}"
-          # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
-          - name: REDIGOCLUSTER_SHARDCOUNT
-            value: "128"
-          - name: TYK_MDCB_HEALTHCHECKPORT
-            value: "{{ .Values.mdcb.healthcheckport }}"
-          - name: TYK_MDCB_STORAGE_ADDRS
-            value: {{ include "tyk-pro.redis_url" . | quote }}
-          - name: TYK_MDCB_STORAGE_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
-                key: redisPass
-          - name: TYK_MDCB_STORAGE_REDISUSESSL
-            value: "{{ default "false" .Values.redis.useSSL }}"
-          - name: TYK_MDCB_STORAGE_REDISSSLINSECURESKIPVERIFY
-            value: "true"
-          - name: TYK_MDCB_ANALYTICSCONFIG_MONGOURL
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
-                key: mongoURL
-          - name: TYK_MDCB_ANALYTICSCONFIG_MONGOUSESSL
-            value: "{{ default "false" .Values.mongo.useSSL }}"
-          - name: TYK_MDCB_FORWARDANALYTICSTOPUMP
-            value: "{{ .Values.mdcb.forwardAnalyticsToPump }}"
-          - name: TYK_MDCB_LICENSE
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
-                key: MDCBLicense
-          # Default Settings
-          - name: TYK_MDCB_SERVEROPTIONS_MINVERSION
-            value: "771"
-          - name: TYK_MDCB_STORAGE_TYPE
-            value: "redis"
-          - name: TYK_MDCB_HASHKEYS
-            value: "true"
-          - name: TYK_MDCB_SESSIONTIMEOUT
-            value: "0"
-          - name: TYK_MDCB_DONTSTORESELECTIVE
-            value: "false"
-          - name: TYK_MDCB_DONTSTOREAGGREGATES
-            value: "false"
-          {{- if .Values.mdcb.certificate }}
-          - name: TYK_MDCB_SERVEROPTIONS_CERTIFICATE_CERTFILE
-            value: "/etc/certs/crts/{{ .Values.mdcb.certificate.certFilename }}"
-          - name: TYK_MDCB_SERVEROPTIONS_CERTIFICATE_KEYFILE
-            value: "/etc/certs/keys/{{ .Values.mdcb.certificate.keyFilename }}"
-          {{- end }}
-          {{- if .Values.mdcb.extraEnvs }}
-          {{- toYaml .Values.mdcb.extraEnvs| nindent 10 }}
-          {{- end }}
+        - name: TYK_MDCB_LICENSE
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+              key: MDCBLicense
+        - name: TYK_MDCB_ANALYTICSCONFIG_MONGOURL
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+              key: mongoURL
+        - name: TYK_MDCB_STORAGE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+              key: redisPass
         resources:
         {{ toYaml .Values.mdcb.resources | indent 12 }}
         command: ["/opt/tyk-sink/tyk-sink"]

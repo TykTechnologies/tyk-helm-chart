@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mgmt-dashboard-env-conf-{{ include "tyk-pro.fullname" . }}
+  name: dashboard-env-conf-{{ include "tyk-pro.fullname" . }}
   labels:
     app: dashboard-{{ include "tyk-pro.fullname" . }}
     chart: {{ include "tyk-pro.chart" . }}

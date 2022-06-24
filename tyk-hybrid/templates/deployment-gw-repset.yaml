@@ -64,140 +64,30 @@ spec:
           capabilities:
             drop:
               - all
+        envFrom:
+        - configMapRef:
+            name: gateway-env-conf-{{ include "tyk-hybrid.fullname" . }}
         env:
-          - name: TYK_GW_LISTENPORT
-            value: "{{ .Values.gateway.containerPort }}"
-          # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
-          - name: REDIGOCLUSTER_SHARDCOUNT
-            value: "128"
-          - name: TYK_GW_STORAGE_ADDRS
-            value: {{ include "tyk-hybrid.redis_url" . | quote }}
-          - name: TYK_GW_STORAGE_ENABLECLUSTER
-            value: "{{ default "false" .Values.redis.enableCluster }}"
-          - name: TYK_GW_STORAGE_DATABASE
-            value: "{{ default "0" .Values.redis.storage.database }}"
-          - name: TYK_GW_STORAGE_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-hybrid.fullname" . }} {{ end}}
-                key: redisPass
-          - name: TYK_GW_STORAGE_USESSL
-            value: "{{ default "false" .Values.redis.useSSL }}"
-          - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
-            value: "{{ .Values.gateway.tls }}"
-          - name: TYK_GW_SLAVEOPTIONS_RPCKEY
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-hybrid.fullname" . }} {{ end}}
-                key: rpcKey
-          - name: TYK_GW_SLAVEOPTIONS_APIKEY
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-hybrid.fullname" . }} {{ end}}
-                key: apiKey
-          - name: TYK_GW_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-hybrid.fullname" . }} {{ end}}
-                key: APISecret
-          - name: TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING
-            value: "{{ .Values.gateway.rpc.connString }}"
-          - name: TYK_GW_SLAVEOPTIONS_USESSL
-            value: "{{ .Values.gateway.rpc.useSSL }}"
-          - name: TYK_GW_SLAVEOPTIONS_BINDTOSLUGSINSTEADOFLISTENPATHS
-            value: "{{ default "false" .Values.gateway.rpc.bindToSlugs }}"
-          - name: TYK_GW_SLAVEOPTIONS_SSLINSECURESKIPVERIFY
-            value: "{{ .Values.gateway.rpc.sslInsecureSkipVerify }}"
-        {{- if .Values.gateway.rpc.groupId }}
-          - name: TYK_GW_SLAVEOPTIONS_GROUPID
-            value: "{{ .Values.gateway.rpc.groupId }}"
-        {{- end }}
-        # Enable backward compatibility to chart 0.5.1.
-        {{- if or .Values.gateway.sharding .Values.enableSharding}}
-          - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
-            {{- if .Values.gateway.sharding }}
-            value: "{{ .Values.gateway.sharding.enabled }}"
-            {{- else }}
-            value: "{{ .Values.enableSharding }}"
-            {{- end }}
-        {{- end }}
-        # Enable backward compatibility to chart 0.5.1.
-        {{- if or .Values.gateway.sharding .Values.enableSharding}}
-          - name: TYK_GW_DBAPPCONFOPTIONS_TAGS
-            {{- if .Values.gateway.sharding }}
-            value: "{{ .Values.gateway.sharding.tags }}"
-            {{- else }}
-            value: "{{ .Values.gateway.tags }}"
-            {{- end }}
-        {{- end }}
-        # Default Settings
-          - name: TYK_GW_TEMPLATEPATH
-            value: "/opt/tyk-gateway/templates"
-          - name: TYK_GW_TYKJSPATH
-            value: "/opt/tyk-gateway/js/tyk.js"
-          - name: TYK_GW_MIDDLEWAREPATH
-            value: "/mnt/tyk-gateway/middleware"
-          - name: TYK_GW_USEDBAPPCONFIGS
-            value: "false"
-          - name: TYK_GW_APPPATH
-            value: "/mnt/tyk-gateway/apps"
-          - name: TYK_GW_ENABLEANALYTICS
-            value: "true"
-          - name: TYK_GW_ANALYTICSCONFIG_TYPE
-            value: "rpc"
-          - name: TYK_GW_STORAGE_TYPE
-            value: "redis"
-          - name: TYK_GW_AUTHOVERRIDE_FORCEAUTHPROVIDER
-            value: "true"
-          - name: TYK_GW_AUTHOVERRIDE_AUTHPROVIDER_STORAGEENGINE
-            value: "rpc"
-          - name: TYK_GW_SLAVEOPTIONS_USERPC
-            value: "true"
-          - name: TYK_GW_SLAVEOPTIONS_RPCPOOLSIZE
-            value: "20"
-          - name: TYK_GW_SLAVEOPTIONS_ENABLERPCCACHE
-            value: "true"
-          - name: TYK_GW_ENABLENONTRANSACTIONALRATELIMITER
-            value: "true"
-          - name: TYK_GW_ENABLESENTINELRATELIMITER
-            value: "false"
-          - name: TYK_GW_ALLOWMASTERKEYS
-            value: "false"
-          - name: TYK_GW_POLICIES_POLICYSOURCE
-            value: "rpc"
-          - name: TYK_GW_POLICIES_POLICYRECORDNAME
-            value: "tyk_policies"
-          - name: TYK_GW_HASHKEYS
-            value: "true"
-          - name: TYK_GW_HASHKEYFUNCTION
-            value: "murmur128"
-          - name: TYK_GW_CLOSECONNECTIONS
-            value: "false"
-          - name: TYK_GW_HTTPSERVEROPTIONS_ENABLEWEBSOCKETS
-            value: "true"
-          - name: TYK_GW_HTTPSERVEROPTIONS_SERVERNAME
-            value: "*"
-          - name: TYK_GW_HTTPSERVEROPTIONS_MINVERSION
-            value: "771"
-          - name: TYK_GW_ALLOWINSECURECONFIGS
-            value: "true"
-          - name: TYK_GW_COPROCESSOPTIONS_ENABLECOPROCESS
-            value: "true"
-          - name: TYK_GW_ENABLEBUNDLEDOWNLOADER
-            value: "false"
-          - name: TYK_GW_GLOBALSESSIONLIFETIME
-            value: "100"
-          - name: TYK_GW_FORCEGLOBALSESSIONLIFETIME
-            value: "false"
-          - name: TYK_GW_MAXIDLECONNSPERHOST
-            value: "500"
-          - name: TYK_GW_ENABLECUSTOMDOMAINS
-            value: "true"
-          - name: TYK_GW_PIDFILELOCATION
-            value: "/mnt/tyk-gateway/tyk.pid"
-        {{- if .Values.gateway.extraEnvs }}
-        {{- toYaml .Values.gateway.extraEnvs| nindent 8 }}
-        {{- end }}
+        - name: TYK_GW_SLAVEOPTIONS_RPCKEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-hybrid.fullname" . }} {{ end}}
+              key: rpcKey
+        - name: TYK_GW_SLAVEOPTIONS_APIKEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-hybrid.fullname" . }} {{ end}}
+              key: apiKey
+        - name: TYK_GW_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-hybrid.fullname" . }} {{ end}}
+              key: APISecret
+        - name: TYK_GW_STORAGE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-hybrid.fullname" . }} {{ end}}
+              key: redisPass
         command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
         workingDir: /opt/tyk-gateway
         ports:

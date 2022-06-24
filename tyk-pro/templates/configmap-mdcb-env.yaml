@@ -1,0 +1,40 @@
+{{- if .Values.mdcb.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mdcb-env-conf-{{ include "tyk-pro.fullname" . }}
+  labels:
+    app: mdcb-{{ include "tyk-pro.fullname" . }}
+    chart: {{ include "tyk-pro.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  # Enable backward compatibility to chart 0.8.1.
+  TYK_MDCB_SERVEROPTIONS_USESSL: "{{ or .Values.mdcb.tls .Values.mdcb.useSSL false }}"
+  TYK_MDCB_LISTENPORT: "{{ .Values.mdcb.containerPort }}"
+  # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
+  REDIGOCLUSTER_SHARDCOUNT: "128"
+  TYK_MDCB_HEALTHCHECKPORT: "{{ .Values.mdcb.healthcheckport }}"
+  TYK_MDCB_STORAGE_ADDRS: {{ include "tyk-pro.redis_url" . | quote }}
+  TYK_MDCB_STORAGE_REDISUSESSL: "{{ default "false" .Values.redis.useSSL }}"
+  TYK_MDCB_STORAGE_REDISSSLINSECURESKIPVERIFY: "true"
+  TYK_MDCB_ANALYTICSCONFIG_MONGOUSESSL: "{{ default "false" .Values.mongo.useSSL }}"
+  TYK_MDCB_FORWARDANALYTICSTOPUMP: "{{ .Values.mdcb.forwardAnalyticsToPump }}"
+  # Default Settings
+  TYK_MDCB_SERVEROPTIONS_MINVERSION: "771"
+  TYK_MDCB_STORAGE_TYPE: "redis"
+  TYK_MDCB_HASHKEYS: "true"
+  TYK_MDCB_SESSIONTIMEOUT: "0"
+  TYK_MDCB_DONTSTORESELECTIVE: "false"
+  TYK_MDCB_DONTSTOREAGGREGATES: "false"
+  {{- if .Values.mdcb.certificate }}
+  TYK_MDCB_SERVEROPTIONS_CERTIFICATE_CERTFILE: "/etc/certs/crts/{{ .Values.mdcb.certificate.certFilename }}"
+  TYK_MDCB_SERVEROPTIONS_CERTIFICATE_KEYFILE: "/etc/certs/keys/{{ .Values.mdcb.certificate.keyFilename }}"
+  {{- end }}
+  {{- if .Values.mdcb.extraEnvs }}
+  {{- range $envVar := .Values.mdcb.extraEnvs }}
+  {{ $envVar.name }}: "{{ $envVar.value }}"
+  {{- end }} 
+  {{- end }}
+{{- end }}

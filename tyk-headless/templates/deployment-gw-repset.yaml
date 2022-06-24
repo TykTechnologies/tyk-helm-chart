@@ -72,116 +72,32 @@ spec:
           capabilities:
             drop:
               - all
+        envFrom:
+        - configMapRef:
+            name: gateway-env-conf-{{ include "tyk-headless.fullname" . }}
         env:
-          - name: TYK_GW_LISTENPORT
-            value: "{{ .Values.gateway.containerPort }}"
-          {{- if .Values.gateway.control.enabled }}
-          - name: TYK_GW_CONTROLAPIPORT
-            value: "{{ .Values.gateway.control.containerPort }}"
-          {{- end }}
-          # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
-          - name: REDIGOCLUSTER_SHARDCOUNT
-            value: "128"
-          - name: TYK_GW_STORAGE_ADDRS
-            value: {{ include "tyk-headless.redis_url" . | quote }}
-          {{ if .Values.redis.enableSentinel }}
-          - name: TYK_GW_STORAGE_SENTINELPASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
-                key: redisSentinelPass
-          - name: TYK_GW_STORAGE_MASTERNAME
-            value: "{{- .Values.redis.masterName -}}"
-         {{ else if .Values.redis.enableCluster }}
-          - name: TYK_GW_STORAGE_ENABLECLUSTER
-            value: "true"
-         {{ else }}
-          - name: TYK_GW_STORAGE_MASTERNAME
-            value: ""
-          - name: TYK_GW_STORAGE_ENABLECLUSTER
-            value: "false"
-         {{ end }}
-          - name: TYK_GW_STORAGE_DATABASE
-            value: "{{ default "0" .Values.redis.storage.database }}"
-          - name: TYK_GW_STORAGE_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end}}
-                key: redisPass
-          - name: TYK_GW_STORAGE_USESSL
-            value: "{{ default "false" .Values.redis.useSSL }}"
-          - name: TYK_GW_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end}}
-                key: APISecret
-          - name: TYK_GW_NODESECRET
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end}}
-                key: APISecret
-          - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
-            value: "{{ .Values.gateway.tls }}"
-          - name: TYK_GW_ENABLEANALYTICS
-            value: "{{ .Values.pump.enabled }}"
-          # Default Settings
-          - name: TYK_GW_TEMPLATEPATH
-            value: "/opt/tyk-gateway/templates"
-          - name: TYK_GW_TYKJSPATH
-            value: "/opt/tyk-gateway/js/tyk.js"
-          - name: TYK_GW_MIDDLEWAREPATH
-            value: "/mnt/tyk-gateway/middleware"
-          - name: TYK_GW_USEDBAPPCONFIGS
-            value: "false"
-          - name: TYK_GW_APPPATH
-            value: "/mnt/tyk-gateway/apps"
-          - name: TYK_GW_ANALYTICSCONFIG_TYPE
-            value: ""
-          - name: TYK_GW_STORAGE_TYPE
-            value: "redis"
-          - name: TYK_GW_ENABLENONTRANSACTIONALRATELIMITER
-            value: "true"
-          - name: TYK_GW_ENABLESENTINELRATELIMITER
-            value: "false"
-          - name: TYK_GW_ALLOWMASTERKEYS
-            value: "false"
-          - name: TYK_GW_POLICIES_POLICYSOURCE
-            value: "file"
-          - name: TYK_GW_POLICIES_POLICYRECORDNAME
-            value: "/mnt/tyk-gateway/policies/policies.json"
-          - name: TYK_GW_HASHKEYS
-            value: "true"
-          - name: TYK_GW_HASHKEYFUNCTION
-            value: "murmur128"
-          - name: TYK_GW_CLOSECONNECTIONS
-            value: "false"
-          - name: TYK_GW_HTTPSERVEROPTIONS_ENABLEWEBSOCKETS
-            value: "true"
-          - name: TYK_GW_HTTPSERVEROPTIONS_SERVERNAME
-            value: "*"
-          - name: TYK_GW_HTTPSERVEROPTIONS_MINVERSION
-            value: "771"
-          - name: TYK_GW_ALLOWINSECURECONFIGS
-            value: "true"
-          - name: TYK_GW_ENABLEHASHEDKEYSLISTING
-            value: "true"
-          - name: TYK_GW_COPROCESSOPTIONS_ENABLECOPROCESS
-            value: "true"
-          - name: TYK_GW_ENABLEBUNDLEDOWNLOADER
-            value: "false"
-          - name: TYK_GW_GLOBALSESSIONLIFETIME
-            value: "100"
-          - name: TYK_GW_FORCEGLOBALSESSIONLIFETIME
-            value: "false"
-          - name: TYK_GW_MAXIDLECONNSPERHOST
-            value: "500"
-          - name: TYK_GW_ENABLECUSTOMDOMAINS
-            value: "true"
-          - name: TYK_GW_PIDFILELOCATION
-            value: "/mnt/tyk-gateway/tyk.pid"
-        {{- if .Values.gateway.extraEnvs }}
-        {{- toYaml .Values.gateway.extraEnvs| nindent 8 }}
+        {{ if .Values.redis.enableSentinel }}
+        - name: TYK_GW_STORAGE_SENTINELPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
+              key: redisSentinelPass
         {{- end }}
+        - name: TYK_GW_STORAGE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end}}
+              key: redisPass
+        - name: TYK_GW_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end}}
+              key: APISecret
+        - name: TYK_GW_NODESECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end}}
+              key: APISecret
         command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
         workingDir: /opt/tyk-gateway
         ports:

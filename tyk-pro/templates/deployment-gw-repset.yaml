@@ -74,8 +74,8 @@ spec:
             drop:
               - all
         envFrom:
-          - configMapRef:
-              name: mgmt-gateway-env-conf-{{ include "tyk-pro.fullname" . }}
+        - configMapRef:
+            name: gateway-env-conf-{{ include "tyk-pro.fullname" . }}
         env:
         - name: TYK_GW_SECRET
           valueFrom:

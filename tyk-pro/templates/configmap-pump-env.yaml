@@ -1,0 +1,47 @@
+{{- if .Values.pump.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pump-env-conf-{{ include "tyk-pro.fullname" . }}
+  labels:
+    app: pump-{{ include "tyk-pro.fullname" . }}
+    chart: {{ include "tyk-pro.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  TYK_PMP_OMITCONFIGFILE: "true"
+  TYK_PMP_ANALYTICSSTORAGETYPE: "redis"
+  TYK_PMP_ANALYTICSSTORAGECONFIG_TYPE: "redis"
+  TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS: {{ include "tyk-pro.redis_url" . | quote }}
+  TYK_PMP_ANALYTICSSTORAGECONFIG_ENABLECLUSTER: "{{ default "false" .Values.redis.enableCluster }}"
+  TYK_PMP_ANALYTICSSTORAGECONFIG_DATABASE: "{{ .Values.redis.storage.database }}"
+  TYK_PMP_ANALYTICSSTORAGECONFIG_REDISUSESSL: "{{ default "false" .Values.redis.useSSL }}"
+  TYK_PMP_ANALYTICSSTORAGECONFIG_MAXIDLE: "2000"
+  TYK_PMP_ANALYTICSSTORAGECONFIG_MAXACTIVE: "4000"
+  TYK_PMP_PURGEDELAY: "4"
+  TYK_PMP_DONTPURGEUPTIMEDATA: "false"
+  {{ if eq "postgres" (include "tyk-pro.backend" .) }}
+  TYK_PMP_PUMPS_MAIN_TYPE: "sql"
+  TYK_PMP_PUMPS_MAIN_META_TYPE: "postgres"
+  TYK_PMP_PUMPS_MAINAGG_TYPE: "sql_aggregate"
+  TYK_PMP_PUMPS_MAINAGG_META_TYPE: "postgres"
+  TYK_PMP_UPTIMEPUMPCONFIG_UPTIMETYPE: "sql"
+  TYK_PMP_UPTIMEPUMPCONFIG_TYPE: "postgres"
+  {{ else }}
+  TYK_PMP_PUMPS_MAIN_TYPE: "mongo"
+  TYK_PMP_PUMPS_MAIN_META_MONGOUSESSL: "{{ default "false" .Values.mongo.useSSL }}"
+  TYK_PMP_PUMPS_MAIN_META_COLLECTIONNAME: "tyk_analytics"
+  TYK_PMP_PUMPS_MAINAGG_TYPE: "mongo-pump-aggregate"
+  TYK_PMP_PUMPS_MAINAGG_META_MONGOUSESSL:  "{{ default "false" .Values.mongo.useSSL }}"
+  TYK_PMP_PUMPS_MAINAGG_META_USEMIXEDCOLLECTION: "true"
+  TYK_PMP_UPTIMEPUMPCONFIG_COLLECTIONNAME: "tyk_uptime_analytics"
+  {{ end }}
+  # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
+  REDIGOCLUSTER_SHARDCOUNT: "128"
+  {{- if .Values.pump.extraEnvs }}
+  {{- range $envVar := .Values.pump.extraEnvs }}
+  {{ $envVar.name }}: "{{ $envVar.value }}"
+  {{- end }} 
+  {{- end }}
+{{- end }}

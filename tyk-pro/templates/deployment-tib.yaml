@@ -51,47 +51,25 @@ spec:
           capabilities:
             drop:
               - all
+        envFrom:
+        - configMapRef:
+            name: tib-env-conf-{{ include "tyk-pro.fullname" . }}
         env:
-          - name: TYK_IB_PORT
-            value: "{{ .Values.tib.containerPort }}"
-          - name: TYK_IB_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
-                key: tibSecret
-          - name: TYK_IB_HTTPSERVEROPTIONS_USESSL
-          # Enable backward compatibility to chart 0.8.1.
-            value: "{{ or .Values.tib.tls .Values.tib.useSSL false }}"
-          - name: TYK_IB_TYKAPISETTINGS_DASHBOARDCONFIG_ADMINSECRET
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
-                key: AdminSecret
-          - name: TYK_IB_TYKAPISETTINGS_GATEWAYCONFIG_ENDPOINT
-            value: "{{ include "tyk-pro.gwproto" . }}://gateway-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
-          - name: TYK_IB_TYKAPISETTINGS_GATEWAYCONFIG_PORT
-            value: "{{ .Values.gateway.service.port }}"
-          - name: TYK_IB_TYKAPISETTINGS_GATEWAYCONFIG_ADMINSECRET
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
-                key: AdminSecret
-          - name: TYK_IB_TYKAPISETTINGS_DASHBOARDCONFIG_ENDPOINT
-            value: "{{ include "tyk-pro.dash_proto" . }}://dashboard-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
-          - name: TYK_IB_TYKAPISETTINGS_DASHBOARDCONFIG_PORT
-            value: "{{ .Values.dash.service.port }}"
-          # Default Settings
-          - name: TYK_TIB_BACKEND_IDENTITYBACKENDSETTINGS_DATABASE
-            value: "0"
-          - name: TYK_TIB_BACKEND_IDENTITYBACKENDSETTINGS_MAXIDLE
-            value: "1000"
-          - name: TYK_TIB_BACKEND_IDENTITYBACKENDSETTINGS_MAXACTIVE
-            value: "2000"
-          - name: TYK_TIB_BACKEND_IDENTITYBACKENDSETTINGS_SSLINSECURESKIPVERIFY
-            value: "false"
-          {{- if .Values.tib.extraEnvs }}
-          {{- toYaml .Values.tib.extraEnvs| nindent 10 }}
-          {{- end }}
+        - name: TYK_IB_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+              key: tibSecret
+        - name: TYK_IB_TYKAPISETTINGS_GATEWAYCONFIG_ADMINSECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+              key: AdminSecret
+        - name: TYK_IB_TYKAPISETTINGS_DASHBOARDCONFIG_ADMINSECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+              key: AdminSecret
         resources:
 {{ toYaml .Values.tib.resources | indent 10 }}
         ports:

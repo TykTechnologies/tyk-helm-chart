@@ -59,8 +59,8 @@ spec:
             drop:
               - all
         envFrom:
-          - configMapRef:
-              name: mgmt-dashboard-env-conf-{{ include "tyk-pro.fullname" . }}
+        - configMapRef:
+            name: dashboard-env-conf-{{ include "tyk-pro.fullname" . }}
         env:
         - name: TYK_DB_ADMINSECRET
           valueFrom:
