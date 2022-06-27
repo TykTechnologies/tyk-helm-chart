@@ -97,29 +97,13 @@ spec:
             value: "{{ default "false" .Values.redis.useSSL }}"
           - name: TYK_DB_REDISSSLINSECURESKIPVERIFY
             value: "true"
-{{ if eq "postgres" (include "tyk-pro.backend" .) }}
-          - name: TYK_DB_STORAGE_MAIN_TYPE
-            value: "postgres"
-          - name: TYK_DB_STORAGE_MAIN_CONNECTIONSTRING
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
-                key: pgConnectionString
-{{ else }}
-          - name: TYK_DB_STORAGE_MAIN_TYPE
-            value: "mongo"
-          - name: TYK_DB_STORAGE_MAIN_CONNECTIONSTRING
+          - name: TYK_DB_MONGOURL
             valueFrom:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
                 key: mongoURL
-          - name: TYK_DB_STORAGE_MAIN_MONGO_SSL_ENABLED
+          - name: TYK_DB_MONGOUSESSL
             value: "{{ default "false" .Values.mongo.useSSL }}"
-          - name: TYK_DB_STORAGE_MAIN_MONGO_SSL_INSECURESKIPVERIFY
-            value: "false"
-          - name: TYK_DB_STORAGE_MAIN_MONGO_SSL_ALLOWINVALIDHOSTNAMES
-            value: "false"
-{{ end }}
           - name: TYK_DB_ADMINSECRET
             valueFrom:
               secretKeyRef:
@@ -139,43 +123,6 @@ spec:
             value:  {{ .Values.portal.path }}
           - name: TYK_DB_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.dash.tls }}"
-          # Default Settings
-          - name: TYK_DB_NOTIFYONCHANGE
-            value: "true"
-          - name: TYK_DB_HASHKEYS
-            value: "true"
-          - name: TYK_DB_ENABLEDUPLICATESLUGS
-            value: "true"
-          - name: TYK_DB_SHOWORGID
-            value: "true"
-          - name: TYK_DB_HOSTCONFIG_ENABLEHOSTNAMES
-            value: "true"
-          - name: TYK_DB_HOSTCONFIG_DISABLEORGSLUGPREFIX
-            value: "true"
-          - name: TYK_DB_HOMEDIR
-            value: "/opt/tyk-dashboard"
-          - name: TYK_DB_USESHARDEDANLAYTICS
-            value: "false"
-          - name: TYK_DB_ENABLEAGGREGATELOOKUPS
-            value: "true"
-          - name: TYK_DB_ENABLEOWNERSHIP
-            value: "true"
-          - name: TYK_DB_ALLOWEXPLICITPOLICYID
-            value: "true"
-          - name: TYK_DB_OAUTHREDIRECTURISEPARATOR
-            value: ";"
-          - name: TYK_DB_DASHBOARDSESSIONLIFETIME
-            value: "43200"
-          - name: TYK_DB_ENABLEDELETEKEYBYHASH
-            value: "true"
-          - name: TYK_DB_ENABLEUPDATEKEYBYHASH
-            value: "true"
-          - name: TYK_DB_ENABLEHASHEDKEYSLISTING
-            value: "true"
-          - name: TYK_DB_ENABLEMULTIORGUSERS
-            value: "true"
-          - name: TYK_DB_PAGESIZE
-            value: "10"
           {{- if .Values.dash.extraEnvs }}
           {{- toYaml .Values.dash.extraEnvs| nindent 10 }}
           {{- end }}
@@ -186,22 +133,8 @@ spec:
         ports:
         - containerPort: {{ .Values.dash.containerPort }}
         volumeMounts:
-          {{- if .Values.dash.tls}}
-          - name: {{.Values.certificates.caConfigMapName}}
-            mountPath: /etc/ssl/certs/{{.Values.certificates.caBundleFileName}}
-            subPath: {{.Values.certificates.caBundleFileName}}
-            readOnly: false
-          {{- end }}
           - name: tyk-dashboard-conf
             mountPath: /etc/tyk-dashboard
-          {{- if .Values.dash.certificates }}
-          {{- range $i, $certset := .Values.dash.certificates }}
-          - name: tyk-dash-certs-crt-{{ $i }}
-            mountPath: /etc/certs/crts
-          - name: tyk-dash-certs-key-{{ $i }}
-            mountPath: /etc/certs/keys
-          {{- end }}
-          {{- end }}
           {{- if .Values.dash.mounts }}
           {{- range $secret := .Values.dash.mounts }}
           - name: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
@@ -230,27 +163,12 @@ spec:
         runAsUser: 1000
         fsGroup: 2000
       volumes:
-        {{- if .Values.dash.tls }}
-        - name: {{.Values.certificates.caConfigMapName}}
-          configMap:
-            name: {{.Values.certificates.caConfigMapName}}
-        {{- end }}
         - name: tyk-dashboard-conf
           configMap:
             name: dashboard-conf-{{ include "tyk-pro.fullname" . }}
             items:
               - key: tyk_analytics.conf
                 path: tyk_analytics.conf
-        {{- if .Values.dash.certificates }}
-        {{- range $i, $certset := .Values.dash.certificates }}
-        - name: tyk-dash-certs-crt-{{ $i }}
-          secret:
-            secretName: {{ $certset.certSecret }}
-        - name: tyk-dash-certs-key-{{ $i }}
-          secret:
-            secretName: {{ $certset.keySecret }}
-        {{- end }}
-        {{- end }}
         {{- if .Values.dash.mounts }}
         {{- range $secret := .Values.dash.mounts }}
         - name: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}

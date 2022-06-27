@@ -60,9 +60,13 @@ redis:
   storage:
     database: 0
 
-# Choose the pumps backend for Tyk. [ "", "mongo", "postgres" ]
-backend: ""
 mongo:
+  # If you want to collect analytics through the mongo pumps you can turn this
+  # option on. Once on, Tyk Pump will assume that MongoDB is avaibale at
+  # mongo.tyk.svc.cluster.local:27017 if it is not, please change the mongoURL
+  # value below.
+  enabled: false
+
   # The mongoURL value will allow you to set your MongoDB address.
   # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
   # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
@@ -71,36 +75,20 @@ mongo:
 
   # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
   # Default value: false
-  useSSL: false
-
-# Postgres connection string parameters.
-postgres:
-  host: tyk-postgres-postgresql.tyk.svc.cluster.local
-  port: 5432
-  user: postgres
-  password:
-  database: tyk_analytics
-  sslmode:
+  # useSSL: true
 
 gateway:
   # The hostname to bind the Gateway to.
   hostName: tyk-gw.local
   # When true, sets the gateway protocol to HTTPS.
   tls: false
-  # Set you certs here if you want to enable TLS.
-  # - name: dashboard-cert
-  #   certSecret: dashboard-cert
-  #   certFilename: dashboard-crt.pem
-  #   keySecret: dashboard-key
-  #   keyFilename: dashboard-key.pem
-  certificates: []
 
   kind: DaemonSet
   replicaCount: 1
   containerPort: 8080
   image:
     repository: docker.tyk.io/tyk-gateway/tyk-gateway
-    tag: v4.0.0
+    tag: v3.2.1
     pullPolicy: IfNotPresent
   service:
     type: NodePort
@@ -163,7 +151,7 @@ pump:
   replicaCount: 1
   image:
     repository: docker.tyk.io/tyk-pump/tyk-pump
-    tag: v1.5.1
+    tag: v1.4.0
     pullPolicy: IfNotPresent
   annotations: {}
   resources: {}
