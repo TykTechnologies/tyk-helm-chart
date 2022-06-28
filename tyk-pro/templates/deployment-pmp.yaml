@@ -19,11 +19,10 @@ spec:
       labels:
         app: pump-{{ include "tyk-pro.fullname" . }}
         release: {{ .Release.Name }}
-      {{- if .Values.pump.annotations }}
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-pump.yaml") . | sha256sum }}
       {{- range $key, $value := .Values.pump.annotations }}
         {{ $key }}: {{ $value | quote }}
-      {{- end }}
       {{- end }}
     spec:
 {{- if .Values.pump.nodeSelector }}
@@ -52,12 +51,23 @@ spec:
             drop:
               - all
         env:
-          - name: TYK_PMP_OMITCONFIGFILE
-            value: "true"
-          - name: TYK_PMP_ANALYTICSSTORAGETYPE
-            value: "redis"
-          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_TYPE
-            value: "redis"
+          # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
+          - name: REDIGOCLUSTER_SHARDCOUNT
+            value: "128"
+          - name: PMP_MONGO_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                key: mongoURL
+          - name: PMP_MONGO_MONGOUSESSL
+            value: "{{ default "false" .Values.mongo.useSSL }}"
+          - name: PMP_MONGOAGG_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                key: mongoURL
+          - name: PMP_MONGOAGG_MONGOUSESSL
+            value:  "{{ default "false" .Values.mongo.useSSL }}"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS
             value: {{ include "tyk-pro.redis_url" . | quote }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ENABLECLUSTER
@@ -67,83 +77,8 @@ spec:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
                 key: redisPass
-          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_DATABASE
-            value: "{{ .Values.redis.storage.database }}"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISUSESSL
             value: "{{ default "false" .Values.redis.useSSL }}"
-          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_MAXIDLE
-            value: "2000"
-          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_MAXACTIVE
-            value: "4000"
-          - name: TYK_PMP_PURGEDELAY
-            value: "4"
-          - name: TYK_PMP_DONTPURGEUPTIMEDATA
-            value: "false"
-{{ if eq "postgres" (include "tyk-pro.backend" .) }}
-          - name: TYK_PMP_PUMPS_MAIN_TYPE
-            value: "sql"
-          - name: TYK_PMP_PUMPS_MAIN_META_TYPE
-            value: "postgres"
-          - name: TYK_PMP_PUMPS_MAIN_META_CONNECTIONSTRING
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
-                key: pgConnectionString
-
-          - name: TYK_PMP_PUMPS_MAINAGG_TYPE
-            value: "sql_aggregate"
-          - name: TYK_PMP_PUMPS_MAINAGG_META_TYPE
-            value: "postgres"
-          - name: TYK_PMP_PUMPS_MAINAGG_META_CONNECTIONSTRING
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
-                key: pgConnectionString
-
-          - name: TYK_PMP_UPTIMEPUMPCONFIG_UPTIMETYPE
-            value: "sql"
-          - name: TYK_PMP_UPTIMEPUMPCONFIG_TYPE
-            value: "postgres"
-          - name: TYK_PMP_UPTIMEPUMPCONFIG_CONNECTIONSTRING
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
-                key: pgConnectionString
-{{ else }}
-          - name: TYK_PMP_PUMPS_MAIN_TYPE
-            value: "mongo"
-          - name: TYK_PMP_PUMPS_MAIN_META_MONGOURL
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
-                key: mongoURL
-          - name: TYK_PMP_PUMPS_MAIN_META_MONGOUSESSL
-            value: "{{ default "false" .Values.mongo.useSSL }}"
-          - name: TYK_PMP_PUMPS_MAIN_META_COLLECTIONNAME
-            value: "tyk_analytics"
-
-          - name: TYK_PMP_PUMPS_MAINAGG_TYPE
-            value: "mongo-pump-aggregate"
-          - name: TYK_PMP_PUMPS_MAINAGG_META_MONGOURL
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
-                key: mongoURL
-          - name: TYK_PMP_PUMPS_MAINAGG_META_MONGOUSESSL
-            value:  "{{ default "false" .Values.mongo.useSSL }}"
-          - name: TYK_PMP_PUMPS_MAINAGG_META_USEMIXEDCOLLECTION
-            value: "true"
-          - name: TYK_PMP_UPTIMEPUMPCONFIG_COLLECTIONNAME
-            value: "tyk_uptime_analytics"
-          - name: TYK_PMP_UPTIMEPUMPCONFIG_MONGOURL
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
-                key: mongoURL
-{{ end }}
-          # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
-          - name: REDIGOCLUSTER_SHARDCOUNT
-            value: "128"
           {{- if .Values.pump.extraEnvs }}
           {{- toYaml .Values.pump.extraEnvs| nindent 10 }}
           {{- end }}

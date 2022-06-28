@@ -68,7 +68,7 @@ if_present_echo(){
 }
 
 create_organisation(){
-  ORGDATA=$(CURL_CA_BUNDLE=$CURL_CA_BUNDLE_TYK curl --silent --header "admin-auth: $TYK_ADMIN_SECRET" --header "Content-Type:application/json" --data '{"owner_name": "'"$TYK_ORG_NAME"'", "cname_enabled": true, "cname": "'$TYK_ORG_CNAME'"}' $DASHBOARD_HOSTNAME/admin/organisations 2>&1)
+  ORGDATA=$(curl --silent --header "admin-auth: $TYK_ADMIN_SECRET" --header "Content-Type:application/json" --data '{"owner_name": "'"$TYK_ORG_NAME"'", "cname_enabled": true, "cname": "'$TYK_ORG_CNAME'"}' $DASHBOARD_HOSTNAME/admin/organisations 2>&1)
   if_present_echo "$ORGDATA" 3
 }
 
@@ -82,12 +82,12 @@ create_user(){
   AUTH_CODE=$(echo $USER_DATA | jq -r '.Message')
   USER_ID=$(echo $USER_DATA | jq -r '.Meta.id')
   ## set user password
-  response=$(CURL_CA_BUNDLE=$CURL_CA_BUNDLE_TYK curl --silent --header "authorization: $AUTH_CODE" --header "Content-Type:application/json" $DASHBOARD_HOSTNAME/api/users/$USER_ID/actions/reset --data '{"new_password":"'$TYK_ADMIN_PASSWORD'", "user_permissions": { "IsAdmin": "admin" }}')
+  response=$(curl --silent --header "authorization: $AUTH_CODE" --header "Content-Type:application/json" $DASHBOARD_HOSTNAME/api/users/$USER_ID/actions/reset --data '{"new_password":"'$TYK_ADMIN_PASSWORD'", "user_permissions": { "IsAdmin": "admin" }}')
   if_present_echo "$AUTH_CODE" 4
 }
 
 user_data(){
-  user_curl=$(CURL_CA_BUNDLE=$CURL_CA_BUNDLE_TYK curl --silent --header "admin-auth: $TYK_ADMIN_SECRET" --header "Content-Type:application/json" --data '{"first_name": "'$TYK_ADMIN_FIRST_NAME'", "last_name": "'$TYK_ADMIN_LAST_NAME'", "email_address": "'$TYK_ADMIN_EMAIL'", "active": true, "org_id": "'$1'", "user_permissions": { "IsAdmin": "admin" }}' $DASHBOARD_HOSTNAME/admin/users 2>&1)
+  user_curl=$(curl --silent --header "admin-auth: $TYK_ADMIN_SECRET" --header "Content-Type:application/json" --data '{"first_name": "'$TYK_ADMIN_FIRST_NAME'", "last_name": "'$TYK_ADMIN_LAST_NAME'", "email_address": "'$TYK_ADMIN_EMAIL'", "active": true, "org_id": "'$1'", "user_permissions": { "IsAdmin": "admin" }}' $DASHBOARD_HOSTNAME/admin/users 2>&1)
   if_present_echo $user_curl 3
 }
 
@@ -95,19 +95,19 @@ create_portal(){
   log_message "Creating Portal for organisation $TYK_ORG_NAME"
 
   log_message "  Creating Portal default settings"
-  log_json_result "$(CURL_CA_BUNDLE=$CURL_CA_BUNDLE_TYK curl $DASHBOARD_HOSTNAME/api/portal/configuration \
+  log_json_result "$(curl $DASHBOARD_HOSTNAME/api/portal/configuration \
     -H "Authorization: $USER_AUTH_CODE" \
     -d "{}" 2>> bootstrap.log)"
 
   log_message "  Initialising Catalogue"
-  result=$(CURL_CA_BUNDLE=$CURL_CA_BUNDLE_TYK curl $DASHBOARD_HOSTNAME/api/portal/catalogue \
+  result=$(curl $DASHBOARD_HOSTNAME/api/portal/catalogue \
     -H "Authorization: $USER_AUTH_CODE" \
     -d '{"org_id": "'$ORGID'"}' 2>> bootstrap.log)
   catalogue_id=$(echo "$result" | jq -r '.Message')
   log_json_result "$result"
 
   log_message "  Creating Portal home page"
-  log_json_result "$(CURL_CA_BUNDLE=$CURL_CA_BUNDLE_TYK curl $DASHBOARD_HOSTNAME/api/portal/pages \
+  log_json_result "$(curl $DASHBOARD_HOSTNAME/api/portal/pages \
     -H "Authorization: $USER_AUTH_CODE" \
     -d '{
     "is_homepage": true,

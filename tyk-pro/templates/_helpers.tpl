@@ -77,24 +77,6 @@ mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
 {{- end -}}
 {{- end -}}
 
-{{- define "tyk-pro.pg_connection_string" -}}
-{{- if .Values.postgres -}}
-{{- range $key, $value := .Values.postgres }}{{ print $key "=" $value " " }}{{- end }}
-{{- end -}}
-{{- end -}}
-
-{{- define "tyk-pro.backend" -}}
-{{- if .Values.backend -}}
-{{- if eq "postgres" .Values.backend -}}
-postgres
-{{- else if eq "mongo" .Values.backend -}}
-mongo
-{{- end -}}
-{{- else -}}
-mongo
-{{- end -}}
-{{- end -}}
-
 {{- /* Create Semantic Version of gateway without prefix v */}}
 {{- define "tyk-pro.gateway-version" -}}
 {{- printf "%s" .Values.gateway.image.tag | replace "v" "" -}}

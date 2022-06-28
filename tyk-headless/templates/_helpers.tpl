@@ -57,23 +57,3 @@ mongodb://{{ .Values.mongo.host }}:{{ .Values.mongo.port }}/tyk_analytics
 mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
 {{- end -}}
 {{- end -}}
-
-{{- define "tyk-headless.pg_connection_string" -}}
-{{- if .Values.postgres -}}
-{{- range $key, $value := .Values.postgres }}{{ print $key "=" $value " " }}{{- end }}
-{{- end -}}
-{{- end -}}
-
-{{- define "tyk-headless.backend" -}}
-{{- if .Values.backend -}}
-{{- if eq "postgres" .Values.backend -}}
-postgres
-{{- else if eq "mongo" .Values.backend -}}
-mongo
-{{- end -}}
-{{- else if .Values.mongo.enabled -}}
-mongo
-{{- else -}}
-none
-{{- end -}}
-{{- end -}}
