@@ -23,7 +23,7 @@ check_expiry_date() {
 
     if [ $current_date -gt $token_exp ]
     then
-        echo "Your dashboard license has expired at $(date -r ${token_exp})." 1>&2
+        echo "Your dashboard license has expired." 1>&2
         exit 1
     fi
 }
