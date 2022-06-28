@@ -12,3 +12,7 @@ if kubectl get secret -n "$TYK_POD_NAMESPACE" "$OPERATOR_SECRET_NAME"; then
 else
     echo "$OPERATOR_SECRET_NAME does not exists in $TYK_POD_NAMESPACE namespace, skipping delete operation."
 fi
+
+if kubectl delete jobs -n "$TYK_POD_NAMESPACE" bootstrap-post-install-tyk-pro; then
+    echo "Deleted existing bootstrap post install jobs"
+fi

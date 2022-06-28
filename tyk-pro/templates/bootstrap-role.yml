@@ -24,6 +24,11 @@ rules:
   - list
   - create
   - delete
+- apiGroups: ["batch"]
+  resources:
+  - jobs
+  verbs:
+  - delete
 - apiGroups: ["apps"]
   resources: ["deployments"]
   verbs: ["get","update","patch"]
