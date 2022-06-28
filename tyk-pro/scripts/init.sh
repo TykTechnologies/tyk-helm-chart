@@ -39,7 +39,7 @@ wait_for_liveness () {
    attempt_count=$((attempt_count+1))
 
    # Check Gateway, Redis and Dashboard status
-   local hello=$(CURL_CA_BUNDLE=$CURL_CA_BUNDLE_TYK curl "$GATEWAY_ADDRESS"/hello -s)
+   local hello=$(curl "$GATEWAY_ADDRESS"/hello -s)
    local gw_status=$(echo "$hello" | jq -r '.status')
    local dash_status=$(echo "$hello" | jq -r '.details.dashboard.status')
    local redis_status=$(echo "$hello" | jq -r '.details.redis.status')
