@@ -36,28 +36,31 @@ wait_for_liveness () {
 
   while true
   do
-   attempt_count=$((attempt_count+1))
-  if [[ attempt_count -gt 100 ]]
-   then
-    echo "Failed to wait for liveness, exceeded attempt count"
-    exit 1
-  fi
+    attempt_count=$((attempt_count+1))
+    
+    # The timeout is set by default to 6 mins which is the default back-off limit for
+    # Kubernetes Jobs.
+    if [[ attempt_count -gt 180 ]]
+    then
+      echo "Failed to wait for liveness, exceeded attempt count"
+      exit 1
+    fi
 
-   # Check Gateway, Redis and Dashboard status
-   local hello=$(curl "$GATEWAY_ADDRESS"/hello -s)
-   local gw_status=$(echo "$hello" | jq -r '.status')
-   local dash_status=$(echo "$hello" | jq -r '.details.dashboard.status')
-   local redis_status=$(echo "$hello" | jq -r '.details.redis.status')
+    # Check Gateway, Redis and Dashboard status
+    local hello=$(curl "$GATEWAY_ADDRESS"/hello -s)
+    local gw_status=$(echo "$hello" | jq -r '.status')
+    local dash_status=$(echo "$hello" | jq -r '.details.dashboard.status')
+    local redis_status=$(echo "$hello" | jq -r '.details.redis.status')
 
-   if [[ "$gw_status" = "$pass" ]] && [[ "$dash_status" = "$pass" ]] && [[ "$redis_status" = "$pass" ]]
-   then
-     echo "Attempt $attempt_count succeeded: Gateway, Dashboard and Redis all running";
-     break
-   else
-     echo "Attempt $attempt_count unsuccessful: gw status = '$gw_status', dashboard status = '$dash_status', redis status = '$redis_status'";
-   fi
+    if [[ "$gw_status" = "$pass" ]] && [[ "$dash_status" = "$pass" ]] && [[ "$redis_status" = "$pass" ]]
+    then
+      echo "Attempt $attempt_count succeeded: Gateway, Dashboard and Redis all running";
+      break
+    else
+      echo "Attempt $attempt_count unsuccessful: gw status = '$gw_status', dashboard status = '$dash_status', redis status = '$redis_status'";
+    fi
 
-   sleep 2
+    sleep 2
   done
 }
 
@@ -71,5 +74,4 @@ wait_for_liveness
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
-while [[ $(kubectl get pod -n $TYK_POD_NAMESPACE -l app=$TYK_DASHBOARD_DEPLOY -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do sleep 10; done && \
 /opt/scripts/bootstrap.sh
