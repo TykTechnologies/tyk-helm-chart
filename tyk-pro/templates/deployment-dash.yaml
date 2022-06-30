@@ -61,13 +61,9 @@ spec:
         env:
           - name: TYK_DB_LISTENPORT
             value: "{{ .Values.dash.containerPort }}"
-          # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
+          # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
-          - name: TYK_DB_HOSTCONFIG_HOSTNAME
-            value: "{{ .Values.dash.hostName }}"
-          - name: TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME
-            value: "{{ .Values.gateway.hostName }}"
           {{- if .Values.gateway.control.enabled }}
           - name: TYK_DB_TYKAPI_HOST
             value: "{{ include "tyk-pro.gwproto" . }}://gateway-control-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
@@ -79,31 +75,12 @@ spec:
           - name: TYK_DB_TYKAPI_PORT
             value: "{{ .Values.gateway.service.port }}"
           {{- end }}
+
           - name: TYK_DB_TYKAPI_SECRET
             valueFrom:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
                 key: APISecret
-          - name: TYK_DB_REDISADDRS
-            value: {{ include "tyk-pro.redis_url" . | quote }}
-          - name: TYK_DB_ENABLECLUSTER
-            value: "{{ default "false" .Values.redis.enableCluster }}"
-          - name: TYK_DB_REDISPASSWORD
-            valueFrom:
-              secretKeyRef:
-                name:{{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
-                key: redisPass
-          - name: TYK_DB_REDISUSESSL
-            value: "{{ default "false" .Values.redis.useSSL }}"
-          - name: TYK_DB_REDISSSLINSECURESKIPVERIFY
-            value: "true"
-          - name: TYK_DB_MONGOURL
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
-                key: mongoURL
-          - name: TYK_DB_MONGOUSESSL
-            value: "{{ default "false" .Values.mongo.useSSL }}"
           - name: TYK_DB_ADMINSECRET
             valueFrom:
               secretKeyRef:
@@ -119,10 +96,65 @@ spec:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
                 key: DashLicense
-          - name: TYK_DB_HOSTCONFIG_PORTALROOTPATH
-            value:  {{ .Values.portal.path }}
+            
+          - name: TYK_DB_REDISADDRS
+            value: {{ include "tyk-pro.redis_url" . | quote }}
+          - name: TYK_DB_ENABLECLUSTER
+            value: "{{ default "false" .Values.redis.enableCluster }}"
+          - name: TYK_DB_REDISPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name:{{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                key: redisPass
+          - name: TYK_DB_REDISUSESSL
+            value: "{{ default "false" .Values.redis.useSSL }}"
+          - name: TYK_DB_REDISSSLINSECURESKIPVERIFY
+            value: "true"
+            
           - name: TYK_DB_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.dash.tls }}"
+
+          - name: TYK_DB_HOSTCONFIG_HOSTNAME
+            value: "{{ .Values.dash.hostName }}"
+          - name: TYK_DB_HOSTCONFIG_GATEWAYHOSTNAME
+            value: "{{ .Values.gateway.hostName }}"
+          - name: TYK_DB_HOSTCONFIG_PORTALROOTPATH
+            value:  {{ .Values.portal.path }}
+          {{ if eq "postgres" (include "tyk-pro.backend" .) }}
+          - name: TYK_DB_STORAGE_MAIN_TYPE
+            value: "postgres"
+          - name: TYK_DB_STORAGE_MAIN_CONNECTIONSTRING
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
+                key: pgConnectionString
+
+          - name: TYK_DB_STORAGE_ANALYTICS_TYPE
+            value: "postgres"
+          - name: TYK_DB_STORAGE_ANALYTICS_CONNECTIONSTRING
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
+                key: pgConnectionString
+
+          - name: TYK_DB_STORAGE_UPTIME_TYPE
+            value: "postgres"
+          - name: TYK_DB_STORAGE_UPTIME_CONNECTIONSTRING
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
+                key: pgConnectionString
+          {{ else }}
+          - name: TYK_DB_STORAGE_MAIN_TYPE
+            value: "mongo"
+          - name: TYK_DB_STORAGE_MAIN_CONNECTIONSTRING
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                key: mongoURL
+          - name: TYK_DB_STORAGE_MAIN_MONGO_SSL_ENABLED
+            value: "{{ default "false" .Values.mongo.useSSL }}"
+          {{ end }}
           {{- if .Values.dash.extraEnvs }}
           {{- toYaml .Values.dash.extraEnvs| nindent 10 }}
           {{- end }}
