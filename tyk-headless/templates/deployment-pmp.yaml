@@ -48,22 +48,57 @@ spec:
             drop:
               - all
         env:
-          # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
+          # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
-          {{- if .Values.mongo.enabled }}
-          - name: PMP_MONGO_MONGOURL
-            value: {{ include "tyk-headless.mongo_url" . | quote }}
-          - name: PMP_MONGO_MONGOUSESSL
-            value: "{{ default "false" .Values.mongo.useSSL }}"
-          - name: PMP_MONGOAGG_MONGOURL
+          {{- if eq "postgres" (include "tyk-headless.backend" .) }}
+          # SQL Pump
+          - name: TYK_PMP_PUMPS_SQL_META_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end}}
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
+                key: pgConnectionString
+            
+          # SQL Aggregate Pump
+          - name: TYK_PMP_PUMPS_SQLAGGREGATE_META_CONNECTIONSTRING
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
+                key: pgConnectionString
+                
+          # SQL Uptime Pump
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_CONNECTIONSTRING
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
+                key: pgConnectionString
+          {{ else }}
+          # Mongo Pump
+          - name: TYK_PMP_PUMPS_MONGO_META_MONGOUSESSL
+            value: "{{ default "false" .Values.mongo.useSSL }}"
+          - name: TYK_PMP_PUMPS_MONGO_META_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
                 key: mongoURL
-          - name: PMP_MONGOAGG_MONGOUSESSL
+          
+          # Mongo Aggregate Pump
+          - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_MONGOUSESSL
             value:  "{{ default "false" .Values.mongo.useSSL }}"
-          {{- end }}
+          - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
+                key: mongoURL
+
+          # Mongo Uptime Pump
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
+                key: mongoURL
+          {{ end }}
+
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS
             {{- if and .Values.redis.host .Values.redis.port }}
             value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"
@@ -100,7 +135,7 @@ spec:
             value: {{ $env.value | quote }}
         {{- end }}
         {{- end }}
-        command: ["/opt/tyk-pump/tyk-pump", "-c", "/etc/tyk-pump/pump.conf"]
+        command: ["/opt/tyk-pump/tyk-pump", "-c", "/etc/tyk-pump/{{ include "tyk-headless.pmp_config" . }}"]
         volumeMounts:
           - name: tyk-pump-conf
             mountPath: /etc/tyk-pump
@@ -120,8 +155,8 @@ spec:
           configMap:
             name: pump-conf-{{ include "tyk-headless.fullname" . }}
             items:
-              - key: pump.conf
-                path: pump.conf
+              - key: {{ include "tyk-headless.pmp_config" . }}
+                path: {{ include "tyk-headless.pmp_config" . }}
         {{- if .Values.pump.mounts }}
         {{- range $secret := .Values.pump.mounts }}
         - name: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}

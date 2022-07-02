@@ -9,5 +9,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
-  {{- (.Files.Glob "configs/pump.conf").AsConfig | nindent 2 }}
+  {{- $pumpConfPath := include "tyk-headless.pmp_config" . }}
+  {{- $pumpConfPath = printf "configs/%s" $pumpConfPath }}
+  {{- (.Files.Glob  $pumpConfPath).AsConfig | nindent 2 }}
 {{- end }}
