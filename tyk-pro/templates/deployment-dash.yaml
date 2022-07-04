@@ -61,7 +61,7 @@ spec:
         env:
           - name: TYK_DB_LISTENPORT
             value: "{{ .Values.dash.containerPort }}"
-          # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
+          # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
           - name: TYK_DB_HOSTCONFIG_HOSTNAME
