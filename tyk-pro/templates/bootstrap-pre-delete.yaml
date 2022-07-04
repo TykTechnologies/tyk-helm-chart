@@ -1,0 +1,55 @@
+{{- if .Values.bootstrap -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "bootstrap-pre-delete-{{ include "tyk-pro.fullname" . }}"
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+
+    # Removed the use of appVersion since it's not accurate. We'll put it back in v1.0
+    # when every app will have its own a chart
+    # app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "0"
+
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: “false”
+    spec:
+      serviceAccountName: k8s-bootstrap-role
+      containers:
+        - name: bootstrap-pre-delete
+          image: bash:5.1
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - /opt/scripts/pre-delete.sh
+          env:
+            - name: OPERATOR_SECRET_NAME
+              value: "tyk-operator-conf"
+            - name: TYK_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          volumeMounts:
+            - name: bootstrap-config-volume
+              mountPath: /opt/scripts
+      volumes:
+        - name: bootstrap-config-volume
+          configMap:
+            name: bootstrap-pre-delete-configmap-{{ include "tyk-pro.fullname" . }}
+            defaultMode: 0777
+      terminationGracePeriodSeconds: 0
+      restartPolicy: Never
+{{- end }}

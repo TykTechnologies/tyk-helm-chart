@@ -160,11 +160,22 @@ then
   main $DASHBOARD_HOSTNAME
 fi
 
-kubectl create secret -n ${TYK_POD_NAMESPACE} generic tyk-operator-conf \
-  --from-literal "TYK_AUTH=${USER_AUTH_CODE}" \
-  --from-literal "TYK_ORG=${ORGID}" \
-  --from-literal "TYK_MODE=pro" \
-  --from-literal "TYK_URL=${DASHBOARD_HOSTNAME}"
+if [ "$OPERATOR_SECRET_ENABLED" = "true" ] && [ "$BOOTSTRAP_DASHBOARD" = "true" ]
+then
+  kubectl get secrets -n "$TYK_POD_NAMESPACE" "$OPERATOR_SECRET_NAME" || operator_secret_exists=$?
+
+  # if $OPERATOR_SECRET_NAME exists, delete the previous secret.
+  if [[ $operator_secret_exists -eq 0 ]]
+  then
+    kubectl delete secret -n "$TYK_POD_NAMESPACE" "$OPERATOR_SECRET_NAME"
+  fi
+  
+  kubectl create secret -n "$TYK_POD_NAMESPACE" generic "$OPERATOR_SECRET_NAME" \
+    --from-literal "TYK_AUTH=${USER_AUTH_CODE}" \
+    --from-literal "TYK_ORG=${ORGID}" \
+    --from-literal "TYK_MODE=pro" \
+    --from-literal "TYK_URL=${DASHBOARD_HOSTNAME}"
+fi
 
 if [ "$DASHBOARD_ENABLED" = "true" ]
 then
