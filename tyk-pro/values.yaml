@@ -387,3 +387,7 @@ pump:
   mounts: []
 
 rbac: true
+
+certificates:
+  caBundleFileName: ""
+  caConfigMapName: ""

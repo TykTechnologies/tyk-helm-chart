@@ -147,3 +147,7 @@ rbac: true
 tyk_k8s:
   dash_key: ""
   org_id: ""
+
+certificates:
+  caBundleFileName: ""
+  caConfigMapName: ""
