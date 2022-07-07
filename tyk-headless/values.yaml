@@ -150,7 +150,7 @@ gateway:
 # possible pump configs can be found here:
 # https://github.com/TykTechnologies/tyk-pump#configuration
 pump:
-  # Determines whither or not the pump component should be installed.
+  # Determines whether or not the pump component should be installed.
   enabled: false
 
   replicaCount: 1

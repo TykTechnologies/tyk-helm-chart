@@ -77,12 +77,3 @@ mongo
 none
 {{- end -}}
 {{- end -}}
-
-
-{{- define "tyk-headless.pmp_config" -}}
-{{- if eq "postgres" .Values.backend -}}
-pump-postgres.conf
-{{- else -}}
-pump.conf
-{{- end -}}
-{{- end -}}
