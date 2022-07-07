@@ -53,7 +53,7 @@ redis:
   # Default value: false
   # useSSL: true
 
-  # The enableCluster value will allow you to indicate to Tyk whither you are
+  # The enableCluster value will allow you to indicate to Tyk whether you are
   # running a Redis cluster or not.
   # Default value: false
   # enableCluster: true
@@ -88,7 +88,7 @@ postgres:
   sslmode:
 
 mdcb:
-  # Determines whither or not the MDCB component should be installed.
+  # Determines whether or not the MDCB component should be installed.
   enabled: false
   # If set to true the MDCB will use SSL connection.
   # You will also need to set the:
@@ -134,7 +134,7 @@ mdcb:
   mounts: []
 
 tib:
-  # Determines whither or not the tib component should be installed.
+  # Determines whether or not the tib component should be installed.
   enabled: false
   # If set to true TIB will use SSL connection. THIS IS RECOMMENDED.
   # You will also need to set the:
@@ -192,7 +192,7 @@ tib:
   mounts: []
 
 dash:
-  # Determines whither or not the dashboard component should be installed.
+  # Determines whether or not the dashboard component should be installed.
   enabled: true
   # Dashboard will only bootstrap if the master bootstrap option is set to true.
   bootstrap: true
@@ -289,7 +289,7 @@ portal:
   #    hosts:
   #      - chart-example.local
 gateway:
-  # Determines whither or not the gateway component should be installed.
+  # Determines whether or not the gateway component should be installed.
   enabled: true
   # The hostname to bind the Gateway to.
   hostName: tyk-gw.local
@@ -364,7 +364,7 @@ gateway:
   mounts: []
 
 pump:
-  # Determines whither or not the pump component should be installed.
+  # Determines whether or not the pump component should be installed.
   enabled: true
 
   replicaCount: 1

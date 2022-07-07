@@ -42,7 +42,7 @@ redis:
   # Default value: false
   # useSSL: true
 
-  # The enableCluster value will allow you to indicate to Tyk whither you are running
+  # The enableCluster value will allow you to indicate to Tyk whether you are running
   # a Redis cluster or not.
   # Default value: false
   # enableCluster: true
