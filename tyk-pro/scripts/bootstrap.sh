@@ -23,7 +23,7 @@ syntax_message(){
 }
 
 check_for_existing_organisations(){
-    EXISTING_ORGS=$(CURL_CA_BUNDLE=$CURL_CA_BUNDLE_TYK curl --silent --header "admin-auth: $TYK_ADMIN_SECRET" --header "Content-Type:application/json"  $DASHBOARD_HOSTNAME/admin/organisations 2>&1)
+    EXISTING_ORGS=$(curl --silent --header "admin-auth: $TYK_ADMIN_SECRET" --header "Content-Type:application/json"  $DASHBOARD_HOSTNAME/admin/organisations 2>&1)
     OWNER_NAMES=$(echo "$EXISTING_ORGS" | jq -r '.organisations | .[] | .owner_name | @base64')
     if [[ -z "${OWNER_NAMES}" ]]
     then
