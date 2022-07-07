@@ -9,7 +9,7 @@ and MDCB (Multi Data-centre Bridge).
 ---
 
 ## Prerequisites
-Redis and MongoDB or PostgreSQL should already be installed or accessible by the gateway.
+Redis and MongoDB should already be installed or accessible by the gateway.
 
 Check [Tyk Self-managed Helm chart Installation](https://tyk.io/docs/tyk-self-managed/tyk-helm-chart/) for the full details.
 

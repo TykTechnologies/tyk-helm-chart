@@ -12,11 +12,23 @@ rules:
   - services
   - pods
   - pods/exec
+  verbs:
+  - get
+  - list
+  - create
+- apiGroups: [""]
+  resources:
   - secrets
   verbs:
   - get
   - list
   - create
+  - delete
+- apiGroups: ["batch"]
+  resources:
+  - jobs
+  verbs:
+  - delete
 - apiGroups: ["apps"]
   resources: ["deployments"]
   verbs: ["get","update","patch"]

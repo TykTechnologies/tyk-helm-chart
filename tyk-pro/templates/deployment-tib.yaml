@@ -26,6 +26,8 @@ spec:
       labels:
         app: tib-{{ include "tyk-pro.fullname" . }}
         release: {{ .Release.Name }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-tib.yaml") . | sha256sum }}
     spec:
 {{- if .Values.tib.nodeSelector }}
       nodeSelector:
@@ -80,15 +82,6 @@ spec:
             value: "{{ include "tyk-pro.dash_proto" . }}://dashboard-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
           - name: TYK_IB_TYKAPISETTINGS_DASHBOARDCONFIG_PORT
             value: "{{ .Values.dash.service.port }}"
-          # Default Settings
-          - name: TYK_TIB_BACKEND_IDENTITYBACKENDSETTINGS_DATABASE
-            value: "0"
-          - name: TYK_TIB_BACKEND_IDENTITYBACKENDSETTINGS_MAXIDLE
-            value: "1000"
-          - name: TYK_TIB_BACKEND_IDENTITYBACKENDSETTINGS_MAXACTIVE
-            value: "2000"
-          - name: TYK_TIB_BACKEND_IDENTITYBACKENDSETTINGS_SSLINSECURESKIPVERIFY
-            value: "false"
           {{- if .Values.tib.extraEnvs }}
           {{- toYaml .Values.tib.extraEnvs| nindent 10 }}
           {{- end }}
@@ -97,6 +90,10 @@ spec:
         ports:
         - containerPort: {{ .Values.tib.containerPort }}
         volumeMounts:
+          - name: tyk-tib-conf-volume
+            mountPath: /opt/tyk-identity-broker/tib.conf
+            subPath: tib.conf
+            readOnly: true
           - name: tyk-tib-profiles-conf-volume
             mountPath: /opt/tyk-identity-broker/profiles.json
             subPath: profiles.json
@@ -129,6 +126,9 @@ spec:
         runAsUser: 1000
         fsGroup: 2000
       volumes:
+        - name: tyk-tib-conf-volume
+          configMap:
+            name: tyk-tib-conf
         - name: tyk-tib-profiles-conf-volume
           configMap:
             name: {{ .Values.tib.configMap.profiles }}

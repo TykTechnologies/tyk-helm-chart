@@ -9,6 +9,5 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
-  pump.conf: |
-    {}
+  {{- (.Files.Glob "configs/pump.conf").AsConfig | nindent 2 }}
 {{- end }}

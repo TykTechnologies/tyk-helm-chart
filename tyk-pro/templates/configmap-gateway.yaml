@@ -1,5 +1,4 @@
-{{- if .Values.gateway.enabled }}
----
+{{- if .Values.gateway.enabled -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -10,18 +9,5 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
-  tyk_mgmt.conf: |
-    {
-      "http_server_options": {
-        "certificates": [
-        {{- $length := len .Values.gateway.certificates -}}
-        {{- range $i, $certset := .Values.gateway.certificates }}
-          {
-            "cert_file": "/etc/certs/crts/{{ $certset.certFilename }}",
-            "key_file": "/etc/certs/keys/{{ $certset.keyFilename }}"
-          }{{- if lt $i (sub $length 1) }},{{- end }}
-        {{- end }}
-        ]
-      }
-    }
+  {{- (.Files.Glob "configs/tyk_mgmt.conf").AsConfig | nindent 2 }}
 {{- end }}

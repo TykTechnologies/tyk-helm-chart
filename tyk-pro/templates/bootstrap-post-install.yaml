@@ -17,7 +17,7 @@ metadata:
     # job is considered part of the release.
     "helm.sh/hook": post-install
     "helm.sh/hook-weight": "-5"
-    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 spec:
   backoffLimit: 1
   template:
@@ -56,6 +56,8 @@ spec:
             value: dashboard-svc-{{ include "tyk-pro.fullname" . }}
           - name: TYK_DB_LISTENPORT
             value: "{{ .Values.dash.containerPort }}"
+          - name: TYK_DB_LICENSEKEY
+            value: {{ .Values.dash.license | quote }}
           - name: TYK_ADMIN_SECRET
             value: {{ .Values.secrets.AdminSecret | quote }}
           - name: TYK_ORG_NAME
@@ -66,35 +68,28 @@ spec:
           - name: DASHBOARD_ENABLED
             value: "true"
           {{- end }}
+          {{- if .Values.dash.operatorSecret }}
+          - name: OPERATOR_SECRET_ENABLED
+            value: "true"
+          - name: OPERATOR_SECRET_NAME
+            value: "tyk-operator-conf"
+          {{- end }}
           {{- if .Values.dash.bootstrap }}
           - name: BOOTSTRAP_DASHBOARD
             value: "true"
           {{- end }}
+          - name: GATEWAY_ADDRESS
+            value: {{ include "tyk-pro.gateway_url" . }}
           {{- if .Values.portal.bootstrap }}
           - name: BOOTSTRAP_PORTAL
             value: "true"
           {{- end }}
           - name: TYK_DASHBOARD_DEPLOY
             value: dashboard-{{ include "tyk-pro.fullname" . }}
-          {{- if or .Values.dash.tls .Values.gateway.tls }}
-          - name: CURL_CA_BUNDLE_TYK
-            value: /etc/ssl/certs/{{.Values.certificates.caBundleFileName}}
-          {{- end}}
         volumeMounts:
-          {{- if or .Values.dash.tls .Values.gateway.tls }}
-          - name: {{.Values.certificates.caConfigMapName}}
-            mountPath: /etc/ssl/certs/{{.Values.certificates.caBundleFileName}}
-            subPath: {{.Values.certificates.caBundleFileName}}
-            readOnly: false
-          {{- end }}
           - name: bootstrap-config-volume
             mountPath: /opt/scripts
       volumes:
-        {{- if or .Values.dash.tls .Values.gateway.tls }}
-        - name: {{.Values.certificates.caConfigMapName}}
-          configMap:
-            name: {{.Values.certificates.caConfigMapName}}
-        {{- end }}
         - name: bootstrap-config-volume
           configMap:
             name: bootstrap-post-install-configmap-{{ include "tyk-pro.fullname" . }}
