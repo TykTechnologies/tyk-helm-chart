@@ -75,12 +75,12 @@ spec:
           - name: TYK_DB_TYKAPI_PORT
             value: "{{ .Values.gateway.service.port }}"
           {{- end }}
-
           - name: TYK_DB_TYKAPI_SECRET
             valueFrom:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
                 key: APISecret
+
           - name: TYK_DB_ADMINSECRET
             valueFrom:
               secretKeyRef:
@@ -121,6 +121,8 @@ spec:
           - name: TYK_DB_HOSTCONFIG_PORTALROOTPATH
             value:  {{ .Values.portal.path }}
           {{ if eq "postgres" (include "tyk-pro.backend" .) }}
+          - name: TYK_DB_ENABLEAGGREGATELOOKUPS
+            value: "false"
           - name: TYK_DB_STORAGE_MAIN_TYPE
             value: "postgres"
           - name: TYK_DB_STORAGE_MAIN_CONNECTIONSTRING

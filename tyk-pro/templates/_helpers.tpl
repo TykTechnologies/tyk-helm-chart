@@ -95,13 +95,6 @@ mongo
 {{- end -}}
 {{- end -}}
 
-{{- define "tyk-pro.pmp_config" -}}
-{{- if eq "postgres" .Values.backend -}}
-pump-postgres.conf
-{{- else -}}
-pump.conf
-{{- end -}}
-{{- end -}}
 
 {{- /* Create Semantic Version of gateway without prefix v */}}
 {{- define "tyk-pro.gateway-version" -}}

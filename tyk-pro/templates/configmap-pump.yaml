@@ -9,7 +9,5 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
-  {{- $pumpConfPath := include "tyk-pro.pmp_config" . }}
-  {{- $pumpConfPath = printf "configs/%s" $pumpConfPath }}
-  {{- (.Files.Glob  $pumpConfPath).AsConfig | nindent 2 }}
+  {{- (.Files.Glob "configs/pump.conf").AsConfig | nindent 2 }}
 {{- end }}

@@ -72,6 +72,10 @@ spec:
           
           {{ if eq "postgres" (include "tyk-pro.backend" .) }}
           # SQL Pump
+          - name: TYK_PMP_PUMPS_SQL_TYPE
+            value: "sql"
+          - name: TYK_PMP_PUMPS_SQL_META_TYPE
+            value: "postgres"
           - name: TYK_PMP_PUMPS_SQL_META_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
@@ -79,6 +83,10 @@ spec:
                 key: pgConnectionString
 
           # SQL Aggregate Pump
+          - name: TYK_PMP_PUMPS_SQLAGGREGATE_TYPE
+            value: "sql_aggregate"
+          - name: TYK_PMP_PUMPS_SQLAGGREGATE_META_TYPE
+            value: "postgres"
           - name: TYK_PMP_PUMPS_SQLAGGREGATE_META_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
@@ -86,6 +94,10 @@ spec:
                 key: pgConnectionString
 
           # SQL Uptime Pump
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_UPTIMETYPE
+            value: "sql"
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_TYPE
+            value: "postgres"
           - name: TYK_PMP_UPTIMEPUMPCONFIG_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
@@ -100,8 +112,12 @@ spec:
                 key: mongoURL
           - name: TYK_PMP_PUMPS_MONGO_META_MONGOUSESSL
             value: "{{ default "false" .Values.mongo.useSSL }}"
+          - name: TYK_PMP_PUMPS_MONGO_META_COLLECTIONNAME
+            value: "tyk_analytics"
 
           # Mongo Aggregate Pump
+          - name: TYK_PMP_PUMPS_MONGOAGGREGATE_TYPE
+            value: "mongo-pump-aggregate"
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_MONGOURL
             valueFrom:
               secretKeyRef:
@@ -109,6 +125,10 @@ spec:
                 key: mongoURL
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_MONGOUSESSL
             value:  "{{ default "false" .Values.mongo.useSSL }}"
+          - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_COLLECTIONNAME
+            value: "tyk_analytics"
+          - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_USEMIXEDCOLLECTION
+            value: "true"
 
           # Mongo Uptime Pump
           - name: TYK_PMP_UPTIMEPUMPCONFIG_MONGOURL
@@ -121,7 +141,7 @@ spec:
           {{- if .Values.pump.extraEnvs }}
           {{- toYaml .Values.pump.extraEnvs| nindent 10 }}
           {{- end }}
-        command: ["/opt/tyk-pump/tyk-pump", "-c", "/etc/tyk-pump/{{ include "tyk-pro.pmp_config" . }}"]
+        command: ["/opt/tyk-pump/tyk-pump", "-c", "/etc/tyk-pump/pump.conf"]
         volumeMounts:
           - name: tyk-pump-conf
             mountPath: /etc/tyk-pump
@@ -141,8 +161,8 @@ spec:
           configMap:
             name: pump-conf-{{ include "tyk-pro.fullname" . }}
             items:
-              - key: {{ include "tyk-pro.pmp_config" . }}
-                path: {{ include "tyk-pro.pmp_config" . }}
+              - key: pump.conf
+                path: pump.conf
         {{- if .Values.pump.mounts }}
         {{- range $secret := .Values.pump.mounts }}
         - name: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
