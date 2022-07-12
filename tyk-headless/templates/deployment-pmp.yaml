@@ -48,22 +48,77 @@ spec:
             drop:
               - all
         env:
-          # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
+          # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
-          {{- if .Values.mongo.enabled }}
-          - name: PMP_MONGO_MONGOURL
-            value: {{ include "tyk-headless.mongo_url" . | quote }}
-          - name: PMP_MONGO_MONGOUSESSL
-            value: "{{ default "false" .Values.mongo.useSSL }}"
-          - name: PMP_MONGOAGG_MONGOURL
+          {{- if eq "postgres" (include "tyk-headless.backend" .) }}
+          # SQL Pump
+          - name: TYK_PMP_PUMPS_SQL_TYPE
+            value: "sql"
+          - name: TYK_PMP_PUMPS_SQL_META_TYPE
+            value: "postgres"
+          - name: TYK_PMP_PUMPS_SQL_META_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end}}
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
+                key: pgConnectionString
+            
+          # SQL Aggregate Pump
+          - name: TYK_PMP_PUMPS_SQLAGGREGATE_TYPE
+            value: "sql_aggregate"
+          - name: TYK_PMP_PUMPS_SQLAGGREGATE_META_TYPE
+            value: "postgres"
+          - name: TYK_PMP_PUMPS_SQLAGGREGATE_META_CONNECTIONSTRING
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
+                key: pgConnectionString
+                
+          # SQL Uptime Pump
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_UPTIMETYPE
+            value: "sql"
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_TYPE
+            value: "postgres"
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_CONNECTIONSTRING
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
+                key: pgConnectionString
+          {{ else }}
+          # Mongo Pump
+          - name: TYK_PMP_PUMPS_MONGO_META_COLLECTIONNAME
+            value: "tyk_analytics_headless"
+          - name: TYK_PMP_PUMPS_MONGO_META_MONGOUSESSL
+            value: "{{ default "false" .Values.mongo.useSSL }}"
+          - name: TYK_PMP_PUMPS_MONGO_META_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
                 key: mongoURL
-          - name: PMP_MONGOAGG_MONGOUSESSL
+          
+          # Mongo Aggregate Pump
+          - name: TYK_PMP_PUMPS_MONGOAGGREGATE_TYPE
+            value: "mongo-pump-aggregate"
+          - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_MONGOUSESSL
             value:  "{{ default "false" .Values.mongo.useSSL }}"
-          {{- end }}
+          - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
+                key: mongoURL
+          - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_COLLECTIONNAME
+            value: "tyk_analytics_headless"
+          - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_USEMIXEDCOLLECTION
+            value: "true"
+
+          # Mongo Uptime Pump
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
+                key: mongoURL
+          {{ end }}
+
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS
             {{- if and .Values.redis.host .Values.redis.port }}
             value: "{{ .Values.redis.host }}:{{ .Values.redis.port }}"

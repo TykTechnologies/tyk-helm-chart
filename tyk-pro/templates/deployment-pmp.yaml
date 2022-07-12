@@ -21,8 +21,10 @@ spec:
         release: {{ .Release.Name }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap-pump.yaml") . | sha256sum }}
+      {{- if .Values.pump.annotations }}
       {{- range $key, $value := .Values.pump.annotations }}
         {{ $key }}: {{ $value | quote }}
+      {{- end }}
       {{- end }}
     spec:
 {{- if .Values.pump.nodeSelector }}
@@ -51,23 +53,14 @@ spec:
             drop:
               - all
         env:
-          # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
+          # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
-          - name: PMP_MONGO_MONGOURL
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
-                key: mongoURL
-          - name: PMP_MONGO_MONGOUSESSL
-            value: "{{ default "false" .Values.mongo.useSSL }}"
-          - name: PMP_MONGOAGG_MONGOURL
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
-                key: mongoURL
-          - name: PMP_MONGOAGG_MONGOUSESSL
-            value:  "{{ default "false" .Values.mongo.useSSL }}"
+
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_DATABASE
+            value: "{{ .Values.redis.storage.database }}"
+          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISUSESSL
+            value: "{{ default "false" .Values.redis.useSSL }}"
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS
             value: {{ include "tyk-pro.redis_url" . | quote }}
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ENABLECLUSTER
@@ -75,10 +68,77 @@ spec:
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
                 key: redisPass
-          - name: TYK_PMP_ANALYTICSSTORAGECONFIG_REDISUSESSL
-            value: "{{ default "false" .Values.redis.useSSL }}"
+          
+          {{ if eq "postgres" (include "tyk-pro.backend" .) }}
+          # SQL Pump
+          - name: TYK_PMP_PUMPS_SQL_TYPE
+            value: "sql"
+          - name: TYK_PMP_PUMPS_SQL_META_TYPE
+            value: "postgres"
+          - name: TYK_PMP_PUMPS_SQL_META_CONNECTIONSTRING
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
+                key: pgConnectionString
+
+          # SQL Aggregate Pump
+          - name: TYK_PMP_PUMPS_SQLAGGREGATE_TYPE
+            value: "sql_aggregate"
+          - name: TYK_PMP_PUMPS_SQLAGGREGATE_META_TYPE
+            value: "postgres"
+          - name: TYK_PMP_PUMPS_SQLAGGREGATE_META_CONNECTIONSTRING
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
+                key: pgConnectionString
+
+          # SQL Uptime Pump
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_UPTIMETYPE
+            value: "sql"
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_TYPE
+            value: "postgres"
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_CONNECTIONSTRING
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
+                key: pgConnectionString
+          {{ else }}
+          # Mongo Pump
+          - name: TYK_PMP_PUMPS_MONGO_META_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
+                key: mongoURL
+          - name: TYK_PMP_PUMPS_MONGO_META_MONGOUSESSL
+            value: "{{ default "false" .Values.mongo.useSSL }}"
+          - name: TYK_PMP_PUMPS_MONGO_META_COLLECTIONNAME
+            value: "tyk_analytics"
+
+          # Mongo Aggregate Pump
+          - name: TYK_PMP_PUMPS_MONGOAGGREGATE_TYPE
+            value: "mongo-pump-aggregate"
+          - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
+                key: mongoURL
+          - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_MONGOUSESSL
+            value:  "{{ default "false" .Values.mongo.useSSL }}"
+          - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_COLLECTIONNAME
+            value: "tyk_analytics"
+          - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_USEMIXEDCOLLECTION
+            value: "true"
+
+          # Mongo Uptime Pump
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
+                key: mongoURL
+          {{ end }}
+ 
           {{- if .Values.pump.extraEnvs }}
           {{- toYaml .Values.pump.extraEnvs| nindent 10 }}
           {{- end }}

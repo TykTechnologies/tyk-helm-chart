@@ -41,7 +41,7 @@ redis:
   # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
   # addrs:
   #   - redis.tyk.svc.cluster.local:6379
-  #   This is the the DNS name of the redis as set when using Bitnami
+  #   This is the DNS name of the redis as set when using Bitnami
   #   - tyk-redis-master.tyk.svc.cluster.local:6379
 
 
@@ -53,7 +53,7 @@ redis:
   # Default value: false
   # useSSL: true
 
-  # The enableCluster value will allow you to indicate to Tyk whither you are
+  # The enableCluster value will allow you to indicate to Tyk whether you are
   # running a Redis cluster or not.
   # Default value: false
   # enableCluster: true
@@ -64,6 +64,8 @@ redis:
   storage:
     database: 0
 
+# Choose the backend for Tyk. [ "mongo", "postgres" ]
+backend: mongo
 mongo:
   # The mongoURL value will allow you to set your MongoDB address.
   # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
@@ -76,8 +78,17 @@ mongo:
   # Default value: false
   useSSL: false
 
+# Postgres connection string parameters.
+postgres:
+  host: tyk-postgres-postgresql.tyk.svc.cluster.local
+  port: 5432
+  user: postgres
+  password:
+  database: tyk_analytics
+  sslmode:
+
 mdcb:
-  # Determines whither or not the mdcb component should be installed.
+  # Determines whether or not the MDCB component should be installed.
   enabled: false
   # If set to true the MDCB will use SSL connection.
   # You will also need to set the:
@@ -123,7 +134,7 @@ mdcb:
   mounts: []
 
 tib:
-  # Determines whither or not the tib component should be installed.
+  # Determines whether or not the tib component should be installed.
   enabled: false
   # If set to true TIB will use SSL connection. THIS IS RECOMMENDED.
   # You will also need to set the:
@@ -181,7 +192,7 @@ tib:
   mounts: []
 
 dash:
-  # Determines whither or not the dashboard component should be installed.
+  # Determines whether or not the dashboard component should be installed.
   enabled: true
   # Dashboard will only bootstrap if the master bootstrap option is set to true.
   bootstrap: true
@@ -218,7 +229,7 @@ dash:
   containerPort: 3000
   image:
     repository: tykio/tyk-dashboard
-    tag: v3.2.1
+    tag: v4.0.0
     pullPolicy: Always
   service:
     type: NodePort
@@ -284,7 +295,7 @@ portal:
   #    hosts:
   #      - chart-example.local
 gateway:
-  # Determines whither or not the gateway component should be installed.
+  # Determines whether or not the gateway component should be installed.
   enabled: true
   # The hostname to bind the Gateway to.
   hostName: tyk-gw.local
@@ -307,7 +318,7 @@ gateway:
   containerPort: 8080
   image:
     repository: tykio/tyk-gateway
-    tag: v3.2.1
+    tag: v4.0.0
     pullPolicy: Always
   service:
     type: NodePort
@@ -359,13 +370,13 @@ gateway:
   mounts: []
 
 pump:
-  # Determines whither or not the pump component should be installed.
+  # Determines whether or not the pump component should be installed.
   enabled: true
 
   replicaCount: 1
   image:
     repository: tykio/tyk-pump-docker-pub
-    tag: v1.4.0
+    tag: v1.5.1
     pullPolicy: Always
   annotations: {}
   resources: {}
