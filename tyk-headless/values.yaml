@@ -27,7 +27,7 @@ redis:
   # The addrs value will allow you to set your Redis addresses. 
   #
   # If you are using Redis (e.g. Bitnami Redis at bitnami/redis) then enter single
-  # endpoint.  If using sentinel connection mode for Redis update the port number (typically 26379).
+  # endpoint. If using sentinel connection mode for Redis, please update the port number (typically 26379).
   #
   # If using a Redis Cluster (e.g. bitnami/redis-cluster), you can list 
   # the endpoints of the redis instances or use the cluster configuration endpoint.
