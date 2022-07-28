@@ -29,7 +29,7 @@ redis:
   # If you are using Redis (e.g. Bitnami Redis at bitnami/redis) then enter single
   # endpoint.  If using "Redis Sentinel" update the port number (typically 26379).
   #
-  # If using a "Redis Cluster" (e.g. bitnami/redis-cluster), you can list 
+  # If using a Redis Cluster (e.g. bitnami/redis-cluster), you can list 
   # the endpoints of the redis instances or use the cluster configuration endpoint.
   # 
   # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
