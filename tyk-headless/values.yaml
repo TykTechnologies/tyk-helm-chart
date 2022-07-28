@@ -27,16 +27,18 @@ redis:
   # The addrs value will allow you to set your Redis addresses. 
   #
   # If you are using Redis (e.g. Bitnami Redis at bitnami/redis) then enter single
-  # endpoint.  If using "Redis Sentinel" update the port number (typically 26379).
+  # endpoint.  If using sentinel connection mode for Redis update the port number (typically 26379).
   #
   # If using a Redis Cluster (e.g. bitnami/redis-cluster), you can list 
   # the endpoints of the redis instances or use the cluster configuration endpoint.
   # 
   # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
   # addrs:
+  #   Example using tyk simple redis chart
+  #   - redis.tyk.svc.cluster.local:6379
   #   Example using bitnami/redis
   #   - tyk-redis.tyk.svc.cluster.local:6379
-  #   Example using bitnami/redis with Sentinel
+  #   Example using bitnami/redis with sentinel
   #   - tyk-redis.tyk.svc.cluster.local:26379
   #   Example using bitnami/redis-cluster
   #   - tyk-redis-master.tyk.svc.cluster.local:6379
@@ -52,9 +54,9 @@ redis:
 
   # If using "Redis Cluster" set enableCluster to true
   # (e.g. if using bitnami/redis-cluster)
-  # enableCluster: false
+  # enableCluster: true
 
-  # If using "Redis Sentinel" set enableSentinel to true and provide both
+  # Enables sentinel connection mode for Redis. If enabled, provide both
   # mandatory values for sentinelPass and masterName.
   # enableSentinel: false
 
