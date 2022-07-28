@@ -33,7 +33,6 @@ redis:
   # the endpoints of the redis instances or use the cluster configuration endpoint.
   # 
   # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
-  #
   # addrs:
   #   Example using bitnami/redis
   #   - tyk-redis.tyk.svc.cluster.local:6379
