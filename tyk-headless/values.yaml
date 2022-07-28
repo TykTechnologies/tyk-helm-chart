@@ -64,7 +64,7 @@ redis:
   # sentinelPass: ""
 
   # Redis sentinel master name, only required while enableSentinel is true.
-  # For binami/redis typically redis-master
+  # For bitnami/redis typically redis-master
   # masterName: ""
 
   # By default the database index is 0. Setting the database index is not
