@@ -122,9 +122,10 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
+      {{- if .Values.tib.securityContext }}
       securityContext:
-        runAsUser: 1000
-        fsGroup: 2000
+      {{- toYaml .Values.tib.securityContext | nindent 10 }}
+      {{- end}}
       volumes:
         - name: tyk-tib-conf-volume
           configMap:

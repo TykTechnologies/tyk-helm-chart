@@ -129,9 +129,10 @@ spec:
       imagePullSecrets:
       {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if .Values.mdcb.securityContext }}
       securityContext:
-        runAsUser: 1000
-        fsGroup: 2000
+      {{- toYaml .Values.mdcb.securityContext | nindent 10 }}
+      {{- end}}
       volumes:
         - name: tyk-mdcb-conf
           configMap:
