@@ -127,7 +127,7 @@ mdcb:
     # requests:
     #  cpu: 100m
     #  memory: 128Mi
-  securityContext: 
+  securityContext:
     runAsUser: 1000
     fsGroup: 2000
   nodeSelector: {}
@@ -185,7 +185,7 @@ tib:
     # requests:
     #  cpu: 100m
     #  memory: 128Mi
-  securityContext: 
+  securityContext:
     runAsUser: 1000
     fsGroup: 2000
   nodeSelector: {}
@@ -270,7 +270,7 @@ dash:
     # requests:
     #  cpu: 100m
     #  memory: 128Mi
-  securityContext: 
+  securityContext:
     runAsUser: 1000
     fsGroup: 2000
   nodeSelector: {}
@@ -370,7 +370,7 @@ gateway:
     # requests:
     #  cpu: 100m
     #  memory: 128Mi
-  securityContext: 
+  securityContext:
     runAsUser: 1000
     fsGroup: 2000
   nodeSelector: {}
@@ -403,7 +403,7 @@ pump:
     # requests:
     #  cpu: 100m
     #  memory: 128Mi
-  securityContext: 
+  securityContext:
     runAsUser: 1000
     fsGroup: 2000
   nodeSelector: {}
