@@ -19,7 +19,8 @@ helm repo update
 kubectl create namespace tyk
 helm install tyk-headless tyk-helm/tyk-headless -n tyk
 ```
-**NOTE**: By default, Gateway runs as DaemonSet. If you are using more than a Node, please update Gateway kind to `Deployment`. 
+**NOTE**: By default, Gateway runs as DaemonSet. If you are using more than a Node, please update Gateway kind to `Deployment` because multiple instances of headless gateways won't sync API Definition.
+
 To configure Gateway kind, do following changes in the `values.yaml` file:
 1. Save all options to a custom `values.yaml` file by running:
 ```bash
