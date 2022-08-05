@@ -37,7 +37,7 @@ redis:
   #   Example using tyk simple redis chart
   #   - redis.tyk.svc.cluster.local:6379
   #   Example using bitnami/redis
-  #   - tyk-redis.tyk.svc.cluster.local:6379
+  #   - tyk-redis-master.tyk.svc.cluster.local:6379
   #   Example using bitnami/redis with sentinel
   #   - tyk-redis.tyk.svc.cluster.local:26379
   #   Example using bitnami/redis-cluster
