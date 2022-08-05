@@ -41,7 +41,7 @@ redis:
   #   Example using bitnami/redis with sentinel
   #   - tyk-redis.tyk.svc.cluster.local:26379
   #   Example using bitnami/redis-cluster
-  #   - tyk-redis-master.tyk.svc.cluster.local:6379
+  #   - tyk-redis-redis-cluster.tyk.svc.cluster.local:6379
 
   # Redis password
   # If you're using Bitnami Redis chart (e.g. bitnami/redis) please input
