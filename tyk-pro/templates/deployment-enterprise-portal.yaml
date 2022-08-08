@@ -65,6 +65,8 @@ spec:
             value: "{{ .Values.enterprisePortal.adminUser.password }}"
           - name: PORTAL_DATABASE_DIALECT
             value: "{{ .Values.enterprisePortal.storage.type }}"
+          - name: PORTAL_DATABASE_CONNECTIONSTRING
+            value: "{{ .Values.enterprisePortal.storage.connectionString }}"
           - name: PORTAL_THEMING_THEME
             value: "default"
           - name: PORTAL_THEMING_PATH
@@ -72,7 +74,7 @@ spec:
           - name: PROVIDER_NAME
             value: "tyk"
           - name: PROVIDER_DATA
-            value: "{\"URL\":\"{{ .Values.enterprisePortal.provider.url }}\",\"Secret\":\"{{ .Values.enterprisePortal.provider.apiKey }}\",\"OrgID\":\"{{ .Values.enterprisePortal.provider.orgId }}\"}"
+            value: "{\"URL\":\"http{{ if .Values.dash.tls }}s{{ end }}://dashboard-svc-{{ .Release.Name }}.{{ .Release.Namespace }}.svc:{{ .Values.dash.service.port }}\",\"Secret\":\"{{ .Values.enterprisePortal.provider.apiKey }}\",\"OrgID\":\"{{ .Values.enterprisePortal.provider.orgId }}\"}"
           {{- if .Values.enterprisePortal.extraEnvs }}
           {{- toYaml .Values.enterprisePortal.extraEnvs| nindent 10 }}
           {{- end }}

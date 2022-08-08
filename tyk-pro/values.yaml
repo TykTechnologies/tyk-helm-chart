@@ -325,10 +325,9 @@ enterprisePortal:
     email: default@example.com
     password: topsecretpassword
   storage:
-    type: sqlite
+    type: postgres
     connectionString: ""
   provider:
-    url: ""
     orgId: ""
     apiKey: ""
   replicaCount: 1
