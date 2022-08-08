@@ -1,0 +1,21 @@
+{{- if .Values.enterprisePortal.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: enterprise-portal-svc-{{ include "tyk-pro.fullname" . }}
+  labels:
+    app: enterprise-portal-svc-{{ include "tyk-pro.fullname" . }}
+    chart: {{ include "tyk-pro.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  ports:
+  - port: {{ .Values.enterprisePortal.service.port }}
+    targetPort: {{ .Values.enterprisePortal.containerPort }}
+    protocol: TCP
+    name: http
+  type: {{ .Values.enterprisePortal.service.type }}
+  selector:
+    app: enterprise-portal-{{ include "tyk-pro.fullname" . }}
+    release: {{ .Release.Name }}
+{{- end}}

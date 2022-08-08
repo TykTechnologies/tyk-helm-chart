@@ -1,44 +1,113 @@
-# Default values for tyk-headless chart.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+## Default values for tyk-headless chart.
+## This is a YAML-formatted file.
+## Declare variables to be passed into your templates.
+## See Tyk Helm documentation for installation details:
+## https://tyk.io/docs/tyk-oss/ce-helm-chart/
+## Registry for all Tyk images - https://hub.docker.com/u/tykio
 
+# Chart name override. Truncates to 63 characters.
+# Default value: tyk-headless.name
 nameOverride: ""
-fullnameOverride: tyk-headless
 
+# App name override. Truncates to 63 characters.
+# Default value: tyk-headless.fullname
+fullnameOverride: "tyk-headless"
+
+# These are your Tyk stack secrets will directly map to the following Tyk stack
+# configuration:
 secrets:
+  # tyk.conf node_secret
+  # tyk.conf secret
   APISecret: CHANGEME
-  OrgID: "1"
-  # If you don't want to store plaintext secrets in the Helm value file and would rather provide the k8s Secret externally please populate the value below
+  # If you don't want to store plaintext secrets in the Helm value file and would
+  # rather provide the k8s Secret externally please populate the value below
   useSecretName: ""
 
 redis:
-    shardCount: 128
-    addrs:
-      - redis.tyk.svc.cluster.local:6379
-    useSSL: false
-    #If you're using Bitnami Redis chart please input the correct host to your installation in the field below
-    #addrs:
-      #- tyk-redis-master.tyk.svc.cluster.local:6379
-    #If you're using Bitnami Redis chart please input your password in the field below
-      #pass: ""
+  # The addrs value will allow you to set your Redis addresses.
+  #
+  # If you are using Redis (e.g. Bitnami Redis at bitnami/redis) then enter single
+  # endpoint. If using sentinel connection mode for Redis, please update the port number (typically 26379).
+  #
+  # If using a Redis Cluster (e.g. bitnami/redis-cluster), you can list
+  # the endpoints of the redis instances or use the cluster configuration endpoint.
+  #
+  # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+  # addrs:
+  #   Example using tyk simple redis chart
+  #   - redis.tyk.svc.cluster.local:6379
+  #   Example using bitnami/redis
+  #   - tyk-redis-master.tyk.svc.cluster.local:6379
+  #   Example using bitnami/redis with sentinel
+  #   - tyk-redis.tyk.svc.cluster.local:26379
+  #   Example using bitnami/redis-cluster
+  #   - tyk-redis-redis-cluster.tyk.svc.cluster.local:6379
 
+  # Redis password
+  # If you're using Bitnami Redis chart (e.g. bitnami/redis) please input
+  # your password in the field below
+  # pass: ""
+
+  # Enables SSL for Redis connection. Redis instance will have to support that.
+  # Default value: false
+  # useSSL: true
+
+  # If using "Redis Cluster" set enableCluster to true
+  # (e.g. if using bitnami/redis-cluster)
+  # enableCluster: true
+
+  # Enables sentinel connection mode for Redis. If enabled, provide both
+  # mandatory values for sentinelPass and masterName.
+  # enableSentinel: false
+
+  # Redis sentinel password, only required while enableSentinel is true.
+  # For bitnami/redis the same password as Redis above
+  # sentinelPass: ""
+
+  # Redis sentinel master name, only required while enableSentinel is true.
+  # For bitnami/redis typically redis-master
+  # masterName: ""
+
+  # By default the database index is 0. Setting the database index is not
+  # supported with redis cluster. As such, if you have enableCluster: true,
+  # then this value should be omitted or explicitly set to 0.
+  storage:
+    database: 0
+
+# Choose the pumps backend for Tyk. [ "", "mongo", "postgres" ]
+backend: ""
 mongo:
-  enabled: false
-#    mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
-#    #If you're using Bitnami MongoDB chart please input your password below
-#    #mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk-dashboard?authSource=admin
-#    useSSL: false
+  # The mongoURL value will allow you to set your MongoDB address.
+  # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
+  # mongoURL: mongodb://mongo.tyk.svc.cluster.local:27017/tyk_analytics
+  # If your MongoDB has a password you can add the username and password to the url
+  # mongoURL: mongodb://root:pass@tyk-mongo-mongodb.tyk.svc.cluster.local:27017/tyk_analytics?authSource=admin
+
+  # Enables SSL for MongoDB connection. MongoDB instance will have to support that.
+  # Default value: false
+  useSSL: false
+
+# Postgres connection string parameters.
+postgres:
+  host: tyk-postgres-postgresql.tyk.svc.cluster.local
+  port: 5432
+  user: postgres
+  password:
+  database: tyk_analytics
+  sslmode:
 
 gateway:
+  # The hostname to bind the Gateway to.
+  hostName: tyk-gw.local
+  # When true, sets the gateway protocol to HTTPS.
+  tls: false
+
   kind: DaemonSet
   replicaCount: 1
-  hostName: tyk-gw.local
-  tls: false
   containerPort: 8080
-  tags: ""
   image:
-    repository: tykio/tyk-gateway
-    tag: v3.2.1
+    repository: docker.tyk.io/tyk-gateway/tyk-gateway
+    tag: v4.0.0
     pullPolicy: IfNotPresent
   service:
     type: NodePort
@@ -51,60 +120,81 @@ gateway:
     port: 9696
     type: ClusterIP
     annotations: {}
+  # Creates an ingress object in k8s. Will require an ingress-controller and
+  # annotation to that ingress controller.
   ingress:
     enabled: false
+    # specify your ingress controller class name below
+    className: ""
     annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-    path: /
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
     hosts:
-      - tyk-gw.local
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
     tls: []
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
   resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # We usually recommend not to specify default resources and to leave this
+    # as a conscious choice for the user. This also increases chances charts
+    # run on environments with little resources, such as Minikube. If you do
+    # want to specify resources, uncomment the following lines, adjust them
+    # as necessary, and remove the curly braces after 'resources:'.
     # limits:
     #  cpu: 100m
     #  memory: 128Mi
     # requests:
     #  cpu: 100m
     #  memory: 128Mi
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 2000
   nodeSelector: {}
   tolerations:
     - key: node-role.kubernetes.io/master
       effect: NoSchedule
   affinity: {}
   extraEnvs: []
+  mounts: []
 
-# If pump is enabled the Gateway will create and collect analytics data to send to a data store of your choice
-# These can be set up in the pump config. The possible pump configs can be found here: https://github.com/TykTechnologies/tyk-pump#configuration
+# If pump is enabled the Gateway will create and collect analytics data to send
+# to a data store of your choice. These can be set up in the pump config. The
+# possible pump configs can be found here:
+# https://github.com/TykTechnologies/tyk-pump#configuration
 pump:
+  # Determines whether or not the pump component should be installed.
   enabled: false
+
   replicaCount: 1
   image:
-    repository: tykio/tyk-pump-docker-pub
-    tag: v1.4.0
+    repository: docker.tyk.io/tyk-pump/tyk-pump
+    tag: v1.5.1
     pullPolicy: IfNotPresent
   annotations: {}
   resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # We usually recommend not to specify default resources and to leave this
+    # as a conscious choice for the user. This also increases chances charts
+    # run on environments with little resources, such as Minikube. If you do
+    # want to specify resources, uncomment the following lines, adjust them
+    # as necessary, and remove the curly braces after 'resources:'.
     # limits:
     #  cpu: 100m
     #  memory: 128Mi
     # requests:
     #  cpu: 100m
     #  memory: 128Mi
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 2000
   nodeSelector: {}
   tolerations: []
   affinity: {}
   extraEnvs: []
+  mounts: []
 
 rbac: true
