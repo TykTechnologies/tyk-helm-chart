@@ -149,12 +149,12 @@ spec:
           {{ else }}
           - name: TYK_DB_STORAGE_MAIN_TYPE
             value: "mongo"
-          - name: TYK_DB_STORAGE_MAIN_CONNECTIONSTRING
+          - name: TYK_DB_MONGOURL
             valueFrom:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
                 key: mongoURL
-          - name: TYK_DB_STORAGE_MAIN_MONGO_SSL_ENABLED
+          - name: TYK_DB_MONGOUSESSL
             value: "{{ default "false" .Values.mongo.useSSL }}"
           {{ end }}
           {{- if .Values.dash.extraEnvs }}
