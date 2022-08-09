@@ -11,6 +11,7 @@
 - Added GithubAction to release helm chart [\#206](https://github.com/TykTechnologies/tyk-helm-chart/pull/206) 
 - Added new field `operatorSecret` values.yaml file[\#202](https://github.com/TykTechnologies/tyk-helm-chart/pull/202) 
 - Added pre-delete hook to clean up resources created during bootstrap [\#202](https://github.com/TykTechnologies/tyk-helm-chart/pull/202) 
+- Clarified integration options for the Tyk simple Redis chart, Redis Cluster and Redis Sentinel in values.yaml [\#218](https://github.com/TykTechnologies/tyk-helm-chart/pull/218)
 
 
 **Updated:**
