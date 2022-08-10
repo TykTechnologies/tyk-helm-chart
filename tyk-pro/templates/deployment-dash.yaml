@@ -180,7 +180,7 @@ spec:
             scheme: "HTTP{{ if .Values.dash.tls }}S{{ end }}"
             path: /
             port: {{ .Values.dash.containerPort }}
-          initialDelaySeconds: 5
+          initialDelaySeconds: 10
           periodSeconds: 2
           timeoutSeconds: 3
           failureThreshold: 2
@@ -189,7 +189,7 @@ spec:
             scheme: "HTTP{{ if .Values.dash.tls }}S{{ end }}"
             path: /
             port: {{ .Values.dash.containerPort }}
-          initialDelaySeconds: 1
+          initialDelaySeconds: 10
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
