@@ -18,6 +18,7 @@
 - Check Environment Configuration Before Bootstrapping [\#213](https://github.com/TykTechnologies/tyk-helm-chart/pull/213) 
 - Check for existing Org during bootstrap  [\#209](https://github.com/TykTechnologies/tyk-helm-chart/pull/209) 
 - Update bootstrap post-install hook and introduce new field in the values.yaml [\#202](https://github.com/TykTechnologies/tyk-helm-chart/pull/202) 
+- Increased `initialDelaySeconds` of livenessProbe and readinessProbe of Dashboard container.
 
 ## [v0.9.5](https://github.com/TykTechnologies/tyk-helm-chart/tree/v0.9.5) (2022-04-08)
 
