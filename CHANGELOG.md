@@ -2,7 +2,11 @@
 
 ## [Unreleased](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
 
-[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.9.5...HEAD)
+[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.10.0...HEAD)
+
+## [v0.10.0](https://github.com/TykTechnologies/tyk-helm-chart/tree/v0.10.0) (2022-08-12)
+
+[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.9.5...v0.10.0)
 
 **Added:**
 - Added support of SQL in Dashboard and Pump [\#214](https://github.com/TykTechnologies/tyk-helm-chart/pull/214) 
