@@ -141,36 +141,111 @@ gateway:
   extraEnvs: []
   mounts: []
 
-
-  pump:
-    # Determines if the pump component should be installed.
-    enabled: true
-    onlySendAggregates: false
-
-
-    replicaCount: 1
-    image:
-      repository: tykio/tyk-pump-docker-pub
-      tag: v1.3
-      pullPolicy: Always
-    annotations: { }
-    resources: { }
-      # We usually recommend not to specify default resources and to leave this
-      # as a conscious choice for the user. This also increases chances charts
-      # run on environments with little resources, such as Minikube. If you do
-      # want to specify resources, uncomment the following lines, adjust them
-      # as necessary, and remove the curly braces after 'resources:'.
-      # limits:
-      #  cpu: 100m
-      #  memory: 128Mi
-      # requests:
-    #  cpu: 100m
-    #  memory: 128Mi
-    nodeSelector: { }
-    tolerations: [ ]
-    affinity: { }
-    extraEnvs: [ ]
-    mounts: [ ]
+pump:
+  # Determines if the pump component should be installed.
+  enabled: true
+  onlySendAggregates: false
+  replicaCount: 1
+  image:
+    repository: tykio/tyk-pump-docker-pub
+    tag: v1.3
+    pullPolicy: Always
+  annotations: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  extraEnvs: [
+    {
+      "name": "TYK_PMP_LOGLEVEL",
+      "value": "debug"
+    },
+    {
+      "name": "TYK_PMP_PUMPS_HYBRID_TYPE",
+      "value": "hybrid"
+    },
+    {
+      "name": "TYK_PMP_PUMPS_HYBRID_META_RPCKEY",
+      "value": ""
+    },
+    {
+      "name": "TYK_PMP_PUMPS_HYBRID_META_APIKEY",
+      "value": ""
+    },
+    {
+      "name": "TYK_PMP_PUMPS_HYBRID_META_CONNECTIONSTRING",
+      "value": ""
+    },
+    {
+      "name": "TYK_PMP_PUMPS_HYBRID_META_USESSL",
+      "value": "true"
+    },
+    {
+      "name": "TYK_PMP_PUMPS_HYBRID_META_AGGREGATED",
+      "value": "false"
+    },
+    {
+      "name": "TYK_PMP_PUMPS_HYBRID_META_SSLINSECURESKIPVERIFY",
+      "value": "true"
+    },
+    {
+      "name": "TYK_PMP_PUMPS_HYBRID_META_GROUPID",
+      "value": ""
+    },
+    {
+      "name": "TYK_PMP_PUMPS_HYBRID_META_CALLTIMEOUT",
+      "value": "30"
+    },
+    {
+      "name": "TYK_PMP_PUMPS_HYBRID_META_PINGTIMEOUT",
+      "value": "60"
+    },
+    {
+      "name": "TYK_PMP_PUMPS_HYBRID_META_RPCPOOLSIZE",
+      "value": "30"
+    },
+    {
+      "name": "TYK_PMP_PUMPS_ELASTICSEARCH_TYPE",
+      "value": "elasticsearch"
+    },
+    {
+      "name": "TYK_PMP_PUMPS_ELASTICSEARCH_META_INDEXNAME",
+      "value": "tyk_analytics"
+    },
+    {
+      "name": "TYK_PMP_PUMPS_ELASTICSEARCH_META_ELASTICSEARCHURL",
+      "value": "http://host.minikube.internal:9200"
+    },
+    {
+      "name": "TYK_PMP_PUMPS_ELASTICSEARCH_META_ENABLESNIFFING",
+      "value": "false"
+    },
+    {
+      "name": "TYK_PMP_PUMPS_ELASTICSEARCH_META_DOCUMENTTYPE",
+      "value": "tyk_analytics"
+    },
+    {
+      "name": "TYK_PMP_PUMPS_ELASTICSEARCH_META_ROLLINGINDEX",
+      "value": "false"
+    },
+    {
+      "name": "TYK_PMP_PUMPS_ELASTICSEARCH_META_EXTENDEDSTATISTICS",
+      "value": "false"
+    },
+    {
+      "name": "TYK_PMP_PUMPS_ELASTICSEARCH_META_VERSION",
+      "value": "5"
+    },
+    {
+      "name": "TYK_PMP_PUMPS_ELASTICSEARCH_META_BULKCONFIG_WORKERS",
+      "value": "2"
+    },
+    {
+      "name": "TYK_PMP_PUMPS_ELASTICSEARCH_META_BULKCONFIG_FLUSHINTERVAL",
+      "value": "60"
+    }
+  ]
+  mounts: []
 
 rbac: true
 
