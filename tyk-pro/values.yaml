@@ -215,6 +215,10 @@ dash:
   # and operatorSecret are set to true.
   # Set false to disable creating a secret for Tyk Operator.
   operatorSecret: true
+  # It creates a secret for Tyk Enterprise Developer Portal along with bootstraping dasboard. Enterprise Developer Portal
+  # Secret is only created if the dash.bootstrap and enterprisePortalSecret are set to true.
+  # Set false to disable creating a secret for Tyk Enterprise Developer Portal.
+  enterprisePortalSecret: true
 
   # The hostname to bind the Dashboard to.
   hostName: tyk-dashboard.local
@@ -316,6 +320,11 @@ enterprisePortal:
   # Determines whether or not the enterprise portal component should be installed.
   enabled: false
 
+  # Eenterprise Portal will only bootstrap if the tyk-enterprise-portal-conf secret
+  # is present. The secret is created during the dashboard bootstraping and 
+  # be turned on and off using the dash.enterprisePortalSecret bool.
+  bootstrap: true
+
   # The hostname to bind the Enterprise Portal to.
   hostName: tyk-enterprise-portal.local
   # Enterprise Portal license.
@@ -327,9 +336,6 @@ enterprisePortal:
   storage:
     type: postgres
     connectionString: ""
-  provider:
-    orgId: ""
-    apiKey: ""
   replicaCount: 1
   containerPort: 3001
   image:

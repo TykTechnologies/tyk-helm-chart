@@ -73,15 +73,27 @@ spec:
             value: "./themes"
           - name: PROVIDER_NAME
             value: "tyk"
-          - name: PROVIDER_DATA
-            value: "{\"URL\":\"http{{ if .Values.dash.tls }}s{{ end }}://dashboard-svc-{{ .Release.Name }}.{{ .Release.Namespace }}.svc:{{ .Values.dash.service.port }}\",\"Secret\":\"{{ .Values.enterprisePortal.provider.apiKey }}\",\"OrgID\":\"{{ .Values.enterprisePortal.provider.orgId }}\"}"
+          - name: TYK_URL
+            value: "http{{ if .Values.dash.tls }}s{{ end }}://dashboard-svc-{{ .Release.Name }}.{{ .Release.Namespace }}.svc:{{ .Values.dash.service.port }}"
+          - name: TYK_AUTH
+            valueFrom:
+              secretKeyRef:
+                name: tyk-enterprise-portal-conf
+                key: TYK_AUTH
+          - name: TYK_ORG
+            valueFrom:
+              secretKeyRef:
+                name: tyk-enterprise-portal-conf
+                key: TYK_ORG
           {{- if .Values.enterprisePortal.extraEnvs }}
           {{- toYaml .Values.enterprisePortal.extraEnvs| nindent 10 }}
           {{- end }}
         resources:
 {{ toYaml .Values.enterprisePortal.resources | indent 12 }}
         command: ["/opt/portal/dev-portal"]
-        args: ["--bootstrap", "--provider-data=$(PROVIDER_DATA)", "-user=$(ADMIN_EMAIL)", "-pass=$(ADMIN_PASSWORD)"]
+        {{- if .Values.enterprisePortal.bootstrap }}
+        args: ["--bootstrap", "--provider-data={\"URL\":\"$(TYK_URL)\",\"Secret\":\"$(TYK_AUTH)\",\"OrgID\":\"$(TYK_ORG)\"}", "-user=$(ADMIN_EMAIL)", "-pass=$(ADMIN_PASSWORD)"]
+        {{- end }}
         workingDir: /opt/portal
         ports:
         - containerPort: {{ .Values.enterprisePortal.containerPort }}

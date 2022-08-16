@@ -71,6 +71,12 @@ spec:
             - name: OPERATOR_SECRET_NAME
               value: "tyk-operator-conf"
             {{- end }}
+            {{- if .Values.dash.enterprisePortalSecret }}
+            - name: ENTERPRISEPORTAL_SECRET_ENABLED
+              value: "true"
+            - name: ENTERPRISEPORTAL_SECRET_NAME
+              value: "tyk-enterprise-portal-conf"
+            {{- end }}
             {{- if .Values.dash.bootstrap }}
             - name: BOOTSTRAP_DASHBOARD
               value: "true"
