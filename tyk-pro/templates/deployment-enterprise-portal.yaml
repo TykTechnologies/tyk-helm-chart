@@ -62,11 +62,17 @@ spec:
           - name: ADMIN_EMAIL
             value: "{{ .Values.enterprisePortal.adminUser.email }}"
           - name: ADMIN_PASSWORD
-            value: "{{ .Values.enterprisePortal.adminUser.password }}"
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
+                key: EnterprisePortalAdminPassword
           - name: PORTAL_DATABASE_DIALECT
             value: "{{ .Values.enterprisePortal.storage.type }}"
           - name: PORTAL_DATABASE_CONNECTIONSTRING
-            value: "{{ .Values.enterprisePortal.storage.connectionString }}"
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
+                key: EnterprisePortalStorgeConnectionString
           - name: PORTAL_THEMING_THEME
             value: "default"
           - name: PORTAL_THEMING_PATH
