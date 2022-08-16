@@ -321,7 +321,7 @@ enterprisePortal:
   enabled: false
 
   # Eenterprise Portal will only bootstrap if the tyk-enterprise-portal-conf secret
-  # is present. The secret is created during the dashboard bootstraping and 
+  # is present. The secret is created during the dashboard bootstraping and
   # be turned on and off using the dash.enterprisePortalSecret bool.
   bootstrap: true
 
