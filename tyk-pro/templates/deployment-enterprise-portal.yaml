@@ -128,9 +128,10 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
+      {{- if .Values.enterprisePortal.securityContext }}
       securityContext:
-        runAsUser: 1000
-        fsGroup: 2000
+      {{- toYaml .Values.enterprisePortal.securityContext | nindent 8 }}
+      {{- end}}
       volumes:
         {{- if .Values.enterprisePortal.mounts }}
         {{- range $secret := .Values.enterprisePortal.mounts }}
