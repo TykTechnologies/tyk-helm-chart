@@ -29,7 +29,7 @@ spec:
       serviceAccountName: k8s-bootstrap-role
       containers:
         - name: bootstrap-tyk
-          image: localhost:5001/bootstrap-tyk-pre-delete:1.5
+          image: andreiattyk/tyk-repo:predelete
           command: [ './app/bin/bootstrap-app-pre-delete' ]
           imagePullPolicy: IfNotPresent
           env:
