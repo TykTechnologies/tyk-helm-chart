@@ -1,41 +1,74 @@
-# Default values for tyk-hybrid chart
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+## Default values for tyk-hybrid chart
+## This is a YAML-formatted file.
+## Declare variables to be passed into your templates.
+## See Tyk Helm documentation for installation details:
+## https://tyk.io/docs/tyk-cloud/environments-deployments/hybrid-gateways/#hybrid-gateways-in-a-kubernetes-cluster
+## Registry for all Tyk images - https://hub.docker.com/u/tykio
 
+# Chart name override. Truncates to 63 characters.
+# Default value: tyk-hybrid.name
 nameOverride: ""
+
+# App name override. Truncates to 63 characters.
+# Default value: tyk-hybrid.fullname
 fullnameOverride: ""
 
-enableSharding: false
 hybrid: true
 
+# These are your Tyk stack secrets will directly map to the following Tyk stack configuration:
 secrets:
-  APISecret: "CHANGEME"
-  # If you don't want to store plaintext secrets in the Helm value file and would rather provide the k8s Secret externally please populate the value below
+  # tyk.conf node_secret
+  # tyk.conf secret
+  APISecret: CHANGEME
+  # If you don't want to store plaintext secrets in the Helm value file and would
+  # rather provide the k8s Secret externally please populate the value below
   useSecretName: ""
 
 redis:
-    shardCount: 128
-    #If you're using Bitnami Redis chart please input the correct host to your instalaltion in the field below
-    #addrs:
-    #- tyk-redis-master.tyk.svc.cluster.local:6379
-    addrs:
-      - redis.tyk.svc.cluster.local:6379
-    useSSL: false
-    #If you're using Bitnami Redis chart please input your password in the field below
-    #pass: ""
+  # The addrs value will allow you to set your Redis addresses. If you are
+  # using a redis cluster, you can list the endpoints of the redis instances
+  # or use the cluster configuration endpoint.
+  # Default value: redis.{{ .Release.Namespace }}.svc.cluster.local:6379
+  # addrs:
+  #   - redis.tyk.svc.cluster.local:6379
+  #   This is the the DNS name of the redis as set when using Bitnami
+  #   - tyk-redis-master.tyk.svc.cluster.local:6379
+
+  # Redis password
+  # If you're using Bitnami Redis chart please input your password in the field below
+  # pass: ""
+
+  # Enables SSL for Redis connection. Redis instance will have to support that.
+  # Default value: false
+  # useSSL: true
+
+  # The enableCluster value will allow you to indicate to Tyk whether you are running
+  # a Redis cluster or not.
+  # Default value: false
+  # enableCluster: true
+
+  # By default the database index is 0. Setting the database index is not
+  # supported with redis cluster. As such, if you have enableCluster: true,
+  # then this value should be omitted or explicitly set to 0.
+  storage:
+    database: 0
 
 gateway:
-  kind: DaemonSet
-  # Set replicaCount for Deployments
-  replicaCount: 2
-  # if enableSharding set to true then you must define a tag to load APIs to these gateways i.e. "ingress"
-  tags: ""
+  # The hostname to bind the Gateway to.
   hostName: tyk-gw.local
+  # Sharding gateway allows you to selectively load APIs to specific gateways.
+  # If enabled make sure you have at least one gateway that is not sharded.
+  # Also be sure to match API segmentation tags with the tags selected below.
+  sharding:
+    enabled: false
+    tags: ""
+  # When true, sets the gateway protocol to HTTPS.
   tls: false
-  containerPort: 8080
-  # For on premise MDCB setups simply change the connection string to point to your MDCB instance
+  # For on premise MDCB setups simply change the connection string to point to
+  # your MDCB instance
   rpc:
-    # On the Tyk Cloud Console find this value in the endpoints for your control plane deployment
+    # On the Tyk Cloud Console find this value in the endpoints for your
+    # control plane deployment
     connString: ""
     useSSL: true
     sslInsecureSkipVerify: true
@@ -43,6 +76,11 @@ gateway:
     rpcKey: ""
     # API key of your dashboard user
     apiKey: ""
+    # Group/cluster that this instance belongs.
+    # Required when running multiple isolated clusters each having their own Redis instance.
+    # Must be the same across all the gateways of a cluster which share a Redis.
+    # Must be unique per cluster.
+    groupId: ""
     #
     # For a classic cloud hybrid gateway use these settings:
     #
@@ -52,44 +90,59 @@ gateway:
     # sslInsecureSkipVerify: false
     # rpcKey: ""
     # apiKey: ""
+
+  kind: DaemonSet
+  replicaCount: 2
+  containerPort: 8080
   image:
     repository: tykio/tyk-gateway
-    tag: v3.2.1
+    tag: v4.0.0
     pullPolicy: Always
   service:
     type: NodePort
     port: 443
     externalTrafficPolicy: Local
     annotations: {}
+  # Creates an ingress object in k8s. Will require an ingress-controller and
+  # annotation to that ingress controller.
   ingress:
     enabled: false
+    # specify your ingress controller class name below
+    className: ""
     annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
-    path: /
     hosts:
-      - tyk-gw.local
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
     tls: []
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
   resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # We usually recommend not to specify default resources and to leave this
+    # as a conscious choice for the user. This also increases chances charts
+    # run on environments with little resources, such as Minikube. If you do
+    # want to specify resources, uncomment the following lines, adjust them
+    # as necessary, and remove the curly braces after 'resources:'.
     # limits:
     #  cpu: 100m
     #  memory: 128Mi
     # requests:
     #  cpu: 100m
   #  memory: 128Mi
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 2000
   nodeSelector: {}
   tolerations:
     - key: node-role.kubernetes.io/master
       effect: NoSchedule
   affinity: {}
   extraEnvs: []
+  mounts: []
 
 rbac: true
 
