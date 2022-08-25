@@ -29,12 +29,14 @@ spec:
       serviceAccountName: k8s-bootstrap-role
       containers:
         - name: bootstrap-tyk
-          image: andreiattyk/tyk-repo:predelete
+          image: tykio/tyk-k8s-bootstrap-pre-delete:latest
           command: [ './app/bin/bootstrap-app-pre-delete' ]
           imagePullPolicy: IfNotPresent
           env:
             - name: OPERATOR_SECRET_NAME
               value: "tyk-operator-conf"
+            - name: ENTERPRISE_PORTAL_SECRET_NAME
+              value: "tyk-enterprise-portal-conf"
             - name: TYK_POD_NAMESPACE
               valueFrom:
                 fieldRef:
