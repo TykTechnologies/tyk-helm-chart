@@ -23,6 +23,13 @@ spec:
       labels:
         app: enterprise-portal-{{ include "tyk-pro.fullname" . }}
         release: {{ .Release.Name }}
+      annotations:
+        checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+        {{- if .Values.enterprisePortal.mounts }}
+        {{- range $secret := .Values.enterprisePortal.mounts }}
+        "checksum/secret-{{ $secret.name }}": {{ include (print "mounts/%s" $secret.filename) . | sha256sum }}
+        {{- end }}
+        {{- end }}
     spec:
 {{- if .Values.enterprisePortal.nodeSelector }}
       nodeSelector:
