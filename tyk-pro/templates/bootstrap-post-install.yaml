@@ -28,7 +28,7 @@ spec:
       serviceAccountName: k8s-bootstrap-role
       containers:
         - name: bootstrap-tyk
-          image: andreiattyk/tyk-repo:post
+          image: tykio/tyk-k8s-bootstrap-post:latest
           command: [ './app/bin/bootstrap-app-post' ]
           imagePullPolicy: IfNotPresent
           env:
