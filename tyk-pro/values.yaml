@@ -16,7 +16,10 @@ fullnameOverride: ""
 
 # Master switch for enabling/disabling bootstraing job batch, role binding,
 # role, and account service.
-bootstrap: true
+bootstrap:
+  jobName: bootstrap-post-install
+  enabled: true
+
 
 # These are your Tyk stack secrets will directly map to the following
 # Tyk stack configuration:
