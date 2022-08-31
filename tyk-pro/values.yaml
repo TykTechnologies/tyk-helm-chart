@@ -336,6 +336,7 @@ enterprisePortal:
   storage:
     type: postgres
     connectionString: ""
+  pvcName: pvc-tyk-portal
   replicaCount: 1
   containerPort: 3001
   image:
