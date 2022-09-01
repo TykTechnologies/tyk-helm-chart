@@ -130,6 +130,9 @@ mdcb:
     # requests:
     #  cpu: 100m
     #  memory: 128Mi
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 2000
   nodeSelector: {}
   tolerations: []
   affinity: {}
@@ -185,6 +188,9 @@ tib:
     # requests:
     #  cpu: 100m
     #  memory: 128Mi
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 2000
   nodeSelector: {}
   tolerations: []
   affinity: {}
@@ -267,6 +273,9 @@ dash:
     # requests:
     #  cpu: 100m
     #  memory: 128Mi
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 2000
   nodeSelector: {}
   tolerations: []
   affinity: {}
@@ -364,6 +373,9 @@ gateway:
     # requests:
     #  cpu: 100m
     #  memory: 128Mi
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 2000
   nodeSelector: {}
   tolerations:
     - key: node-role.kubernetes.io/master
@@ -394,6 +406,9 @@ pump:
     # requests:
     #  cpu: 100m
     #  memory: 128Mi
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 2000
   nodeSelector: {}
   tolerations: []
   affinity: {}
