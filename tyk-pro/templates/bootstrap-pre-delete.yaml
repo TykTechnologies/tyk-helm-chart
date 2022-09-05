@@ -1,4 +1,4 @@
-{{- if .Values.bootstrap.enabled -}}
+{{- if .Values.bootstrap -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -40,7 +40,7 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
             - name: BOOTSTRAP_JOB_NAME
-              value: {{ .Values.bootstrap.jobName }}
+              value: {{ .Values.jobs.bootstrapJobName }}
       terminationGracePeriodSeconds: 0
       restartPolicy: Never
 {{- end }}

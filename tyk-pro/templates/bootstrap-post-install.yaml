@@ -1,8 +1,8 @@
-{{- if .Values.bootstrap.enabled -}}
+{{- if .Values.bootstrap -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name:  {{ .Values.bootstrap.jobName }}
+  name:  {{ .Values.jobs.bootstrapJobName }}
   labels:
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/instance: {{ .Release.Name | quote }}
