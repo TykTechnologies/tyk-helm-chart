@@ -138,7 +138,11 @@ gateway:
     - key: node-role.kubernetes.io/master
       effect: NoSchedule
   affinity: {}
-  extraEnvs: []
+  extraEnvs: [
+    {
+      "name": "TYK_GW_ANALYTICSCONFIG_TYPE",
+      "value": ""
+    }]
   mounts: []
 
 pump:
@@ -148,7 +152,7 @@ pump:
   replicaCount: 1
   image:
     repository: tykio/tyk-pump-docker-pub
-    tag: v1.3
+    tag: v1.6
     pullPolicy: Always
   annotations: {}
   resources: {}
@@ -158,51 +162,7 @@ pump:
   extraEnvs: [
     {
       "name": "TYK_PMP_LOGLEVEL",
-      "value": "debug"
-    },
-    {
-      "name": "TYK_PMP_PUMPS_HYBRID_TYPE",
-      "value": "hybrid"
-    },
-    {
-      "name": "TYK_PMP_PUMPS_HYBRID_META_RPCKEY",
-      "value": ""
-    },
-    {
-      "name": "TYK_PMP_PUMPS_HYBRID_META_APIKEY",
-      "value": ""
-    },
-    {
-      "name": "TYK_PMP_PUMPS_HYBRID_META_CONNECTIONSTRING",
-      "value": ""
-    },
-    {
-      "name": "TYK_PMP_PUMPS_HYBRID_META_USESSL",
-      "value": "true"
-    },
-    {
-      "name": "TYK_PMP_PUMPS_HYBRID_META_AGGREGATED",
-      "value": "false"
-    },
-    {
-      "name": "TYK_PMP_PUMPS_HYBRID_META_SSLINSECURESKIPVERIFY",
-      "value": "true"
-    },
-    {
-      "name": "TYK_PMP_PUMPS_HYBRID_META_GROUPID",
-      "value": ""
-    },
-    {
-      "name": "TYK_PMP_PUMPS_HYBRID_META_CALLTIMEOUT",
-      "value": "30"
-    },
-    {
-      "name": "TYK_PMP_PUMPS_HYBRID_META_PINGTIMEOUT",
-      "value": "60"
-    },
-    {
-      "name": "TYK_PMP_PUMPS_HYBRID_META_RPCPOOLSIZE",
-      "value": "30"
+      "value": "info"
     },
     {
       "name": "TYK_PMP_PUMPS_ELASTICSEARCH_TYPE",
@@ -217,32 +177,20 @@ pump:
       "value": "http://host.minikube.internal:9200"
     },
     {
-      "name": "TYK_PMP_PUMPS_ELASTICSEARCH_META_ENABLESNIFFING",
-      "value": "false"
-    },
-    {
-      "name": "TYK_PMP_PUMPS_ELASTICSEARCH_META_DOCUMENTTYPE",
-      "value": "tyk_analytics"
-    },
-    {
-      "name": "TYK_PMP_PUMPS_ELASTICSEARCH_META_ROLLINGINDEX",
-      "value": "false"
-    },
-    {
       "name": "TYK_PMP_PUMPS_ELASTICSEARCH_META_EXTENDEDSTATISTICS",
-      "value": "false"
+      "value": "true"
     },
     {
       "name": "TYK_PMP_PUMPS_ELASTICSEARCH_META_VERSION",
-      "value": "5"
+      "value": "7"
     },
     {
-      "name": "TYK_PMP_PUMPS_ELASTICSEARCH_META_BULKCONFIG_WORKERS",
-      "value": "2"
+      "name": "TYK_PMP_PUMPS_ELASTICSEARCH_META_BULKCONFIG_BULKACTIONS",
+      "value": "100"
     },
     {
       "name": "TYK_PMP_PUMPS_ELASTICSEARCH_META_BULKCONFIG_FLUSHINTERVAL",
-      "value": "60"
+      "value": "10"
     }
   ]
   mounts: []
