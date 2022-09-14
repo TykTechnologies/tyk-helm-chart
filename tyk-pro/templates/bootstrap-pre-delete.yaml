@@ -28,7 +28,7 @@ spec:
     spec:
       serviceAccountName: k8s-bootstrap-role
       containers:
-        - name: bootstrap-tyk
+        - name: bootstrap-tyk-pre-delete
           image: tykio/tyk-k8s-bootstrap-pre-delete:latest
           command: [ './app/bin/bootstrap-app-pre-delete' ]
           imagePullPolicy: IfNotPresent
