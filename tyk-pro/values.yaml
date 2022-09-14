@@ -16,10 +16,7 @@ fullnameOverride: ""
 
 # Master switch for enabling/disabling bootstraing job batch, role binding,
 # role, and account service.
-bootstrap:
-  jobName: bootstrap-post-install
-  enabled: true
-
+bootstrap: true
 
 # Settings related to k8s that are ran when installing the tyk stack
 jobs:
