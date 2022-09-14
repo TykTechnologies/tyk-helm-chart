@@ -29,6 +29,7 @@ rules:
   - jobs
   verbs:
   - delete
+  - list
 - apiGroups: ["apps"]
   resources: ["deployments"]
   verbs: ["get","update","patch"]
