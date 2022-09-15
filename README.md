@@ -24,7 +24,7 @@ helm install tyk-mongo bitnami/mongodb --version {HELM_CHART_VERSION} --set "rep
 (follow notes from the installation output to get connection details and update them in `values.yaml` file)
 ```
 
->**_NOTE_**: [Here](https://tyk.io/docs/planning-for-production/redis-mongodb/#supported-versions) is list of supported mongo versions. Please make sure you are installing mongo helm chart that matches these version.
+>**_NOTE_**: [Here](https://tyk.io/docs/planning-for-production/database-settings/mongodb/#supported-versions) is list of supported mongo versions. Please make sure you are installing mongo helm chart that matches these version.
 
 ```bash
 helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics" -n tyk
