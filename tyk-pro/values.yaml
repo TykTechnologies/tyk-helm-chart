@@ -343,6 +343,8 @@ enterprisePortal:
   service:
     type: NodePort
     port: 3001
+    externalTrafficPolicy: Local
+    annotations: {}
   # Creates an ingress object in k8s. Will require an ingress-controller and
   # annotation to that ingress controller.
   ingress:
