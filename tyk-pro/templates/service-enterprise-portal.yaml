@@ -8,6 +8,12 @@ metadata:
     chart: {{ include "tyk-pro.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+{{- if .Values.enterprisePortal.service.annotations }}
+  annotations:
+  {{- range $key, $value := .Values.enterprisePortal.service.annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}
 spec:
   ports:
   - port: {{ .Values.enterprisePortal.service.port }}
@@ -18,4 +24,7 @@ spec:
   selector:
     app: enterprise-portal-{{ include "tyk-pro.fullname" . }}
     release: {{ .Release.Name }}
+{{- if eq .Values.enterprisePortal.service.type "LoadBalancer" }}
+  externalTrafficPolicy: {{ .Values.enterprisePortal.service.externalTrafficPolicy }}
+{{- end }}
 {{- end}}
