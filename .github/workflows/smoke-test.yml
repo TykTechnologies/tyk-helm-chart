@@ -133,7 +133,7 @@ jobs:
               --set dash.license="${{ secrets.DASH_LICENSE }}" \
               --set enterprisePortal.enabled="true" \
               --set enterprisePortal.license="${{ secrets.PORTAL_LICENSE }}" \
-              --set enterprisePortal.storage.connectionString="host=tyk-postgres-postgresql.${{ env.NAMESPACE }}.svc.cluster.local port=5432 user=postgres password=$(kubectl get secret -n ${{ env.NAMESPACE }} tyk-postgres-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d) database=tyk_enterprise_portal sslmode=disable" \
+              --set enterprisePortal.storage.database.connectionString="host=tyk-postgres-postgresql.${{ env.NAMESPACE }}.svc.cluster.local port=5432 user=postgres password=$(kubectl get secret -n ${{ env.NAMESPACE }} tyk-postgres-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d) database=tyk_enterprise_portal sslmode=disable" \
               ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
           fi
       - name: Uninstall "${{ matrix.directory }}" chart

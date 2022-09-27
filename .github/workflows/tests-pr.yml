@@ -106,7 +106,7 @@ jobs:
             --set dash.license="${{ secrets.DASH_LICENSE }}" \
             --set enterprisePortal.enabled="true" \
             --set enterprisePortal.license="${{ secrets.PORTAL_LICENSE }}" \
-            --set enterprisePortal.storage.connectionString="host=tyk-postgres-postgresql.tyk-pro.svc.cluster.local port=5432 user=postgres password=$(kubectl get secret -n tyk-pro tyk-postgres-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d) database=tyk_enterprise_portal sslmode=disable" \
+            --set enterprisePortal.storage.database.connectionString="host=tyk-postgres-postgresql.tyk-pro.svc.cluster.local port=5432 user=postgres password=$(kubectl get secret -n tyk-pro tyk-postgres-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d) database=tyk_enterprise_portal sslmode=disable" \
             tyk-pro ./tyk-pro -n tyk-pro --timeout ${{ env.TIMEOUT }}
       - name: Uninstall Tyk Pro chart
         run: |

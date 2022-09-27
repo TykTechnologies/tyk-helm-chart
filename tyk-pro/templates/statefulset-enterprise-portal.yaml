@@ -1,6 +1,6 @@
 {{- if .Values.enterprisePortal.enabled -}}
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: enterprise-portal-{{ include "tyk-pro.fullname" . }}
   labels:
@@ -9,14 +9,12 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
+  serviceName: enterprise-portal-svc-{{ include "tyk-pro.fullname" . }}
   replicas: {{ .Values.enterprisePortal.replicaCount }}
   minReadySeconds: 5
-  strategy:
+  updateStrategy:
     # indicate which strategy we want for rolling update
     type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 2
-      maxUnavailable: 1
   selector:
     matchLabels:
       app: enterprise-portal-{{ include "tyk-pro.fullname" . }}
@@ -67,7 +65,7 @@ spec:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
                 key: EnterprisePortalAdminPassword
           - name: PORTAL_DATABASE_DIALECT
-            value: "{{ .Values.enterprisePortal.storage.type }}"
+            value: "{{ .Values.enterprisePortal.storage.database.type }}"
           - name: PORTAL_DATABASE_CONNECTIONSTRING
             valueFrom:
               secretKeyRef:
@@ -104,7 +102,7 @@ spec:
         ports:
         - containerPort: {{ .Values.enterprisePortal.containerPort }}
         volumeMounts:
-          - name: enterprise-portal-storage-{{ include "tyk-pro.fullname" . }}
+          - name: enterprise-portal-pvc-{{ include "tyk-pro.fullname" . }}
             mountPath: /opt/portal/public/system
           {{- if .Values.enterprisePortal.mounts }}
           {{- range $secret := .Values.enterprisePortal.mounts }}
@@ -135,9 +133,6 @@ spec:
       {{- toYaml .Values.enterprisePortal.securityContext | nindent 8 }}
       {{- end}}
       volumes:
-        - name: enterprise-portal-storage-{{ include "tyk-pro.fullname" . }}
-          persistentVolumeClaim:
-            claimName: {{ .Values.enterprisePortal.pvcName }}
         {{- if .Values.enterprisePortal.mounts }}
         {{- range $secret := .Values.enterprisePortal.mounts }}
         - name: {{ $.Release.Name }}-enterprise-portal-secret-{{ $secret.name }}
@@ -145,4 +140,34 @@ spec:
             secretName: {{ $.Release.Name }}-enterprise-portal-secret-{{ $secret.name }}
         {{- end }}
         {{- end }}
+  volumeClaimTemplates:
+  - metadata:
+      name: enterprise-portal-pvc-{{ include "tyk-pro.fullname" . }}
+      {{- if .Values.enterprisePortal.storage.persistence.annotations }}
+      annotations:
+      {{- range $key, $value := .Values.enterprisePortal.storage.persistence.annotations }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+      {{- end }}
+      {{- if .Values.enterprisePortal.storage.persistence.labels }}
+      labels:
+      {{- range $key, $value := .Values.enterprisePortal.storage.persistence.labels }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+      {{- end }}
+    spec:
+      accessModes:
+      {{- range .Values.enterprisePortal.storage.persistence.accessModes }}
+        - {{ . | quote }}
+      {{- end }}
+      storageClassName: {{ .Values.enterprisePortal.storage.persistence.storageClass }}
+      resources:
+        requests:
+          storage: {{ .Values.enterprisePortal.storage.persistence.size | quote }}
+      {{- if .Values.enterprisePortal.storage.persistence.selector }}
+      selector:
+      {{- range $key, $value := .Values.enterprisePortal.storage.persistence.selector }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+      {{- end }}
 {{- end }}
