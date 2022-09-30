@@ -331,9 +331,17 @@ enterprisePortal:
     email: default@example.com
     password: topsecretpassword
   storage:
-    type: postgres
-    connectionString: ""
-  pvcName: pvc-tyk-portal
+    database:
+      type: postgres
+      connectionString: ""
+    persistence:
+      storageClass: ""
+      accessModes:
+        - ReadWriteOnce
+      size: 8Gi
+      annotations: {}
+      labels: {}
+      selector: {}
   replicaCount: 1
   containerPort: 3001
   image:
