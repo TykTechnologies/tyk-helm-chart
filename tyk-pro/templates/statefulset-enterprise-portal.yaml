@@ -103,7 +103,26 @@ spec:
         - containerPort: {{ .Values.enterprisePortal.containerPort }}
         volumeMounts:
           - name: enterprise-portal-pvc-{{ include "tyk-pro.fullname" . }}
-            mountPath: /opt/portal/public/system
+            mountPath: /opt/portal/public/system/api_details
+            subPath: api_details
+          - name: enterprise-portal-pvc-{{ include "tyk-pro.fullname" . }}
+            mountPath: /opt/portal/public/system/versions
+            subPath: versions
+          - name: enterprise-portal-pvc-{{ include "tyk-pro.fullname" . }}
+            mountPath: /opt/portal/public/system/products
+            subPath: products
+          - name: enterprise-portal-pvc-{{ include "tyk-pro.fullname" . }}
+            mountPath: /opt/portal/public/system/posts
+            subPath: posts
+          - name: enterprise-portal-pvc-{{ include "tyk-pro.fullname" . }}
+            mountPath: /opt/portal/public/system/media_libraries
+            subPath: media_libraries
+          - name: enterprise-portal-pvc-{{ include "tyk-pro.fullname" . }}
+            mountPath: /opt/portal/public/system/image_blocks
+            subPath: image_blocks
+          - name: enterprise-portal-pvc-{{ include "tyk-pro.fullname" . }}
+            mountPath: /opt/portal/public/system/assets
+            subPath: assets
           {{- if .Values.enterprisePortal.mounts }}
           {{- range $secret := .Values.enterprisePortal.mounts }}
           - name: {{ $.Release.Name }}-enterprise-portal-secret-{{ $secret.name }}
