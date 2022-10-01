@@ -103,8 +103,8 @@ gateway:
   tls: false
 
   # git-sync is a simple command that pulls a git repository into a local directory.
-  # If you want to fetch your APIs, policies or plugins from Git repository while
-  # creating Gateway, you can use specify your Git repository through gitSync field.
+  # If you want to fetch your APIs, policies and plugins from Git repository while
+  # creating Gateway, you can specify your Git repository through gitSync field.
   gitSync:
     # The repository address to sync. This option is required. If your
     # repository is private, please provide SSH address of your repository
@@ -115,8 +115,7 @@ gateway:
 
     # The --root flag must indicate either a directory that either a) does not exist
     # (it will be created); or b) exists and is empty; or c) can be emptied by removing
-    # all of the contents. Please see https://github.com/kubernetes/git-sync/#volumes
-    # for details of root flag.
+    # all the contents. Please see https://github.com/kubernetes/git-sync/#volumes
     root: /mnt
     destination: tyk-gateway
     permissions: 0777
