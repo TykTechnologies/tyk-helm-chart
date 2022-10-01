@@ -53,13 +53,52 @@ spec:
 {{ toYaml .Values.gateway.affinity | indent 8 }}
 {{- end }}
       initContainers:
+      {{- if .Values.gateway.gitSync.repo }}
+        - name: "git-sync"
+          image: k8s.gcr.io/git-sync/git-sync:v3.6.1
+          volumeMounts:
+            - name: tyk-scratch
+              mountPath: /mnt
+              subPath: tyk-gateway
+          {{- if .Values.gateway.gitSync.secret }}
+            - name: git-secret
+              mountPath: /etc/git-secret
+              readOnly: true
+          {{- end }}
+          securityContext:
+            runAsUser: 65533 # git-sync user
+          env:
+            - name: GIT_SYNC_REPO
+              value: "{{ .Values.gateway.gitSync.repo }}"
+            - name: GIT_SYNC_BRANCH
+              value:  "{{ .Values.gateway.gitSync.branch }}"
+            - name: GIT_SYNC_ROOT
+              value: "{{ .Values.gateway.gitSync.root }}"
+            - name: GIT_SYNC_DEST
+              value: "{{ .Values.gateway.gitSync.destination }}"
+            - name: GIT_SYNC_PERMISSIONS
+              value: "{{ .Values.gateway.gitSync.permissions }}"
+            - name: GIT_SYNC_ONE_TIME
+              value: "true"
+          {{- if .Values.gateway.gitSync.secret }}
+            - name: GIT_SYNC_SSH
+              value: "true"
+          {{- end }}
+          {{- if .Values.gateway.gitSync.extraEnvs }}
+            {{- range $env := .Values.gateway.gitSync.extraEnvs }}
+            - name: {{ $env.name }}
+              value: {{ $env.value | quote }}
+            {{- end }}
+          {{- end }}
+      {{- else }}
       - name: "setup-directories"
         image: busybox:1.32
         command: ['sh','-c','mkdir -p apps middleware policies && touch policies/policies.json']
         workingDir: /mnt/tyk-gateway
         volumeMounts:
           - name: tyk-scratch
-            mountPath: /mnt/tyk-gateway   
+            mountPath: /mnt/tyk-gateway
+      {{- end }}
       containers:
       - name: gateway-{{ .Chart.Name }}
         image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
@@ -147,7 +186,12 @@ spec:
           - name: {{ .Release.Name }}-default-cert
             mountPath: /etc/certs
           - name: tyk-scratch
+            {{- if .Values.gateway.gitSync.repo }}
+            mountPath: /mnt
+            subPath: tyk-gateway
+            {{- else }}
             mountPath: /mnt/tyk-gateway
+            {{- end }}
           {{- if .Values.gateway.mounts }}
           {{- range $secret := .Values.gateway.mounts }}
           - name: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
@@ -202,4 +246,10 @@ spec:
           secret:
             secretName: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
         {{- end }}
+        {{- end }}
+        {{- if .Values.gateway.gitSync.secret }}
+        - name: git-secret
+          secret:
+            secretName: {{ .Values.gateway.gitSync.secret }}
+            defaultMode: 0400
         {{- end }}
