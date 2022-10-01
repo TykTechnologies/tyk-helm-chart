@@ -102,6 +102,32 @@ gateway:
   # When true, sets the gateway protocol to HTTPS.
   tls: false
 
+  # git-sync is a simple command that pulls a git repository into a local directory.
+  # If you want to fetch your APIs, policies and plugins from Git repository while
+  # creating Gateway, you can specify your Git repository through gitSync field.
+  gitSync:
+    # The repository address to sync. This option is required. If your
+    # repository is private, please provide SSH address of your repository
+    # such as git@github.com:${username}/${repo}.git Otherwise, you can use
+    # HTTPS address of your repository.
+    repo:
+    branch: master
+
+    # The --root flag must indicate either a directory that either a) does not exist
+    # (it will be created); or b) exists and is empty; or c) can be emptied by removing
+    # all the contents. Please see https://github.com/kubernetes/git-sync/#volumes
+    root: /git
+    destination: tyk-gateway
+    permissions: 0777
+
+    # If the .gateway.gitSync.repo is private, please provide your ssh key
+    # through secret for git authentication. For more details, please visit
+    # https://github.com/thockin/git-sync/blob/master/docs/ssh.md
+    secret:
+
+    # You can configure additional properties of git-sync via extraEnvs.
+    extraEnvs: []
+
   kind: DaemonSet
   replicaCount: 1
   containerPort: 8080
