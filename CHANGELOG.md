@@ -2,7 +2,11 @@
 
 ## [Unreleased](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
 
-[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.10.0...HEAD)
+[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.11.0...HEAD)
+
+## [v0.11.0](https://github.com/TykTechnologies/tyk-helm-chart/tree/v0.11.0)
+
+[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.10.0...v0.11.0)
 
 **Added:**
 - Added new bootstrapping `tyk-bootstrap` image to bootstrap Tyk Pro instead of
