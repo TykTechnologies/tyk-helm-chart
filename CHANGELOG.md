@@ -4,6 +4,19 @@
 
 [Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.10.0...HEAD)
 
+**Added:**
+- Added new bootstrapping `tyk-bootstrap` image to bootstrap Tyk Pro instead of
+scripts. [#226](https://github.com/TykTechnologies/tyk-helm-chart/pull/226)
+- Added `securityContext` field for every component(Gateway, Dashboard, Pump, MDCB, TIB)
+in `values.yaml` file. It is used to set `PodSecurityContext` field of corresponding
+deployments. [#220](https://github.com/TykTechnologies/tyk-helm-chart/pull/220)
+
+**Fixed:**
+- Fixed Tyk Pro bootstrapping issues on Openshift environment [#226](https://github.com/TykTechnologies/tyk-helm-chart/pull/226) and [#220](https://github.com/TykTechnologies/tyk-helm-chart/pull/220)
+
+**Deleted:**
+- Deleted scripts used in bootstrapping. [#226](https://github.com/TykTechnologies/tyk-helm-chart/pull/226)
+
 ## [v0.10.0](https://github.com/TykTechnologies/tyk-helm-chart/tree/v0.10.0) (2022-08-12)
 
 [Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.9.5...v0.10.0)
