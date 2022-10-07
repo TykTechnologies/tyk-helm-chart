@@ -36,13 +36,13 @@ jobs:
       - name: Run chart-testing (list-changed)
         id: list-changed
         run: |
-          changed=$(ct list-changed --config ct.yaml)
+          changed=$(ct list-changed --config ct.yaml --since HEAD~)
           if [[ -n "$changed" ]]; then
             echo "::set-output name=changed::true"
           fi
 
       - name: Run chart-testing (lint)
-        run: ct lint --config ct.yaml
+        run: ct lint --config ct.yaml --since HEAD~
 
       - name: Create kind cluster
         uses: helm/kind-action@v1.1.0
@@ -59,7 +59,7 @@ jobs:
 
       - name: Update Chart Dependencies and Values
         run: |
-          changed_list=($(ct list-changed --config ct.yaml))
+          changed_list=($(ct list-changed --config ct.yaml --since HEAD~))
           for chart in "${changed_list[@]}"; do
             if [ "$chart" == "tyk-pro" ]; then
               # Both MDCB and Dashbaord license keys will expire on 07-04-21
@@ -77,4 +77,4 @@ jobs:
           done
 
       - name: Run chart-testing (install)
-        run: ct install --config ct.yaml # Use --upgrade to test an in-place upgrade of each chart
+        run: ct install --config ct.yaml --since HEAD~ # Use --upgrade to test an in-place upgrade of each chart
