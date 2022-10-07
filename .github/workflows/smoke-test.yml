@@ -4,10 +4,7 @@
     push:
       branches:
         - master
-    pull_request:
-      branches:
-        - master
-
+  
   env:
     TIMEOUT: 5m
     NAMESPACE: tyk-ci
