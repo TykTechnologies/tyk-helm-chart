@@ -89,7 +89,7 @@ jobs:
     needs: generate-matrix
     strategy:
       matrix: ${{fromJson(needs.generate-matrix.outputs.matrix)}}
-    if: ${{strategy.matrix.directory != ''}}
+    if: matrix.directory != ''
     steps:
       - name: Git Checkout
         uses: actions/checkout@v2
