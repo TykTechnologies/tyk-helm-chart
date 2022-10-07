@@ -76,8 +76,13 @@
             fi
             JSON="$JSON]}"
 
+            ndir=$(echo $JSON | jq '.directory | length')
+            if [[ "$ndir" != 0 ]]; then
             # Add different kubernetes versions for the smoke-tests
             MATRIX_JSON=$(echo "$JSON" | jq --raw-output '.k8s += ["v1.20.2","v1.19.7","v1.18.15","v1.17.17","v1.16.15"]')
+            else
+            MATRIX_JSON="{}"
+            fi
 
             # Set output
             echo "::debug::matrix is ${MATRIX_JSON}"
@@ -89,7 +94,6 @@
       needs: generate-matrix
       strategy:
         matrix: ${{fromJson(needs.generate-matrix.outputs.matrix)}}
-      if: ${{ !contains(needs.generate-matrix.outputs.matrix, '"directory":[]') }}
       steps:
         - name: Git Checkout
           uses: actions/checkout@v2
