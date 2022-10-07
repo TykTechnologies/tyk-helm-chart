@@ -47,7 +47,8 @@ jobs:
       - name: Create kind cluster
         uses: helm/kind-action@v1.1.0
         with:
-          config: .github/kind-cluster-${{ matrix.k8s-version }}.yml
+          config: .github/kind-cluster.yml
+          node-image: "kindest/node:${{ matrix.k8s }}"
         if: steps.list-changed.outputs.changed == 'true'
 
       - name: Check DASH_LICENSE secret expiry
