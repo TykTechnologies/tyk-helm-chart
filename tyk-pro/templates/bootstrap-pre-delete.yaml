@@ -28,13 +28,10 @@ spec:
     spec:
       serviceAccountName: k8s-bootstrap-role
       containers:
-        - name: bootstrap-pre-delete
-          image: bash:5.1
+        - name: bootstrap-tyk-pre-delete
+          image: tykio/tyk-k8s-bootstrap-pre-delete:latest
+          command: [ './app/bin/bootstrap-app-pre-delete' ]
           imagePullPolicy: IfNotPresent
-          command:
-            - sh
-            - -c
-            - /opt/scripts/pre-delete.sh
           env:
             - name: OPERATOR_SECRET_NAME
               value: "tyk-operator-conf"
@@ -42,14 +39,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-          volumeMounts:
-            - name: bootstrap-config-volume
-              mountPath: /opt/scripts
-      volumes:
-        - name: bootstrap-config-volume
-          configMap:
-            name: bootstrap-pre-delete-configmap-{{ include "tyk-pro.fullname" . }}
-            defaultMode: 0777
+            - name: BOOTSTRAP_JOB_NAME
+              value: {{ .Values.jobs.bootstrapJobName }}
       terminationGracePeriodSeconds: 0
       restartPolicy: Never
 {{- end }}

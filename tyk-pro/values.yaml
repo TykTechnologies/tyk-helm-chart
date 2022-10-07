@@ -18,6 +18,11 @@ fullnameOverride: ""
 # role, and account service.
 bootstrap: true
 
+# Settings related to k8s that are ran when installing the tyk stack
+jobs:
+  bootstrapJobName: boostrap-post-install
+
+
 # These are your Tyk stack secrets will directly map to the following
 # Tyk stack configuration:
 secrets:
