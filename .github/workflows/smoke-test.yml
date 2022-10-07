@@ -94,6 +94,7 @@
       needs: generate-matrix
       strategy:
         matrix: ${{fromJson(needs.generate-matrix.outputs.matrix)}}
+      if: needs.generate-matrix.outputs.matrix != '{}'
       steps:
         - name: Git Checkout
           uses: actions/checkout@v2
