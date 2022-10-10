@@ -76,7 +76,7 @@
             ndir=$(echo $JSON | jq '.directory | length')
             if [[ "$ndir" != 0 ]]; then
             # Add different kubernetes versions for the smoke-tests
-            MATRIX_JSON=$(echo "$JSON" | jq --raw-output '.k8s += ["v1.20.2","v1.19.7","v1.18.15","v1.17.17","v1.16.15"]')
+            MATRIX_JSON=$(echo "$JSON" | jq --raw-output '.k8s += ["v1.24","v1.23","v1.22","v1.21","v1.20.2","v1.19.7","v1.18.15","v1.17.17","v1.16.15"]')
             else
             MATRIX_JSON="{}"
             fi
