@@ -11,7 +11,6 @@ metadata:
 spec:
   serviceName: enterprise-portal-svc-{{ include "tyk-pro.fullname" . }}
   replicas: {{ .Values.enterprisePortal.replicaCount }}
-  minReadySeconds: 5
   updateStrategy:
     # indicate which strategy we want for rolling update
     type: RollingUpdate
