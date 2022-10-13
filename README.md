@@ -24,7 +24,7 @@ helm install tyk-mongo bitnami/mongodb --version {HELM_CHART_VERSION} --set "rep
 (follow notes from the installation output to get connection details and update them in `values.yaml` file)
 ```
 
->**_NOTE_**: [Here](https://tyk.io/docs/planning-for-production/database-settings/mongodb/#supported-versions) is list of supported mongo versions. Please make sure you are installing mongo helm chart that matches these version.
+>**_NOTE_**: [Here](https://tyk.io/docs/planning-for-production/database-settings/) is list of supported MongoDB versions. Please make sure you are installing mongo helm chart that matches these version.
 
 ```bash
 helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_analytics" -n tyk
@@ -59,7 +59,7 @@ You can turn on the tls option under the gateway section in the values.yaml file
 ## Kubernetes Ingress
 NB: tyk-k8s has been deprecated. For reference, old documentation may be found here: [Tyk K8s](https://github.com/TykTechnologies/tyk-k8s)
 
-For further detail on how to configure Tyk as an Ingress Gateway, or how to manage APIs in Tyk using the Kubernetes API, please refer to our [Tyk Operator documentation](https://github.com/TykTechnologies/tyk-operator/). The Tyk operator can be installed along this chart and works with all installation types.
+For further detail on how to configure Tyk as an Ingress Gateway, or how to manage APIs in Tyk using the Kubernetes API, please refer to our [Tyk Operator documentation](https://tyk.io/docs/tyk-operator/). The Tyk Operator can be installed along this chart and works with all installation types.
 
 ## Mounting Files
 To mount files to any of the Tyk stack components, add the following to the mounts array in the section of that component:
