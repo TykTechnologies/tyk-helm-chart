@@ -105,9 +105,11 @@ jobs:
         run: |
           kubectl create namespace ${{ env.NAMESPACE }}
           helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
+          helm repo add bitnami https://charts.bitnami.com/bitnami
           helm repo update
           helm install mongo tyk-helm/simple-mongodb -n ${{ env.NAMESPACE }} --wait
           helm install redis tyk-helm/simple-redis -n ${{ env.NAMESPACE }} --wait
+          helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_enterprise_portal" -n ${{ env.NAMESPACE }}
 
       - name: Deploy "${{ matrix.directory }}" chart
         run: |
@@ -126,9 +128,14 @@ jobs:
           elif [ "${{ matrix.directory }}" == tyk-hybrid ]; then
             helm upgrade -f ${{ env.TYK_HYBRID }} --set gateway.rpc.rpcKey=${{ secrets.HYBRID_RPC_KEY }} --set gateway.rpc.apiKey=${{ secrets.HYBRID_API_KEY }} --set gateway.rpc.connString=${{ secrets.HYBRID_MDCB_HOST }} ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
           elif [ "${{ matrix.directory }}" == tyk-pro ]; then
-            helm upgrade -f ${{ env.TYK_PRO }} --set mdcb.license="${{ secrets.MDCB_LICENSE }}" --set dash.license="${{ secrets.DASH_LICENSE }}" ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
+            helm upgrade -f ${{ env.TYK_PRO }} \
+              --set mdcb.license="${{ secrets.MDCB_LICENSE }}" \
+              --set dash.license="${{ secrets.DASH_LICENSE }}" \
+              --set enterprisePortal.enabled="true" \
+              --set enterprisePortal.license="${{ secrets.PORTAL_LICENSE }}" \
+              --set enterprisePortal.storage.database.connectionString="host=tyk-postgres-postgresql.${{ env.NAMESPACE }}.svc.cluster.local port=5432 user=postgres password=$(kubectl get secret -n ${{ env.NAMESPACE }} tyk-postgres-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d) database=tyk_enterprise_portal sslmode=disable" \
+              ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
           fi
-
       - name: Uninstall "${{ matrix.directory }}" chart
         run: |
           helm uninstall ${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}

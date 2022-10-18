@@ -1,0 +1,30 @@
+{{- if .Values.enterprisePortal.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: enterprise-portal-svc-{{ include "tyk-pro.fullname" . }}
+  labels:
+    app: enterprise-portal-svc-{{ include "tyk-pro.fullname" . }}
+    chart: {{ include "tyk-pro.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- if .Values.enterprisePortal.service.annotations }}
+  annotations:
+  {{- range $key, $value := .Values.enterprisePortal.service.annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}
+spec:
+  ports:
+  - port: {{ .Values.enterprisePortal.service.port }}
+    targetPort: {{ .Values.enterprisePortal.containerPort }}
+    protocol: TCP
+    name: http
+  type: {{ .Values.enterprisePortal.service.type }}
+  selector:
+    app: enterprise-portal-{{ include "tyk-pro.fullname" . }}
+    release: {{ .Release.Name }}
+{{- if eq .Values.enterprisePortal.service.type "LoadBalancer" }}
+  externalTrafficPolicy: {{ .Values.enterprisePortal.service.externalTrafficPolicy }}
+{{- end }}
+{{- end}}
