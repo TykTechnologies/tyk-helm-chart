@@ -9,7 +9,7 @@
 
 ## [v0.12.0](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
 
-[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.11.0...HEAD)
+[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.11.0...v0.12.0)
 
 **Added**
 - Added ability to launch an enterprise portal to tyk-pro [#222](https://github.com/TykTechnologies/tyk-helm-chart/pull/222)
