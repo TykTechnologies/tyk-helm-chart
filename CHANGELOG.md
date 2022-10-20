@@ -2,6 +2,13 @@
 
 ## [Unreleased](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
 
+[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.12.0...HEAD)
+
+**Added**
+- Added secrets hashes to deployments to force restarts on secrets updates [#238](https://github.com/TykTechnologies/tyk-helm-chart/pull/238)
+
+## [v0.12.0](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
+
 [Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.11.0...HEAD)
 
 **Added**
