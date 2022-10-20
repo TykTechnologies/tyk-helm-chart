@@ -4,6 +4,12 @@
 
 [Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.11.0...HEAD)
 
+**Added**
+- Added ability to launch an enterprise portal to tyk-pro [#222](https://github.com/TykTechnologies/tyk-helm-chart/pull/222)
+ 
+**Updated:**
+- Updated smoke tests to include Postgres [#222](https://github.com/TykTechnologies/tyk-helm-chart/pull/222)
+
 ## [v0.11.0](https://github.com/TykTechnologies/tyk-helm-chart/tree/v0.11.0)
 
 [Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.10.0...v0.11.0)
