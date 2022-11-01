@@ -132,9 +132,12 @@ spec:
         {{- end }}
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.gateway.tls }}"
-          {{- if .Values.gateway.extraEnvs }}
-          {{- toYaml .Values.gateway.extraEnvs| nindent 10 }}
-          {{- end }}
+        {{- if .Values.gateway.extraEnvs }}
+        {{- range $env := .Values.gateway.extraEnvs }}
+          - name: {{ $env.name }}
+            value: {{ $env.value | quote }}
+        {{- end }}
+        {{- end }}
         command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
         workingDir: /opt/tyk-gateway
         ports:

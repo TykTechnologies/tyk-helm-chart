@@ -88,9 +88,12 @@ spec:
               secretKeyRef:
                 name: tyk-enterprise-portal-conf
                 key: TYK_ORG
-          {{- if .Values.enterprisePortal.extraEnvs }}
-          {{- toYaml .Values.enterprisePortal.extraEnvs| nindent 10 }}
-          {{- end }}
+        {{- if .Values.enterprisePortal.extraEnvs }}
+        {{- range $env := .Values.enterprisePortal.extraEnvs }}
+          - name: {{ $env.name }}
+            value: {{ $env.value | quote }}
+        {{- end }}
+        {{- end }}
         resources:
 {{ toYaml .Values.enterprisePortal.resources | indent 12 }}
         command: ["/opt/portal/dev-portal"]
