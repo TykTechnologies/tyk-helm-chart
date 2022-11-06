@@ -16,9 +16,5 @@ spec:
   resources:
     requests:
       storage: {{ .Values.persistence.size }}
-  selector:
-    matchLabels:
-      app: gateway-{{ include "tyk-headless.fullname" . }}
-      release: {{ .Release.Name }}
   storageClassName: {{ .Values.persistence.class }}
 {{- end }}

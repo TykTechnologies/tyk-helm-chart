@@ -203,8 +203,6 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
-        - name: tyk-scratch
-          emptyDir: {}
         - name: tyk-mgmt-gateway-conf
           configMap:
             name: mgmt-gateway-conf-{{ include "tyk-headless.fullname" . }}
