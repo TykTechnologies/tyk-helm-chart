@@ -186,6 +186,13 @@ spec:
       {{- end }}
       volumes:
         - name: tyk-scratch
+        {{- if and .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: gateway-{{ include "tyk-headless.fullname" . }}
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
+        - name: tyk-scratch
           emptyDir: {}
         - name: tyk-mgmt-gateway-conf
           configMap:
