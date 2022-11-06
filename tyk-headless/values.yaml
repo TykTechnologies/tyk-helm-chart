@@ -198,3 +198,10 @@ pump:
   mounts: []
 
 rbac: true
+
+persistence:
+  enabled: true
+  accessModes:
+    - ReadWriteOnce
+  size: 8Gi
+  class: default
