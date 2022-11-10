@@ -1,0 +1,189 @@
+suite: test headless gateway deployment
+templates:
+  - templates/configmap-gateway.yaml
+  - templates/deployment-gw-repset.yaml
+release:
+  name: my-release
+  namespace: my-namespace
+chart:
+  version: 0.12.0
+tests:
+  - it: should match metadata name with default values
+    template: templates/deployment-gw-repset.yaml
+    asserts:
+      - equal:
+          path: apiVersion
+          value:  apps/v1
+      - equal:
+          path: kind
+          value:  DaemonSet
+      - equal:
+          path: metadata.name
+          value:  gateway-my-release-tyk-headless
+      - isSubset:
+          path: metadata.labels
+          content:
+            app: gateway-my-release-tyk-headless
+            chart: tyk-headless-0.12.0
+            release: my-release
+  - it: should match metadata name with overrided name
+    template: templates/deployment-gw-repset.yaml
+    set:
+      fullnameOverride: test-name
+    asserts:
+      - isAPIVersion:
+          of: apps/v1
+      - isKind:
+          of: DaemonSet
+      - equal:
+          path: metadata.name
+          value: gateway-test-name
+      - isSubset:
+          path: metadata.labels
+          content:
+            app: gateway-test-name
+            chart: tyk-headless-0.12.0
+            release: my-release
+  - it: should match spec with default values
+    template: templates/deployment-gw-repset.yaml
+    asserts:
+      - equal:
+          path: spec.minReadySeconds
+          value: 5
+      - isSubset:
+          path: spec.updateStrategy
+          content:
+            type: RollingUpdate
+            rollingUpdate:
+              maxUnavailable: 1
+      - isSubset:
+          path: spec.selector.matchLabels
+          content:
+            app: gateway-my-release-tyk-headless
+            release: my-release
+      - isSubset:
+          path: spec.template.metadata.labels
+          content:
+            app: gateway-my-release-tyk-headless
+            release: my-release
+      - isSubset:
+          path: spec.template.metadata.labels
+          content:
+            app: gateway-my-release-tyk-headless
+            release: my-release
+      - contains:
+          path: spec.template.spec.tolerations
+          content:
+            effect: NoSchedule
+            key: node-role.kubernetes.io/master
+      - contains:
+          path: spec.template.spec.initContainers
+          content:
+            name: "setup-directories"
+            image: busybox:1.32
+            command: [ 'sh','-c','mkdir -p apps middleware policies && touch policies/policies.json' ]
+            workingDir: /mnt/tyk-gateway
+            volumeMounts:
+              - name: tyk-scratch
+                mountPath: /mnt/tyk-gateway
+      - contains:
+          path: spec.template.spec.containers
+          content:
+            name: gateway-tyk-headless
+            image: "docker.tyk.io/tyk-gateway/tyk-gateway:v4.0.0"
+            imagePullPolicy: IfNotPresent
+            resources: {}
+            securityContext:
+              runAsNonRoot: true
+              allowPrivilegeEscalation: false
+              privileged: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - all
+            env:
+              - name: TYK_GW_LISTENPORT
+                value: "8080"
+              - name: REDIGOCLUSTER_SHARDCOUNT
+                value: "128"
+              - name: TYK_GW_STORAGE_ADDRS
+                value: "redis.my-namespace.svc.cluster.local:6379"
+              - name: TYK_GW_STORAGE_MASTERNAME
+                value: ""
+              - name: TYK_GW_STORAGE_ENABLECLUSTER
+                value: "false"
+              - name: TYK_GW_STORAGE_DATABASE
+                value: "0"
+              - name: TYK_GW_STORAGE_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: secrets-my-release-tyk-headless
+                    key: redisPass
+              - name: TYK_GW_STORAGE_USESSL
+                value: "false"
+              - name: TYK_GW_SECRET
+                valueFrom:
+                  secretKeyRef:
+                    name: secrets-my-release-tyk-headless
+                    key: APISecret
+              - name: TYK_GW_NODESECRET
+                valueFrom:
+                  secretKeyRef:
+                    name: secrets-my-release-tyk-headless
+                    key: APISecret
+              - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
+                value: "false"
+            command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
+            workingDir: /opt/tyk-gateway
+            ports:
+              - containerPort: 8080
+            volumeMounts:
+              - name: tyk-mgmt-gateway-conf
+                mountPath: /etc/tyk-gateway
+              - name: my-release-default-cert
+                mountPath: /etc/certs
+              - name: tyk-scratch
+                mountPath: /mnt/tyk-gateway
+            livenessProbe:
+              httpGet:
+                scheme: "HTTP"
+                path: /hello
+                port: 8080
+              initialDelaySeconds: 5
+              periodSeconds: 2
+              timeoutSeconds: 3
+              failureThreshold: 2
+            readinessProbe:
+              httpGet:
+                scheme: "HTTP"
+                path: /hello
+                port: 8080
+              initialDelaySeconds: 1
+              periodSeconds: 10
+              timeoutSeconds: 3
+              failureThreshold: 3
+      - isSubset:
+          path: spec.template.spec.securityContext
+          content:
+            fsGroup: 2000
+            runAsUser: 1000
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: tyk-scratch
+            emptyDir: {}
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: my-release-default-cert
+            secret:
+              secretName: my-release-default-cert
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: tyk-mgmt-gateway-conf
+            configMap:
+              name: mgmt-gateway-conf-my-release-tyk-headless
+              items:
+                - key: tyk_mgmt.conf
+                  path: tyk.conf
