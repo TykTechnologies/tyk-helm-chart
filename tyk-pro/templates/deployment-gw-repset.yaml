@@ -48,6 +48,13 @@ spec:
         release: {{ .Release.Name }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap-gateway.yaml") . | sha256sum }}
+        checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+        checksum/secret-certs: {{ include (print $.Template.BasePath "/secret-certs.yaml") . | sha256sum }}
+        {{- if .Values.gateway.mounts }}
+        {{- range $secret := .Values.gateway.mounts }}
+        "checksum/secret-{{ $secret.name }}": {{ include (print "mounts/%s" $secret.filename) . | sha256sum }}
+        {{- end }}
+        {{- end }}
     spec:
 {{- if .Values.gateway.nodeSelector }}
       nodeSelector:
