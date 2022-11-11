@@ -120,6 +120,8 @@ mdcb:
   service:
     type: LoadBalancer
     port: 9090
+    externalTrafficPolicy: Local
+    annotations: {}
   resources: {}
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
@@ -249,6 +251,8 @@ dash:
   service:
     type: NodePort
     port: 3000
+    externalTrafficPolicy: Local
+    annotations: {}
   # Creates an ingress object in k8s. Will require an ingress-controller and
   # annotation to that ingress controller.
   ingress:
