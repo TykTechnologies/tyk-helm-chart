@@ -73,6 +73,8 @@ spec:
             value: "{{ .Values.mdcb.healthcheckport }}"
           - name: TYK_MDCB_STORAGE_ADDRS
             value: {{ include "tyk-pro.redis_url" . | quote }}
+          - name: TYK_MDCB_STORAGE_ENABLECLUSTER
+            value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_MDCB_STORAGE_PASSWORD
             valueFrom:
               secretKeyRef:
