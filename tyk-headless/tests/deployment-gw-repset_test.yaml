@@ -187,3 +187,106 @@ tests:
               items:
                 - key: tyk_mgmt.conf
                   path: tyk.conf
+  - it: should match spec after setting values
+    template: templates/deployment-gw-repset.yaml
+    set:
+      gateway.image.repository: testing-repo
+      gateway.image.tag: v0.0.1
+      gateway.image.pullPolicy: Never
+      gateway.containerPort: 5050
+      gateway.control.enabled: true
+      gateway.control.containerPort: 5034
+      redis.enableSentinel: true
+      secrets.useSecretName: my-secret
+      redis.useSSL: true
+      gateway.tls: true
+      gateway.securityContext.fsGroup: 5000
+      gateway.securityContext.runAsUser: 0050
+    asserts:
+      - contains:
+          path: spec.template.spec.containers
+          content:
+            name: gateway-tyk-headless
+            image: "testing-repo:v0.0.1"
+            imagePullPolicy: Never
+            resources: {}
+            securityContext:
+              runAsNonRoot: true
+              allowPrivilegeEscalation: false
+              privileged: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - all
+            env:
+              - name: TYK_GW_LISTENPORT
+                value: "5050"
+              - name: TYK_GW_CONTROLAPIPORT
+                value: "5034"
+              - name: REDIGOCLUSTER_SHARDCOUNT
+                value: "128"
+              - name: TYK_GW_STORAGE_ADDRS
+                value: redis.my-namespace.svc.cluster.local:6379
+              - name: TYK_GW_STORAGE_SENTINELPASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: my-secret
+                    key: redisSentinelPass
+              - name: TYK_GW_STORAGE_MASTERNAME
+                value: ""
+              - name: TYK_GW_STORAGE_DATABASE
+                value: "0"
+              - name: TYK_GW_STORAGE_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: my-secret
+                    key: redisPass
+              - name: TYK_GW_STORAGE_USESSL
+                value: "true"
+              - name: TYK_GW_SECRET
+                valueFrom:
+                  secretKeyRef:
+                    name: my-secret
+                    key: APISecret
+              - name: TYK_GW_NODESECRET
+                valueFrom:
+                  secretKeyRef:
+                    name: my-secret
+                    key: APISecret
+              - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
+                value: "true"
+            command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
+            workingDir: /opt/tyk-gateway
+            ports:
+              - containerPort: 5050
+              - containerPort: 5034
+            volumeMounts:
+              - name: tyk-mgmt-gateway-conf
+                mountPath: /etc/tyk-gateway
+              - name: my-release-default-cert
+                mountPath: /etc/certs
+              - name: tyk-scratch
+                mountPath: /mnt/tyk-gateway
+            livenessProbe:
+              httpGet:
+                scheme: "HTTPS"
+                path: /hello
+                port: 5050
+              initialDelaySeconds: 5
+              periodSeconds: 2
+              timeoutSeconds: 3
+              failureThreshold: 2
+            readinessProbe:
+              httpGet:
+                scheme: "HTTPS"
+                path: /hello
+                port: 5050
+              initialDelaySeconds: 1
+              periodSeconds: 10
+              timeoutSeconds: 3
+              failureThreshold: 3
+      - isSubset:
+          path: spec.template.spec.securityContext
+          content:
+            fsGroup: 5000
+            runAsUser: 0050
