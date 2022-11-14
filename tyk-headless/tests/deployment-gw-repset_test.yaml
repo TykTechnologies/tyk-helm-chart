@@ -3,6 +3,7 @@ templates:
   - templates/configmap-gateway.yaml
   - templates/deployment-gw-repset.yaml
   - templates/secrets.yaml
+  - templates/secret-certs.yaml
 release:
   name: my-release
   namespace: my-namespace
