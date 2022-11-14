@@ -2,6 +2,7 @@ suite: test headless gateway deployment
 templates:
   - templates/configmap-gateway.yaml
   - templates/deployment-gw-repset.yaml
+  - templates/secrets.yaml
 release:
   name: my-release
   namespace: my-namespace
