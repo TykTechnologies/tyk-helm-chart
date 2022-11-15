@@ -7,18 +7,14 @@ templates:
 release:
   name: my-release
   namespace: my-namespace
-chart:
-  version: 0.12.0
 tests:
   - it: should match metadata name with default values
     template: templates/deployment-gw-repset.yaml
     asserts:
-      - equal:
-          path: apiVersion
-          value:  apps/v1
-      - equal:
-          path: kind
-          value:  DaemonSet
+      - isAPIVersion:
+          of:  apps/v1
+      - isKind:
+          of:  DaemonSet
       - equal:
           path: metadata.name
           value:  gateway-my-release-tyk-headless
@@ -60,11 +56,6 @@ tests:
               maxUnavailable: 1
       - isSubset:
           path: spec.selector.matchLabels
-          content:
-            app: gateway-my-release-tyk-headless
-            release: my-release
-      - isSubset:
-          path: spec.template.metadata.labels
           content:
             app: gateway-my-release-tyk-headless
             release: my-release
