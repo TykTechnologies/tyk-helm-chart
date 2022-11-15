@@ -1,6 +1,7 @@
 name: Unit Tests for Charts
 
 on:
+  pull_request: {}
   push:
     branches:
       - master
