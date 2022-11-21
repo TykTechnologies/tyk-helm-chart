@@ -166,7 +166,11 @@ spec:
           httpGet:
             scheme: "HTTP{{ if .Values.gateway.tls }}S{{ end }}"
             path: /hello
+            {{- if and .Values.gateway.control.enabled (or (semverCompare ">= 3.2.0" (include "tyk-headless.gateway-version" . )) (semverCompare ">=3.0.4 < 3.1.0" (include "tyk-headless.gateway-version" .))) }}
+            port: {{ .Values.gateway.control.containerPort }}
+            {{- else }}
             port: {{ .Values.gateway.containerPort }}
+            {{- end }}
           initialDelaySeconds: 5
           periodSeconds: 2
           timeoutSeconds: 3
@@ -175,7 +179,11 @@ spec:
           httpGet:
             scheme: "HTTP{{ if .Values.gateway.tls }}S{{ end }}"
             path: /hello
+            {{- if and .Values.gateway.control.enabled (or (semverCompare ">= 3.2.0" (include "tyk-headless.gateway-version" . )) (semverCompare ">=3.0.4 < 3.1.0" (include "tyk-headless.gateway-version" .))) }}
+            port: {{ .Values.gateway.control.containerPort }}
+            {{- else }}
             port: {{ .Values.gateway.containerPort }}
+            {{- end }}
           initialDelaySeconds: 1
           periodSeconds: 10
           timeoutSeconds: 3
