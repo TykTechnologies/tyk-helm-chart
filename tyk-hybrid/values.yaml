@@ -108,7 +108,7 @@ gateway:
     containerPort: 9696
     port: 9696
     type: ClusterIP
-    annotations: { }
+    annotations: {}
   # Creates an ingress object in k8s. Will require an ingress-controller and
   # annotation to that ingress controller.
   ingress:
