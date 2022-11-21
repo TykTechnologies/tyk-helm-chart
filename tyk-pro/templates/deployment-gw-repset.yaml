@@ -171,7 +171,7 @@ spec:
           httpGet:
             scheme: "HTTP{{ if .Values.gateway.tls }}S{{ end }}"
             path: /hello
-            {{- if and .Values.gateway.control.enabled (or (semverCompare ">= 3.2.0" (include "tyk-headless.gateway-version" . )) (semverCompare ">=3.0.4 < 3.1.0" (include "tyk-headless.gateway-version" .))) }}
+            {{- if and .Values.gateway.control.enabled (or (semverCompare ">= 3.2.0" (include "tyk-pro.gateway-version" . )) (semverCompare ">=3.0.4 < 3.1.0" (include "tyk-pro.gateway-version" .))) }}
             port: {{ .Values.gateway.control.containerPort }}
             {{- else }}
             port: {{ .Values.gateway.containerPort }}
