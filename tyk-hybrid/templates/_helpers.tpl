@@ -49,8 +49,3 @@ http
 redis.{{ .Release.Namespace }}.svc.cluster.local:6379
 {{- end -}}
 {{- end -}}
-
-{{- /* Create Semantic Version of gateway without prefix v */}}
-{{- define "tyk-hybrid.gateway-version" -}}
-{{- printf "%s" .Values.gateway.image.tag | replace "v" "" -}}
-{{- end -}}
