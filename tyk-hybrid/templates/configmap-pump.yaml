@@ -9,5 +9,5 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
-  {{- (.Files.Glob "configs/pump_hybrid.conf").AsConfig | nindent 2 }}
+  {{- (.Files.Glob "configs/tyk_pump_hybrid.conf").AsConfig | nindent 2 }}
   {{- end }}

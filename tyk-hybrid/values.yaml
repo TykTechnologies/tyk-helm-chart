@@ -131,46 +131,39 @@ gateway:
     #  cpu: 100m
     #  memory: 128Mi
     # requests:
-    #  cpu: 100m
+  #  cpu: 100m
   #  memory: 128Mi
   nodeSelector: {}
   tolerations:
     - key: node-role.kubernetes.io/master
       effect: NoSchedule
   affinity: {}
-  extraEnvs: []
+  extraEnvs: [
+    {
+      "name": "TYK_GW_ANALYTICSCONFIG_TYPE",
+      "value": ""
+    }
+  ]
   mounts: []
 
-
-  pump:
-    # Determines if the pump component should be installed.
-    enabled: true
-    onlySendAggregates: false
-
-
-    replicaCount: 1
-    image:
-      repository: tykio/tyk-pump-docker-pub
-      tag: v1.3
-      pullPolicy: Always
-    annotations: { }
-    resources: { }
-      # We usually recommend not to specify default resources and to leave this
-      # as a conscious choice for the user. This also increases chances charts
-      # run on environments with little resources, such as Minikube. If you do
-      # want to specify resources, uncomment the following lines, adjust them
-      # as necessary, and remove the curly braces after 'resources:'.
-      # limits:
-      #  cpu: 100m
-      #  memory: 128Mi
-      # requests:
-    #  cpu: 100m
-    #  memory: 128Mi
-    nodeSelector: { }
-    tolerations: [ ]
-    affinity: { }
-    extraEnvs: [ ]
-    mounts: [ ]
+pump:
+  # Determines if the pump component should be installed.
+  enabled: true
+  type: hybrid
+  useSSL: true
+  onlySendAggregates: false
+  replicaCount: 1
+  image:
+    repository: tykio/tyk-pump-docker-pub
+    tag: v1.6
+    pullPolicy: Always
+  annotations: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  extraEnvs: []
+  mounts: []
 
 rbac: true
 
