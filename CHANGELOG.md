@@ -2,12 +2,18 @@
 
 ## [Unreleased](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
 
-[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.12.0...HEAD)
+## [v0.13.0](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
+
+[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.12.0...v0.13.0)
 
 **Added**
 - Added secrets hashes to deployments to force restarts on secrets updates [#238](https://github.com/TykTechnologies/tyk-helm-chart/pull/238)
+- Added support for boolean values for envVars [#242](https://github.com/TykTechnologies/tyk-helm-chart/pull/242)
+- Added support for managing annotations for the MDCB and Dashboard [#231](https://github.com/TykTechnologies/tyk-helm-chart/pull/231)
+- Added unit tests for helm charts [#245](https://github.com/TykTechnologies/tyk-helm-chart/pull/245)
+- Fixed probes for Tyk vers > 4.0 [#247](https://github.com/TykTechnologies/tyk-helm-chart/pull/247)
 
-## [v0.12.0](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
+## [v0.12.0](https://github.com/TykTechnologies/tyk-helm-chart/tree/v0.12.0)
 
 [Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.11.0...v0.12.0)
 
