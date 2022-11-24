@@ -7,6 +7,9 @@ templates:
 release:
   name: my-release
   namespace: my-namespace
+chart:
+  version: 0.12.0
+  appVersion: 0.12.0
 tests:
   - it: should match metadata name with default values
     template: templates/deployment-gw-repset.yaml
