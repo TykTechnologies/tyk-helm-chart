@@ -49,11 +49,13 @@ redis.{{ .Release.Namespace }}.svc.cluster.local:6379
 
 {{- define "tyk-headless.mongo_url" -}}
 {{- if .Values.pump.enabled -}}
+{{- if .Values.mongo -}}
 {{- if .Values.mongo.mongoURL -}}
 {{ .Values.mongo.mongoURL }}
 {{- /* Adds support for older charts with the host and port options */}}
 {{- else if and .Values.mongo.host .Values.mongo.port -}}
 mongodb://{{ .Values.mongo.host }}:{{ .Values.mongo.port }}/tyk_analytics
+{{- end -}}
 {{- else -}}
 mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
 {{- end -}}
