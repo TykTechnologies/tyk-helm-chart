@@ -2,6 +2,9 @@
 
 ## [Unreleased](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
 
+**Update:**
+- Check mongo and redis fields is not nil before using it's child fields
+
 ## [v0.13.0](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
 
 [Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.12.0...v0.13.0)

@@ -91,6 +91,8 @@ spec:
             value: "128"
           - name: TYK_GW_STORAGE_ADDRS
             value: {{ include "tyk-headless.redis_url" . | quote }}
+
+          {{ if .Values.redis }}
           {{ if .Values.redis.enableSentinel }}
           - name: TYK_GW_STORAGE_SENTINELPASSWORD
             valueFrom:
@@ -117,6 +119,8 @@ spec:
                 key: redisPass
           - name: TYK_GW_STORAGE_USESSL
             value: "{{ default "false" .Values.redis.useSSL }}"
+          {{ end }}
+
           - name: TYK_GW_SECRET
             valueFrom:
               secretKeyRef:
