@@ -119,7 +119,7 @@ spec:
                 key: redisPass
           - name: TYK_GW_STORAGE_USESSL
             value: "{{ default "false" .Values.redis.useSSL }}"
-          {{- end -}}
+          {{ end }}
 
           - name: TYK_GW_SECRET
             valueFrom:
