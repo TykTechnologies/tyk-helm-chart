@@ -2,6 +2,10 @@
 
 ## [Unreleased](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
 
+## [v0.13.1](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
+
+[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.13.0...HEAD)
+
 **Update:**
 - Check mongo and redis fields is not nil before using it's child fields
 
