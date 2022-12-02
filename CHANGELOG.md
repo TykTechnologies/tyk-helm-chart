@@ -2,11 +2,16 @@
 
 ## [Unreleased](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
 
+[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.13.1...HEAD)
+
+**Updated:**
+- Set `allow_explicit_policy_id` to true by default for hybrid charts
+
 ## [v0.13.1](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
 
-[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.13.0...HEAD)
+[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.13.0...v0.13.1)
 
-**Update:**
+**Updated:**
 - Check mongo and redis fields is not nil before using it's child fields
 
 ## [v0.13.0](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
