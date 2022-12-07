@@ -52,10 +52,11 @@ tests:
           path: spec.minReadySeconds
           value: 5
       - isSubset:
-          path: spec.updateStrategy
+          path: spec.strategy
           content:
             type: RollingUpdate
             rollingUpdate:
+              maxSurge: 2
               maxUnavailable: 1
       - isSubset:
           path: spec.selector.matchLabels
