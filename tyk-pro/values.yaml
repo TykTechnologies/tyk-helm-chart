@@ -416,7 +416,7 @@ gateway:
   enableIstioIngress: false
 
   kind: Deployment
-  replicaCount: 1
+  replicaCount: 2
   containerPort: 8080
   image:
     repository: tykio/tyk-gateway
