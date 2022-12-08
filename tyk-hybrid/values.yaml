@@ -92,7 +92,7 @@ gateway:
     # apiKey: ""
 
   kind: Deployment
-  replicaCount: 2
+  replicaCount: 1
   containerPort: 8080
   image:
     repository: tykio/tyk-gateway
