@@ -33,6 +33,12 @@ spec:
         traffic.sidecar.istio.io/includeInboundPorts: ""
       {{- end }}
         checksum/config: {{ include (print $.Template.BasePath "/configmap-dashboard.yaml") . | sha256sum }}
+        checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+        {{- if .Values.dash.mounts }}
+        {{- range $secret := .Values.dash.mounts }}
+        "checksum/secret-{{ $secret.name }}": {{ include (print "mounts/%s" $secret.filename) . | sha256sum }}
+        {{- end }}
+        {{- end }}
     spec:
 {{- if .Values.dash.nodeSelector }}
       nodeSelector:

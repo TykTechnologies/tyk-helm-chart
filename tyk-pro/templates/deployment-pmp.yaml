@@ -21,11 +21,17 @@ spec:
         release: {{ .Release.Name }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap-pump.yaml") . | sha256sum }}
-      {{- if .Values.pump.annotations }}
-      {{- range $key, $value := .Values.pump.annotations }}
+        checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+        {{- if .Values.pump.mounts }}
+        {{- range $secret := .Values.pump.mounts }}
+        "checksum/secret-{{ $secret.name }}": {{ include (print "mounts/%s" $secret.filename) . | sha256sum }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.pump.annotations }}
+        {{- range $key, $value := .Values.pump.annotations }}
         {{ $key }}: {{ $value | quote }}
-      {{- end }}
-      {{- end }}
+        {{- end }}
+        {{- end }}
     spec:
 {{- if .Values.pump.nodeSelector }}
       nodeSelector:
@@ -138,10 +144,12 @@ spec:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
                 key: mongoURL
           {{ end }}
- 
-          {{- if .Values.pump.extraEnvs }}
-          {{- toYaml .Values.pump.extraEnvs| nindent 10 }}
-          {{- end }}
+        {{- if .Values.pump.extraEnvs }}
+        {{- range $env := .Values.pump.extraEnvs }}
+          - name: {{ $env.name }}
+            value: {{ $env.value | quote }}
+        {{- end }}
+        {{- end }}
         command: ["/opt/tyk-pump/tyk-pump", "-c", "/etc/tyk-pump/pump.conf"]
         volumeMounts:
           - name: tyk-pump-conf

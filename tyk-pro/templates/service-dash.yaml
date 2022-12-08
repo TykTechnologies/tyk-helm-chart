@@ -8,14 +8,23 @@ metadata:
     chart: {{ include "tyk-pro.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+{{- if .Values.dash.service.annotations }}
+  annotations:
+  {{- range $key, $value := .Values.dash.service.annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}
 spec:
+  type: {{ .Values.dash.service.type }}
   ports:
   - port: {{ .Values.dash.service.port }}
     targetPort: {{ .Values.dash.containerPort }}
     protocol: TCP
     name: http
-  type: {{ .Values.dash.service.type }}
   selector:
     app: dashboard-{{ include "tyk-pro.fullname" . }}
     release: {{ .Release.Name }}
+{{- if eq .Values.dash.service.type "LoadBalancer" }}
+  externalTrafficPolicy: {{ .Values.dash.service.externalTrafficPolicy }}
+{{- end }}
 {{- end}} 
