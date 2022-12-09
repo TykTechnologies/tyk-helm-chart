@@ -36,6 +36,7 @@ jobs:
   smoke-tests:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         k8s_version: ["v1.25.2","v1.24.6","v1.23.12","v1.22.15","v1.21.14","v1.20.15","v1.19.16"]
     steps:
