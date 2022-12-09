@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        k8s-version: ["v1.24","v1.23","v1.22","v1.21","v1.20.2","v1.19.7","v1.18.15","v1.17.17","v1.16.15"]
+        k8s-version: ["v1.25.2","v1.24.6","v1.23.12","v1.22.15","v1.21.14","v1.20.15","v1.19.16"]
     steps:
       - name: Git Checkout
         uses: actions/checkout@v2
@@ -44,7 +44,7 @@ jobs:
         run: ct lint --config ct.yaml --since HEAD~
 
       - name: Create kind cluster
-        uses: helm/kind-action@v1.1.0
+        uses: helm/kind-action@v1.4.0
         with:
           config: .github/kind-cluster.yml
           node-image: "kindest/node:${{ matrix.k8s }}"
