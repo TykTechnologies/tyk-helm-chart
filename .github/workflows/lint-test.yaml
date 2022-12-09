@@ -10,11 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        k8s-version:
-          - v1.20.2
+        k8s-version: ["v1.25.2","v1.24.6","v1.23.12","v1.22.15","v1.21.14","v1.20.15","v1.19.16"]
     steps:
       - name: Git Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -24,7 +23,7 @@ jobs:
           version: v3.5.3
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.7
 
@@ -36,18 +35,19 @@ jobs:
       - name: Run chart-testing (list-changed)
         id: list-changed
         run: |
-          changed=$(ct list-changed --config ct.yaml)
+          changed=$(ct list-changed --config ct.yaml --since HEAD~)
           if [[ -n "$changed" ]]; then
             echo "::set-output name=changed::true"
           fi
 
       - name: Run chart-testing (lint)
-        run: ct lint --config ct.yaml
+        run: ct lint --config ct.yaml --since HEAD~
 
       - name: Create kind cluster
-        uses: helm/kind-action@v1.1.0
+        uses: helm/kind-action@v1.4.0
         with:
-          config: .github/kind-cluster-${{ matrix.k8s-version }}.yml
+          config: .github/kind-cluster.yml
+          node-image: "kindest/node:${{ matrix.k8s }}"
         if: steps.list-changed.outputs.changed == 'true'
 
       - name: Check DASH_LICENSE secret expiry
@@ -58,7 +58,7 @@ jobs:
 
       - name: Update Chart Dependencies and Values
         run: |
-          changed_list=($(ct list-changed --config ct.yaml))
+          changed_list=($(ct list-changed --config ct.yaml --since HEAD~))
           for chart in "${changed_list[@]}"; do
             if [ "$chart" == "tyk-pro" ]; then
               # Both MDCB and Dashbaord license keys will expire on 07-04-21
@@ -76,4 +76,4 @@ jobs:
           done
 
       - name: Run chart-testing (install)
-        run: ct install --config ct.yaml # Use --upgrade to test an in-place upgrade of each chart
+        run: ct install --config ct.yaml --since HEAD~ # Use --upgrade to test an in-place upgrade of each chart
