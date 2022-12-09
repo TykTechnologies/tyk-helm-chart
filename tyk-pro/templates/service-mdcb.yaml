@@ -8,13 +8,22 @@ metadata:
     chart: {{ include "tyk-pro.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+{{- if .Values.mdcb.service.annotations }}
+  annotations:
+  {{- range $key, $value := .Values.mdcb.service.annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}
 spec:
+  type: {{ .Values.mdcb.service.type }}
   ports:
   - port: {{ .Values.mdcb.service.port }}
     targetPort: {{ .Values.mdcb.containerPort }}
     protocol: TCP
-  type: {{ .Values.mdcb.service.type }}
   selector:
     app: mdcb-{{ include "tyk-pro.fullname" . }}
     release: {{ .Release.Name }}
+{{- if eq .Values.mdcb.service.type "LoadBalancer" }}
+  externalTrafficPolicy: {{ .Values.mdcb.service.externalTrafficPolicy }}
+{{- end }}
 {{- end }}

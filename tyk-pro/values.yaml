@@ -120,6 +120,8 @@ mdcb:
   service:
     type: LoadBalancer
     port: 9090
+    externalTrafficPolicy: Local
+    annotations: {}
   resources: {}
     # We usually recommend not to specify default resources and to leave this
     # as a conscious choice for the user. This also increases chances charts
@@ -212,6 +214,10 @@ dash:
   # and operatorSecret are set to true.
   # Set false to disable creating a secret for Tyk Operator.
   operatorSecret: true
+  # It creates a secret for Tyk Enterprise Developer Portal along with bootstraping dasboard. Enterprise Developer Portal
+  # Secret is only created if the dash.bootstrap and enterprisePortalSecret are set to true.
+  # Set false to disable creating a secret for Tyk Enterprise Developer Portal.
+  enterprisePortalSecret: true
 
   # The hostname to bind the Dashboard to.
   hostName: tyk-dashboard.local
@@ -245,6 +251,8 @@ dash:
   service:
     type: NodePort
     port: 3000
+    externalTrafficPolicy: Local
+    annotations: {}
   # Creates an ingress object in k8s. Will require an ingress-controller and
   # annotation to that ingress controller.
   ingress:
@@ -308,6 +316,86 @@ portal:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
+
+enterprisePortal:
+  # Determines whether or not the enterprise portal component should be installed.
+  enabled: false
+
+  # Eenterprise Portal will only bootstrap if the tyk-enterprise-portal-conf secret
+  # is present. The secret is created during the dashboard bootstraping and
+  # be turned on and off using the dash.enterprisePortalSecret bool.
+  bootstrap: true
+
+  # The hostname to bind the Enterprise Portal to.
+  hostName: tyk-enterprise-portal.local
+  # Enterprise Portal license.
+  license: ""
+  # Enterprise Portal admin information.
+  adminUser:
+    email: default@example.com
+    password: topsecretpassword
+  storage:
+    database:
+      type: postgres
+      connectionString: ""
+    persistence:
+      storageClass: ""
+      accessModes:
+        - ReadWriteOnce
+      size: 8Gi
+      annotations: {}
+      labels: {}
+      selector: {}
+  replicaCount: 1
+  containerPort: 3001
+  image:
+    repository: tykio/portal
+    tag: v1.0.0
+    pullPolicy: Always
+  service:
+    type: NodePort
+    port: 3001
+    externalTrafficPolicy: Local
+    annotations: {}
+  # Creates an ingress object in k8s. Will require an ingress-controller and
+  # annotation to that ingress controller.
+  ingress:
+    enabled: false
+    # specify your ingress controller class name below
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this
+    # as a conscious choice for the user. This also increases chances charts
+    # run on environments with little resources, such as Minikube. If you do
+    # want to specify resources, uncomment the following lines, adjust them
+    # as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 2000
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  extraEnvs: []
+  mounts: []
+
 gateway:
   # Determines whether or not the gateway component should be installed.
   enabled: true

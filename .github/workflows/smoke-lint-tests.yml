@@ -1,0 +1,113 @@
+name: Smoke test and lint
+
+on:
+  pull_request: {}
+
+env:
+  TIMEOUT: 3m
+  TYK_CE: .github/tyk_ce_values.yaml
+  TYK_HYBRID: .github/tyk_ce_values.yaml
+  TYK_PRO: .github/tyk_ce_values.yaml
+
+jobs:
+
+  lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.0.1
+        with:
+          version: v3.3.0
+      
+      - name: Run chart-testing (lint)
+        run: ct lint --config ct.yaml
+
+
+  smoke-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        k8s_version: ["v1.20.2","v1.19.7","v1.18.15","v1.17.17","v1.16.15"]
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v2
+
+      - name: Create Kind Cluster
+        uses: engineerd/setup-kind@v0.5.0
+        with:
+          version: "v0.11.1"
+          config: .github/kind-cluster-${{ matrix.k8s_version }}.yml
+      
+      - name: Install helm
+        uses: Azure/setup-helm@v1.1
+        with:
+          version: v3.5.3
+      
+      - name: Deploy Tyk CE and Dependencies 
+        run: |
+          kubectl create namespace tyk-headless
+          
+          # Do not change the name
+          helm install mongo simple-mongodb --repo 'https://helm.tyk.io/public/helm/charts/' -n tyk-headless --timeout ${{ env.TIMEOUT }}
+          helm install redis simple-redis --repo 'https://helm.tyk.io/public/helm/charts/' -n tyk-headless --timeout ${{ env.TIMEOUT }}
+
+          helm install tyk-headless ./tyk-headless -n tyk-headless --timeout ${{ env.TIMEOUT }}
+
+      - name: Upgrade Tyk CE
+        run: |
+          helm upgrade -f ${{ env.TYK_CE }} tyk-headless ./tyk-headless -n tyk-headless --timeout ${{ env.TIMEOUT }}
+
+      - name: Uninstall Tyk CE
+        run: |
+          helm uninstall tyk-headless -n tyk-headless --timeout ${{ env.TIMEOUT }}
+          kubectl delete namespace tyk-headless
+
+      - name: Deploy Tyk Hybrid and Dependencies 
+        run: |
+          kubectl create namespace tyk-hybrid
+          
+          helm install redis simple-redis --repo 'https://helm.tyk.io/public/helm/charts/' -n tyk-hybrid --timeout ${{ env.TIMEOUT }}
+
+          helm install --set gateway.rpc.rpcKey=${{ secrets.HYBRID_RPC_KEY }} --set gateway.rpc.apiKey=${{ secrets.HYBRID_API_KEY }} --set gateway.rpc.connString=${{ secrets.HYBRID_MDCB_HOST }} tyk-hybrid ./tyk-hybrid -n tyk-hybrid --timeout ${{ env.TIMEOUT }} --debug
+
+      - name: Upgrade Tyk Hybrid
+        run: |
+          helm upgrade -f ${{ env.TYK_HYBRID }} --set gateway.rpc.rpcKey=${{ secrets.HYBRID_RPC_KEY }} --set gateway.rpc.apiKey=${{ secrets.HYBRID_API_KEY }} --set gateway.rpc.connString=${{ secrets.HYBRID_MDCB_HOST }} tyk-hybrid ./tyk-hybrid -n tyk-hybrid --timeout ${{ env.TIMEOUT }}
+
+      - name: Uninstall Tyk Hybrid
+        run: |
+          helm uninstall tyk-hybrid -n tyk-hybrid --timeout ${{ env.TIMEOUT }}
+          kubectl delete namespace tyk-hybrid
+
+      - name: Deploy Tyk Pro and Dependencies 
+        run: |
+          kubectl create namespace tyk-pro
+
+          helm install redis simple-redis --repo 'https://helm.tyk.io/public/helm/charts/' -n tyk-pro --timeout ${{ env.TIMEOUT }}
+          helm install mongo simple-mongodb --repo 'https://helm.tyk.io/public/helm/charts/' -n tyk-pro --timeout ${{ env.TIMEOUT }}
+          helm install tyk-postgres postgresql --repo 'https://charts.bitnami.com/bitnami/' -n tyk-pro --set "auth.database=tyk_enterprise_portal"
+
+          helm install --set mdcb.license="${{ secrets.MDCB_LICENSE }}" --set dash.license="${{ secrets.DASH_LICENSE }}" tyk-pro ./tyk-pro -n tyk-pro --timeout ${{ env.TIMEOUT }} --wait --debug
+
+      - name: Upgrade Tyk Pro chart
+        run: |
+          helm upgrade -f ${{ env.TYK_PRO }} \
+            --set mdcb.license="${{ secrets.MDCB_LICENSE }}" \
+            --set dash.license="${{ secrets.DASH_LICENSE }}" \
+            --set enterprisePortal.enabled="true" \
+            --set enterprisePortal.license="${{ secrets.PORTAL_LICENSE }}" \
+            --set enterprisePortal.storage.database.connectionString="host=tyk-postgres-postgresql.tyk-pro.svc.cluster.local port=5432 user=postgres password=$(kubectl get secret -n tyk-pro tyk-postgres-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d) database=tyk_enterprise_portal sslmode=disable" \
+            tyk-pro ./tyk-pro -n tyk-pro --timeout ${{ env.TIMEOUT }}
+      - name: Uninstall Tyk Pro chart
+        run: |
+          helm uninstall tyk-pro -n tyk-pro --timeout ${{ env.TIMEOUT }}

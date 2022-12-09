@@ -28,6 +28,13 @@ spec:
         release: {{ .Release.Name }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap-mdcb.yaml") . | sha256sum }}
+        checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+        checksum/secret-certs: {{ include (print $.Template.BasePath "/secret-certs.yaml") . | sha256sum }}
+        {{- if .Values.mdcb.mounts }}
+        {{- range $secret := .Values.mdcb.mounts }}
+        "checksum/secret-{{ $secret.name }}": {{ include (print "mounts/%s" $secret.filename) . | sha256sum }}
+        {{- end }}
+        {{- end }}
     spec:
 {{- if .Values.mdcb.nodeSelector }}
       nodeSelector:
@@ -66,6 +73,8 @@ spec:
             value: "{{ .Values.mdcb.healthcheckport }}"
           - name: TYK_MDCB_STORAGE_ADDRS
             value: {{ include "tyk-pro.redis_url" . | quote }}
+          - name: TYK_MDCB_STORAGE_ENABLECLUSTER
+            value: "{{ default "false" .Values.redis.enableCluster }}"
           - name: TYK_MDCB_STORAGE_PASSWORD
             valueFrom:
               secretKeyRef:
@@ -89,9 +98,12 @@ spec:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
                 key: MDCBLicense
-          {{- if .Values.mdcb.extraEnvs }}
-          {{- toYaml .Values.mdcb.extraEnvs| nindent 10 }}
-          {{- end }}
+        {{- if .Values.mdcb.extraEnvs }}
+        {{- range $env := .Values.mdcb.extraEnvs }}
+          - name: {{ $env.name }}
+            value: {{ $env.value | quote }}
+        {{- end }}
+        {{- end }}
         resources:
         {{ toYaml .Values.mdcb.resources | indent 12 }}
         command: ["/opt/tyk-sink/tyk-sink", "--c=/etc/tyk-sink/tyk_sink.conf"]

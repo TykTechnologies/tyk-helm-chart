@@ -1,0 +1,22 @@
+name: Unit Tests for Charts
+
+on:
+  pull_request: {}
+  push:
+    branches:
+      - master
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up unit tests
+        run: helm plugin install https://github.com/quintush/helm-unittest
+
+      - name: Run unit tests for tyk-headless
+        run: helm unittest ./tyk-headless -3

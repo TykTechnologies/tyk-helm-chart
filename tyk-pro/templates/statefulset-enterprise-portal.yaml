@@ -1,0 +1,204 @@
+{{- if .Values.enterprisePortal.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: enterprise-portal-{{ include "tyk-pro.fullname" . }}
+  labels:
+    app: enterprise-portal-{{ include "tyk-pro.fullname" . }}
+    chart: {{ include "tyk-pro.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  serviceName: enterprise-portal-svc-{{ include "tyk-pro.fullname" . }}
+  replicas: {{ .Values.enterprisePortal.replicaCount }}
+  updateStrategy:
+    # indicate which strategy we want for rolling update
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: enterprise-portal-{{ include "tyk-pro.fullname" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: enterprise-portal-{{ include "tyk-pro.fullname" . }}
+        release: {{ .Release.Name }}
+      annotations:
+        checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+        {{- if .Values.enterprisePortal.mounts }}
+        {{- range $secret := .Values.enterprisePortal.mounts }}
+        "checksum/secret-{{ $secret.name }}": {{ include (print "mounts/%s" $secret.filename) . | sha256sum }}
+        {{- end }}
+        {{- end }}
+    spec:
+{{- if .Values.enterprisePortal.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.enterprisePortal.nodeSelector | indent 8 }}
+{{- end }}
+{{- if .Values.enterprisePortal.tolerations }}
+      tolerations:
+{{ toYaml .Values.enterprisePortal.tolerations | indent 8 }}
+{{- end }}
+{{- if .Values.enterprisePortal.affinity }}
+      affinity:
+{{ toYaml .Values.enterprisePortal.affinity | indent 8 }}
+{{- end }}
+      containers:
+      - image: "{{ .Values.enterprisePortal.image.repository }}:{{ .Values.enterprisePortal.image.tag }}"
+        imagePullPolicy: {{ .Values.enterprisePortal.image.pullPolicy }}
+        name: enterprise-portal-{{ .Chart.Name }}
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - all
+        env:
+          - name: PORTAL_LICENSEKEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
+                key: EnterprisePortalLicense
+          - name: PORTAL_HOST_PORT
+            value: "{{ .Values.enterprisePortal.containerPort }}"
+          - name: ADMIN_EMAIL
+            value: "{{ .Values.enterprisePortal.adminUser.email }}"
+          - name: ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
+                key: EnterprisePortalAdminPassword
+          - name: PORTAL_DATABASE_DIALECT
+            value: "{{ .Values.enterprisePortal.storage.database.type }}"
+          - name: PORTAL_DATABASE_CONNECTIONSTRING
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
+                key: EnterprisePortalStorgeConnectionString
+          - name: PORTAL_THEMING_THEME
+            value: "default"
+          - name: PORTAL_THEMING_PATH
+            value: "./themes"
+          - name: PROVIDER_NAME
+            value: "tyk"
+          - name: TYK_URL
+            value: "http{{ if .Values.dash.tls }}s{{ end }}://dashboard-svc-{{ .Release.Name }}.{{ .Release.Namespace }}.svc:{{ .Values.dash.service.port }}"
+          - name: TYK_AUTH
+            valueFrom:
+              secretKeyRef:
+                name: tyk-enterprise-portal-conf
+                key: TYK_AUTH
+          - name: TYK_ORG
+            valueFrom:
+              secretKeyRef:
+                name: tyk-enterprise-portal-conf
+                key: TYK_ORG
+        {{- if .Values.enterprisePortal.extraEnvs }}
+        {{- range $env := .Values.enterprisePortal.extraEnvs }}
+          - name: {{ $env.name }}
+            value: {{ $env.value | quote }}
+        {{- end }}
+        {{- end }}
+        resources:
+{{ toYaml .Values.enterprisePortal.resources | indent 12 }}
+        command: ["/opt/portal/dev-portal"]
+        {{- if .Values.enterprisePortal.bootstrap }}
+        args: ["--bootstrap", "--provider-data={\"URL\":\"$(TYK_URL)\",\"Secret\":\"$(TYK_AUTH)\",\"OrgID\":\"$(TYK_ORG)\"}", "-user=$(ADMIN_EMAIL)", "-pass=$(ADMIN_PASSWORD)"]
+        {{- end }}
+        workingDir: /opt/portal
+        ports:
+        - containerPort: {{ .Values.enterprisePortal.containerPort }}
+        volumeMounts:
+          - name: enterprise-portal-pvc-{{ include "tyk-pro.fullname" . }}
+            mountPath: /opt/portal/public/system/api_details
+            subPath: api_details
+          - name: enterprise-portal-pvc-{{ include "tyk-pro.fullname" . }}
+            mountPath: /opt/portal/public/system/versions
+            subPath: versions
+          - name: enterprise-portal-pvc-{{ include "tyk-pro.fullname" . }}
+            mountPath: /opt/portal/public/system/products
+            subPath: products
+          - name: enterprise-portal-pvc-{{ include "tyk-pro.fullname" . }}
+            mountPath: /opt/portal/public/system/posts
+            subPath: posts
+          - name: enterprise-portal-pvc-{{ include "tyk-pro.fullname" . }}
+            mountPath: /opt/portal/public/system/media_libraries
+            subPath: media_libraries
+          - name: enterprise-portal-pvc-{{ include "tyk-pro.fullname" . }}
+            mountPath: /opt/portal/public/system/image_blocks
+            subPath: image_blocks
+          - name: enterprise-portal-pvc-{{ include "tyk-pro.fullname" . }}
+            mountPath: /opt/portal/public/system/assets
+            subPath: assets
+          - name: enterprise-portal-pvc-{{ include "tyk-pro.fullname" . }}
+            mountPath: /tmp/tyk-portal
+            subPath: tyk-portal
+          {{- if .Values.enterprisePortal.mounts }}
+          {{- range $secret := .Values.enterprisePortal.mounts }}
+          - name: {{ $.Release.Name }}-enterprise-portal-secret-{{ $secret.name }}
+            mountPath: {{ $secret.mountPath }}
+          {{- end }}
+          {{- end }}
+        livenessProbe:
+          httpGet:
+            scheme: "HTTP{{ if .Values.enterprisePortal.tls }}S{{ end }}"
+            path: /
+            port: {{ .Values.enterprisePortal.containerPort }}
+          initialDelaySeconds: 5
+          periodSeconds: 2
+          timeoutSeconds: 3
+          failureThreshold: 2
+        readinessProbe:
+          httpGet:
+            scheme: "HTTP{{ if .Values.enterprisePortal.tls }}S{{ end }}"
+            path: /
+            port: {{ .Values.enterprisePortal.containerPort }}
+          initialDelaySeconds: 1
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+      {{- if .Values.enterprisePortal.securityContext }}
+      securityContext:
+      {{- toYaml .Values.enterprisePortal.securityContext | nindent 8 }}
+      {{- end}}
+      volumes:
+        {{- if .Values.enterprisePortal.mounts }}
+        {{- range $secret := .Values.enterprisePortal.mounts }}
+        - name: {{ $.Release.Name }}-enterprise-portal-secret-{{ $secret.name }}
+          secret:
+            secretName: {{ $.Release.Name }}-enterprise-portal-secret-{{ $secret.name }}
+        {{- end }}
+        {{- end }}
+  volumeClaimTemplates:
+  - metadata:
+      name: enterprise-portal-pvc-{{ include "tyk-pro.fullname" . }}
+      {{- if .Values.enterprisePortal.storage.persistence.annotations }}
+      annotations:
+      {{- range $key, $value := .Values.enterprisePortal.storage.persistence.annotations }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+      {{- end }}
+      {{- if .Values.enterprisePortal.storage.persistence.labels }}
+      labels:
+      {{- range $key, $value := .Values.enterprisePortal.storage.persistence.labels }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+      {{- end }}
+    spec:
+      accessModes:
+      {{- range .Values.enterprisePortal.storage.persistence.accessModes }}
+        - {{ . | quote }}
+      {{- end }}
+      storageClassName: {{ .Values.enterprisePortal.storage.persistence.storageClass }}
+      resources:
+        requests:
+          storage: {{ .Values.enterprisePortal.storage.persistence.size | quote }}
+      {{- if .Values.enterprisePortal.storage.persistence.selector }}
+      selector:
+      {{- range $key, $value := .Values.enterprisePortal.storage.persistence.selector }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+      {{- end }}
+{{- end }}
