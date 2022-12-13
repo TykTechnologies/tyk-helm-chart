@@ -102,7 +102,7 @@ gateway:
   # When true, sets the gateway protocol to HTTPS.
   tls: false
 
-  kind: DaemonSet
+  kind: Deployment
   replicaCount: 1
   containerPort: 8080
   image:
