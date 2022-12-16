@@ -91,8 +91,8 @@ gateway:
     # rpcKey: ""
     # apiKey: ""
 
-  kind: DaemonSet
-  replicaCount: 2
+  kind: Deployment
+  replicaCount: 1
   containerPort: 8080
   image:
     repository: tykio/tyk-gateway

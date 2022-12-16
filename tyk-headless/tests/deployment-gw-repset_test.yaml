@@ -17,7 +17,7 @@ tests:
       - isAPIVersion:
           of:  apps/v1
       - isKind:
-          of:  DaemonSet
+          of:  Deployment
       - equal:
           path: metadata.name
           value:  gateway-my-release-tyk-headless
@@ -35,7 +35,7 @@ tests:
       - isAPIVersion:
           of: apps/v1
       - isKind:
-          of: DaemonSet
+          of: Deployment
       - equal:
           path: metadata.name
           value: gateway-test-name
@@ -52,10 +52,11 @@ tests:
           path: spec.minReadySeconds
           value: 5
       - isSubset:
-          path: spec.updateStrategy
+          path: spec.strategy
           content:
             type: RollingUpdate
             rollingUpdate:
+              maxSurge: 2
               maxUnavailable: 1
       - isSubset:
           path: spec.selector.matchLabels
