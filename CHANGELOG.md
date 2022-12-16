@@ -5,8 +5,8 @@
 [Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.13.1...HEAD)
 
 **Updated:**
+- Set `allow_explicit_policy_id` to true by default for hybrid charts.
 - Changed default gateway kind from `Daemonset` to `Deployment`.
-
 
 ## [v0.13.1](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
 
