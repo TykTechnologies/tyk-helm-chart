@@ -57,8 +57,7 @@ gateway:
   # The hostname to bind the Gateway to.
   hostName: tyk-gw.local
   # Sharding gateway allows you to selectively load APIs to specific gateways.
-  # If enabled make sure you have at least one gateway that is not sharded.
-  # Also be sure to match API segmentation tags with the tags selected below.
+  # Be sure to match API segmentation tags with the tags selected below.
   sharding:
     enabled: false
     tags: ""
