@@ -2,7 +2,10 @@
 
 ## [Unreleased](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
 
-[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.13.1...HEAD)
+[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.13.2...HEAD)
+
+## [v0.13.2](https://github.com/TykTechnologies/tyk-helm-chart/tree/v0.13.2)
+[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.13.1...v0.13.2)
 
 **Updated:**
 - Set `allow_explicit_policy_id` to true by default for hybrid charts.
