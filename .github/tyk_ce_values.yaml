@@ -107,7 +107,7 @@ gateway:
   containerPort: 8080
   image:
     repository: docker.tyk.io/tyk-gateway/tyk-gateway
-    tag: v4.0.0
+    tag: v4.3.1
     pullPolicy: IfNotPresent
   service:
     type: NodePort
@@ -173,7 +173,7 @@ pump:
   replicaCount: 1
   image:
     repository: docker.tyk.io/tyk-pump/tyk-pump
-    tag: v1.5.1
+    tag: v1.7.0
     pullPolicy: IfNotPresent
   annotations: {}
   resources: {}
