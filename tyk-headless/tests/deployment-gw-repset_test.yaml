@@ -87,7 +87,7 @@ tests:
           path: spec.template.spec.containers
           content:
             name: gateway-tyk-headless
-            image: "docker.tyk.io/tyk-gateway/tyk-gateway:v4.0.0"
+            image: "docker.tyk.io/tyk-gateway/tyk-gateway:v4.3.1"
             imagePullPolicy: IfNotPresent
             resources: {}
             securityContext:
