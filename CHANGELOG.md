@@ -4,6 +4,9 @@
 
 [Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.13.2...HEAD)
 
+**Updated:**
+- Update versions of all the components to latest.
+
 ## [v0.13.2](https://github.com/TykTechnologies/tyk-helm-chart/tree/v0.13.2)
 [Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.13.1...v0.13.2)
 
