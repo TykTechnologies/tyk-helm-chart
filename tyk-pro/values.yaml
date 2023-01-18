@@ -20,7 +20,7 @@ bootstrap: true
 
 # Settings related to k8s that are ran when installing the tyk stack
 jobs:
-  bootstrapJobName: boostrap-post-install
+  bootstrapJobName: bootsrap-post-install
 
 
 # These are your Tyk stack secrets will directly map to the following
