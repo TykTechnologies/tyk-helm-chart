@@ -3,7 +3,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
-  name: tyk-pump-podmonitor-{{ include "tyk-pro.fullname" . }}
+  name: tyk-pump-podmonitor-{{ include "tyk-headless.fullname" . }}
   labels:
     {{- range $key, $value := .Values.pump.prometheusPump.prometheusOperator.podMonitorSelector }}
     {{ $key }}: {{ $value | quote }}
@@ -11,8 +11,8 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: pump-{{ include "tyk-pro.fullname" . }}
+      app: pump-{{ include "tyk-headless.fullname" . }}
   podMetricsEndpoints:
-  - port: web
+    - port: web
 {{ end }}
 {{ end }}

@@ -81,3 +81,21 @@ mongo
 none
 {{- end -}}
 {{- end -}}
+
+{{- define "tyk-headless.pumpType" -}}
+    {{- if .Values.pump.prometheusPump.enabled -}}
+        {{- if  .Values.gateway.enableUptimeAnalytics -}}
+            {{ .Values.backend }}
+        {{- else -}}
+        prometheus
+        {{- end -}}
+    {{- else -}}
+        {{- if  .Values.gateway.enableUptimeAnalytics -}}
+            {{ .Values.backend }}
+        {{- else if not .Values.pump.otherPumpBackend -}}
+            {{ .Values.backend }}
+        {{- else -}}
+            other
+        {{- end -}}
+    {{- end -}}
+{{- end -}}

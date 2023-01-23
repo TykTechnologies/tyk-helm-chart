@@ -45,6 +45,11 @@ spec:
         image: "{{ .Values.pump.image.repository }}:{{ .Values.pump.image.tag }}"
         imagePullPolicy: {{ .Values.pump.image.pullPolicy }}
         workingDir: "/opt/tyk-pump"
+        {{ if .Values.pump.prometheusPump.enabled }}
+        ports:
+          - name: web
+            containerPort: {{ .Values.pump.prometheusPump.port }}
+        {{ end }}
         securityContext:
           runAsNonRoot: true
           allowPrivilegeEscalation: false
@@ -57,7 +62,21 @@ spec:
           # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
-          {{- if eq "postgres" (include "tyk-headless.backend" .) }}
+          - name: TYK_PMP_LOGLEVEL
+            value: "debug"
+          {{- if eq "prometheus" (include "tyk-headless.pumpType" .) }}
+          # Configure Prometheus Pump for Tyk Pump
+          - name: TYK_PMP_PUMPS_PROMETHEUS_TYPE
+            value: prometheus
+          - name: TYK_PMP_PUMPS_PROMETHEUS_META_ADDR
+            value: "{{ .Values.pump.prometheusPump.host }}:{{ .Values.pump.prometheusPump.port }}"
+          - name: TYK_PMP_PUMPS_PROMETHEUS_META_PATH
+            value: "{{ .Values.pump.prometheusPump.path }}"
+            {{ if .Values.pump.prometheusPump.customMetrics }}
+          - name: TYK_PMP_PUMPS_PROMETHEUS_META_CUSTOMMETRICS
+            value: "{{ .Values.pump.prometheusPump.customMetrics }}"
+            {{ end }}
+          {{- else if eq "postgres" (include "tyk-headless.pumpType" .) }}
           # SQL Pump
           - name: TYK_PMP_PUMPS_SQL_TYPE
             value: "sql"
@@ -80,17 +99,7 @@ spec:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
                 key: pgConnectionString
                 
-          # SQL Uptime Pump
-          - name: TYK_PMP_UPTIMEPUMPCONFIG_UPTIMETYPE
-            value: "sql"
-          - name: TYK_PMP_UPTIMEPUMPCONFIG_TYPE
-            value: "postgres"
-          - name: TYK_PMP_UPTIMEPUMPCONFIG_CONNECTIONSTRING
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
-                key: pgConnectionString
-          {{ else }}
+          {{- else if eq "mongo" (include "tyk-headless.pumpType" .) }}
           # Mongo Pump
           - name: TYK_PMP_PUMPS_MONGO_META_COLLECTIONNAME
             value: "tyk_analytics_headless"
@@ -116,14 +125,33 @@ spec:
             value: "tyk_analytics_headless"
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_USEMIXEDCOLLECTION
             value: "true"
+          {{ end }}
 
+          {{- if not .Values.pump.enableUptimePump }}
+          - name: TYK_PMP_DONTPURGEUPTIMEDATA
+            value: "true"
+          {{ else }}
+          {{ if eq "postgres" (include "tyk-headless.backend" .) }}
+          # SQL Uptime Pump
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_UPTIMETYPE
+            value: "sql"
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_TYPE
+            value: "postgres"
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_CONNECTIONSTRING
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
+                key: pgConnectionString
+          {{- else if eq "mongo" (include "tyk-headless.backend" .) }}
           # Mongo Uptime Pump
           - name: TYK_PMP_UPTIMEPUMPCONFIG_MONGOURL
             valueFrom:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
                 key: mongoURL
-          {{ end }}
+            {{- end }}
+          {{- end -}}
+
 
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS
             {{- if and .Values.redis.host .Values.redis.port }}
