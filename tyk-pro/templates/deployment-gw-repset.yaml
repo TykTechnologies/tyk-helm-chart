@@ -89,6 +89,12 @@ spec:
           - name: TYK_GW_CONTROLAPIPORT
             value: "{{ .Values.gateway.control.containerPort }}"
           {{- end }}
+          {{- if .Values.gateway.enableUptimeAnalytics }}
+          - name: TYK_GW_UPTIMETESTS_DISABLE
+            value: "false"
+          - name: TYK_GW_UPTIMETESTS_CONFIG_ENABLEUPTIMEANALYTICS
+            value: "true"
+          {{- end }}
           # Lagacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"

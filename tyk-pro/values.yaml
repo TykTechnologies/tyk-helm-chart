@@ -210,13 +210,13 @@ dash:
   # Dashboard will only bootstrap if the master bootstrap option is set to true.
   bootstrap: true
 
-  # It creates a secret for Tyk Operator along with bootstraping dasboard. Operator Secret is only created if the dash.bootstrap
-  # and operatorSecret are set to true.
+  # It creates a secret for Tyk Operator along with bootstrapping dashboard.
+  # Operator Secret is only created if the dash.bootstrap and operatorSecret are set to true.
   # Set false to disable creating a secret for Tyk Operator.
   operatorSecret: true
-  # It creates a secret for Tyk Enterprise Developer Portal along with bootstraping dasboard. Enterprise Developer Portal
-  # Secret is only created if the dash.bootstrap and enterprisePortalSecret are set to true.
-  # Set false to disable creating a secret for Tyk Enterprise Developer Portal.
+  # It creates a secret for Tyk Enterprise Developer Portal along with bootstrapping dashboard.
+  # Enterprise Developer Portal Secret is only created if the dash.bootstrap and enterprisePortalSecret
+  # are set to true. Set false to disable creating a secret for Tyk Enterprise Developer Portal.
   enterprisePortalSecret: true
 
   # The hostname to bind the Dashboard to.
@@ -415,6 +415,12 @@ gateway:
   # templates for implementation
   enableIstioIngress: false
 
+  # enableUptimeAnalytics enables having record analytics data regarding the uptime tests.
+  # Set this value to true to enable https://tyk.io/docs/planning-for-production/ensure-high-availability/uptime-tests/
+  # Enabling this field to true also enables Tyk Pump installation to be true, and
+  # the storage used by Dashboard, either SQL or MongoDB, will be used in Tyk Pump.
+  enableUptimeAnalytics: false
+
   kind: Deployment
   replicaCount: 1
   containerPort: 8080
@@ -478,6 +484,46 @@ pump:
   # Determines whether or not the pump component should be installed.
   enabled: true
 
+  # enableUptimePump enables Uptime Pump configuration. If it is enabled, the backend used by Dashboard (SQL or MongoDB)
+  # will be used as an uptime pump.
+  enableUptimePump: true
+
+  # prometheusPump configures Tyk Pump to expose Prometheus metrics. Prometheus Pump will not work with
+  # Uptime Tests on Gateway. So, if .Values.gateway.enableUptimeAnalytics  is set to true, Pump will 
+  # automatically use backend picked by Dashboard, not Prometheus.
+  prometheusPump:
+    # enabled determines whether the Prometheus should be used by Tyk Pump.
+    enabled: false
+    # host represents the host without port, where Tyk Pump serve the metrics for Prometheus.
+    host: ""
+    # port represents the port where Tyk Pump serve the metrics for Prometheus.
+    port: 9090
+    # path represents the path to the Prometheus collection. For example /metrics.
+    path: /metrics
+    # customMetrics allows defining custom Prometheus metrics for Tyk Pump. 
+    # It accepts a string that represents a JSON object. For instance,
+    #
+    # customMetrics: '[{"name":"tyk_http_requests_total","description":"Total of API requests","metric_type":"counter","labels":["response_code","api_name"]}]'
+    customMetrics: ""
+    # By default, Pump creates a PodMonitor Custom Resource on your cluster if you use Prometheus Pump. Set .prometheusOperator.enabled to false
+    # for disabling installation of PodMonitor resource.
+    prometheusOperator:
+      # enabled determines whether the Prometheus Operator is in use or not. By default,
+      # it is enabled.
+      # Tyk Pump can be monitored with PodMonitor Custom Resource of Prometheus Operator.
+      # If enabled, PodMonitor resource is created based on .Values.pump.prometheusPump.prometheusOperator.podMonitorSelector 
+      # for Tyk Pump.
+      enabled: true
+      # podMonitorSelector represents a podMonitorSelector of your Prometheus resource. So that
+      # your Prometheus resource can select PodMonitor objects based on selector defined here.
+      # Please set this field to the podMonitorSelector field of your monitoring.coreos.com/v1 
+      # Prometheus resource's spec.
+      #
+      # You can check the podMonitorSelector via:
+      #   kubectl describe prometheuses.monitoring.coreos.com <PROMETHEUS_POD>
+      podMonitorSelector:
+        release: prometheus-stack
+
   replicaCount: 1
   image:
     repository: tykio/tyk-pump-docker-pub
@@ -502,6 +548,11 @@ pump:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+
+  # otherPumpBackend specifies if the backend apart from MongoDB, SQL or Prometheus is in use, e.g., Elasticsearch.
+  # Please set it to true while using other backends listed above. You can see all supported Pump backends here:
+  # https://tyk.io/docs/tyk-stack/tyk-pump/other-data-stores/
+  otherPumpBackend: false
   extraEnvs: []
   mounts: []
 
