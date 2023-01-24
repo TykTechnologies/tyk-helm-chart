@@ -173,12 +173,12 @@ gateway:
 # https://github.com/TykTechnologies/tyk-pump#configuration
 pump:
   # Determines whether or not the pump component should be installed.
-  enabled: true
+  enabled: false
 
   # prometheusPump configures Tyk Pump to expose Prometheus metrics.
   prometheusPump:
     # enabled determines whether the Prometheus should be used by Tyk Pump.
-    enabled: true
+    enabled: false
     # host represents the host without port, where Tyk Pump serve the metrics for Prometheus.
     host: ""
     # port represents the port where Tyk Pump serve the metrics for Prometheus.
