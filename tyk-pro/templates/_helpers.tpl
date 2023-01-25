@@ -118,3 +118,11 @@ mongo
         {{- end -}}
     {{- end -}}
 {{- end -}}
+
+{{- define "tyk-pro.enableUptimePump" -}}
+{{- if or .Values.gateway.enableUptimeAnalytics .Values.pump.enableUptimePump -}}
+true
+{{- else -}}
+false
+{{- end -}}
+{{- end -}}

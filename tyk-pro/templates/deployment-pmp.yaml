@@ -144,7 +144,7 @@ spec:
             value: "true"
           {{ end }}
 
-          {{- if not .Values.pump.enableUptimePump -}}
+          {{- if eq "false" (include "tyk-pro.enableUptimePump" .) -}}
           - name: TYK_PMP_DONTPURGEUPTIMEDATA
             value: "true"
           {{- else -}}

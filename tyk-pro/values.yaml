@@ -493,7 +493,7 @@ pump:
 
   # enableUptimePump enables Uptime Pump configuration. If it is enabled, the backend used by Dashboard (SQL or MongoDB)
   # will be used as an uptime pump.
-  enableUptimePump: true
+  enableUptimePump: false
 
   # prometheusPump configures Tyk Pump to expose Prometheus metrics. Prometheus Pump will not work with
   # Uptime Tests on Gateway. So, if .Values.gateway.enableUptimeAnalytics  is set to true, Pump will
