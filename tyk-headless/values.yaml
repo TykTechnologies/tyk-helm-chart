@@ -74,8 +74,7 @@ redis:
   storage:
     database: 0
 
-# Choose the pumps backend for Tyk. [ "", "mongo", "postgres" ]
-backend: ""
+# mongo specifies MongoDB connection configuration for Tyk Pump if .Values.pump.backend is set to mongo.
 mongo:
   # The mongoURL value will allow you to set your MongoDB address.
   # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
@@ -87,7 +86,7 @@ mongo:
   # Default value: false
   useSSL: false
 
-# Postgres connection string parameters.
+# postgres specifies PostgreSQL connection configuration for Tyk Pump if .Values.pump.backend is set to postgres.
 postgres:
   host: tyk-postgres-postgresql.tyk.svc.cluster.local
   port: 5432
@@ -175,10 +174,18 @@ pump:
   # Determines whether or not the pump component should be installed.
   enabled: false
 
+  # Choose the pump backend for Tyk Pump. ["", "mongo", "postgres", "prometheus" ]
+  # If you would like to use other backends such as ElasticSearch, please set this field to "" and configure
+  # your Tyk Pump via environment variables.
+  backend: ""
+
+  # uptimePumpBackend configures uptime Tyk Pump. ["", "mongo", "postgres"].
+  # Set to "" for disabling uptime Tyk Pump. If you enabled .Values.gateway.uptimePumpAnalytics, please
+  # set backend for Tyk Pump here.
+  uptimePumpBackend: ""
+
   # prometheusPump configures Tyk Pump to expose Prometheus metrics.
   prometheusPump:
-    # enabled determines whether the Prometheus should be used by Tyk Pump.
-    enabled: false
     # host represents the host without port, where Tyk Pump serve the metrics for Prometheus.
     host: ""
     # port represents the port where Tyk Pump serve the metrics for Prometheus.
@@ -209,9 +216,6 @@ pump:
       podMonitorSelector:
         release: prometheus-stack
 
-  # enableUptimePump enables Uptime Pump configuration. If it is enabled, it will use .Values.backend as Pump type.
-  enableUptimePump: false
-
   replicaCount: 1
   image:
     repository: docker.tyk.io/tyk-pump/tyk-pump
@@ -236,11 +240,6 @@ pump:
   nodeSelector: {}
   tolerations: []
   affinity: {}
-
-  # otherPumpBackend specifies if the backend apart from MongoDB, SQL or Prometheus is in use, e.g., Elasticsearch.
-  # Please set it to true while using other backends listed above. You can see all supported Pump backends here:
-  # https://tyk.io/docs/tyk-stack/tyk-pump/other-data-stores/
-  otherPumpBackend: false
   extraEnvs: []
   mounts: []
 

@@ -62,8 +62,6 @@ spec:
           # Legacy support for Redis Cluster driver. Driver dropped in v3.0.0.
           - name: REDIGOCLUSTER_SHARDCOUNT
             value: "128"
-          - name: TYK_PMP_LOGLEVEL
-            value: "debug"
           {{- if eq "prometheus" (include "tyk-headless.pumpType" .) }}
           # Configure Prometheus Pump for Tyk Pump
           - name: TYK_PMP_PUMPS_PROMETHEUS_TYPE
@@ -87,7 +85,6 @@ spec:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
                 key: pgConnectionString
-            
           # SQL Aggregate Pump
           - name: TYK_PMP_PUMPS_SQLAGGREGATE_TYPE
             value: "sql_aggregate"
@@ -110,7 +107,6 @@ spec:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
                 key: mongoURL
-          
           # Mongo Aggregate Pump
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_TYPE
             value: "mongo-pump-aggregate"
@@ -126,12 +122,11 @@ spec:
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_USEMIXEDCOLLECTION
             value: "true"
           {{ end }}
-
-          {{- if not .Values.pump.enableUptimePump }}
+          {{ if not .Values.pump.uptimePumpBackend }}
           - name: TYK_PMP_DONTPURGEUPTIMEDATA
             value: "true"
           {{ else }}
-          {{ if eq "postgres" (include "tyk-headless.backend" .) }}
+          {{ if eq "postgres" .Values.pump.uptimePumpBackend }}
           # SQL Uptime Pump
           - name: TYK_PMP_UPTIMEPUMPCONFIG_UPTIMETYPE
             value: "sql"
@@ -142,16 +137,15 @@ spec:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
                 key: pgConnectionString
-          {{- else if eq "mongo" (include "tyk-headless.backend" .) }}
+          {{ else if eq "mongo" .Values.pump.uptimePumpBackend }}
           # Mongo Uptime Pump
           - name: TYK_PMP_UPTIMEPUMPCONFIG_MONGOURL
             valueFrom:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
                 key: mongoURL
-            {{- end }}
-          {{- end -}}
-
+            {{ end }}
+          {{ end }}
 
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS
             {{- if and .Values.redis.host .Values.redis.port }}
