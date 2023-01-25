@@ -174,7 +174,7 @@ pump:
   # Determines whether or not the pump component should be installed.
   enabled: false
 
-  # Choose the pump backend for Tyk Pump. ["", "mongo", "postgres", "prometheus" ]
+  # Choose the pump backend for Tyk Pump. ["", "mongo", "postgres", "prometheus"]
   # If you would like to use other backends such as ElasticSearch, please set this field to "" and configure
   # your Tyk Pump via environment variables.
   backend: ""

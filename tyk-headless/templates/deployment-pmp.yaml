@@ -45,7 +45,7 @@ spec:
         image: "{{ .Values.pump.image.repository }}:{{ .Values.pump.image.tag }}"
         imagePullPolicy: {{ .Values.pump.image.pullPolicy }}
         workingDir: "/opt/tyk-pump"
-        {{ if .Values.pump.prometheusPump.enabled }}
+        {{- if eq "prometheus" (include "tyk-headless.pumpType" .) }}
         ports:
           - name: web
             containerPort: {{ .Values.pump.prometheusPump.port }}

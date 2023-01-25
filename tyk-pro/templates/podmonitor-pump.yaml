@@ -1,5 +1,6 @@
 {{ if .Values.pump.enabled }}
-{{ if and .Values.pump.prometheusPump.enabled .Values.pump.prometheusPump.prometheusOperator.enabled }}
+{{ if eq "prometheus" .Values.pump.backend }}
+{{ if .Values.pump.prometheusPump.prometheusOperator.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
@@ -14,5 +15,6 @@ spec:
       app: pump-{{ include "tyk-pro.fullname" . }}
   podMetricsEndpoints:
   - port: web
+{{ end }}
 {{ end }}
 {{ end }}

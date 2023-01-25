@@ -69,8 +69,6 @@ redis:
   storage:
     database: 0
 
-# Choose the backend for Tyk. [ "mongo", "postgres" ]
-backend: mongo
 mongo:
   # The mongoURL value will allow you to set your MongoDB address.
   # Default value: mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
@@ -209,6 +207,9 @@ dash:
   enabled: true
   # Dashboard will only bootstrap if the master bootstrap option is set to true.
   bootstrap: true
+
+  # dataStore represents the storage type used by Dashboard. ["mongo", "postgres"]
+  dataStore: "mongo"
 
   # It creates a secret for Tyk Operator along with bootstrapping dashboard.
   # Operator Secret is only created if the dash.bootstrap and operatorSecret are set to true.
@@ -484,6 +485,12 @@ pump:
   # Determines whether or not the pump component should be installed.
   enabled: true
 
+  # Choose the pump backend for Tyk Pump. ["", "dashboard", "prometheus"]
+  # If you would like to use other backends such as ElasticSearch, please set this field to "" and configure
+  # your Tyk Pump via environment variables.
+  # By default, Tyk Pump is configured to the backend used by Tyk Dashboard (MongoDB or PostgreSQL)
+  backend: "dashboard"
+
   # enableUptimePump enables Uptime Pump configuration. If it is enabled, the backend used by Dashboard (SQL or MongoDB)
   # will be used as an uptime pump.
   enableUptimePump: true
@@ -492,8 +499,6 @@ pump:
   # Uptime Tests on Gateway. So, if .Values.gateway.enableUptimeAnalytics  is set to true, Pump will
   # automatically use backend picked by Dashboard, not Prometheus.
   prometheusPump:
-    # enabled determines whether the Prometheus should be used by Tyk Pump.
-    enabled: false
     # host represents the host without port, where Tyk Pump serve the metrics for Prometheus.
     host: ""
     # port represents the port where Tyk Pump serve the metrics for Prometheus.
@@ -549,10 +554,6 @@ pump:
   tolerations: []
   affinity: {}
 
-  # otherPumpBackend specifies if the backend apart from MongoDB, SQL or Prometheus is in use, e.g., Elasticsearch.
-  # Please set it to true while using other backends listed above. You can see all supported Pump backends here:
-  # https://tyk.io/docs/tyk-stack/tyk-pump/other-data-stores/
-  otherPumpBackend: false
   extraEnvs: []
   mounts: []
 

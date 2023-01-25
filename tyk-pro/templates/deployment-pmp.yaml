@@ -50,7 +50,7 @@ spec:
         image: "{{ .Values.pump.image.repository }}:{{ .Values.pump.image.tag }}"
         imagePullPolicy: {{ .Values.pump.image.pullPolicy }}
         workingDir: "/opt/tyk-pump"
-        {{ if .Values.pump.prometheusPump.enabled }}
+        {{- if eq "prometheus" (include "tyk-pro.pumpType" .) }}
         ports:
         - name: web
           containerPort: {{ .Values.pump.prometheusPump.port }}
@@ -142,7 +142,6 @@ spec:
             value: "tyk_analytics"
           - name: TYK_PMP_PUMPS_MONGOAGGREGATE_META_USEMIXEDCOLLECTION
             value: "true"
-
           {{ end }}
 
           {{- if not .Values.pump.enableUptimePump -}}

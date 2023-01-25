@@ -84,10 +84,10 @@ mongodb://mongo.{{ .Release.Namespace }}.svc.cluster.local:27017/tyk_analytics
 {{- end -}}
 
 {{- define "tyk-pro.backend" -}}
-{{- if .Values.backend -}}
-{{- if eq "postgres" .Values.backend -}}
+{{- if .Values.dash.dataStore -}}
+{{- if eq "postgres" .Values.dash.dataStore -}}
 postgres
-{{- else if eq "mongo" .Values.backend -}}
+{{- else if eq "mongo" .Values.dash.dataStore -}}
 mongo
 {{- end -}}
 {{- else -}}
@@ -102,17 +102,17 @@ mongo
 {{- end -}}
 
 {{- define "tyk-pro.pumpType" -}}
-    {{- if .Values.pump.prometheusPump.enabled -}}
+    {{- if eq "prometheus" .Values.pump.backend -}}
         {{- if  .Values.gateway.enableUptimeAnalytics -}}
-            {{ .Values.backend }}
+            {{ .Values.dash.dataStore }}
         {{- else -}}
         prometheus
         {{- end -}}
     {{- else -}}
-        {{- if  .Values.gateway.enableUptimeAnalytics -}}
-            {{ .Values.backend }}
-        {{- else if not .Values.pump.otherPumpBackend -}}
-            {{ .Values.backend }}
+        {{- if .Values.gateway.enableUptimeAnalytics -}}
+            {{ .Values.dash.dataStore }}
+        {{- else if .Values.pump.backend -}}
+            {{ .Values.dash.dataStore }}
         {{- else -}}
             other
         {{- end -}}
