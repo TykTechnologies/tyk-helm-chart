@@ -1,141 +1,148 @@
-name: Smoke test
+  name: Smoke test
 
-on:
-  push:
-    branches:
-      - master
+  on:
+    push:
+      branches:
+        - master
+  
+  env:
+    TIMEOUT: 5m
+    NAMESPACE: tyk-ci
+    TYK_CE: .github/tyk_ce_values.yaml
+    TYK_PRO: .github/tyk_pro_values.yaml
+    TYK_HYBRID: .github/tyk_hybrid_values.yaml
 
-env:
-  TIMEOUT: 5m
-  NAMESPACE: tyk-ci
-  TYK_CE: .github/tyk_ce_values.yaml
-  TYK_PRO: .github/tyk_pro_values.yaml
-  TYK_HYBRID: .github/tyk_hybrid_values.yaml
+  jobs:
 
-jobs:
+    generate-matrix:
+      name: Generate matrix for smoke-tests
+      runs-on: ubuntu-latest
+      outputs:
+        matrix: ${{ steps.set-matrix.outputs.matrix }}
+      steps:
+        - uses: actions/checkout@v3
+        - name: Check changed files
+          id: diff
+          run: |
+            if [ $GITHUB_BASE_REF ]; then
+              # Pull Request
+              git fetch origin $GITHUB_BASE_REF --depth=1
+              export DIFF=$( git diff --name-only origin/$GITHUB_BASE_REF $GITHUB_SHA )
+              echo "Diff between origin/$GITHUB_BASE_REF and $GITHUB_SHA"
+            else
+              # Push
+              git fetch origin ${{ github.event.before }} --depth=1
+              export DIFF=$( git diff --name-only ${{ github.event.before }} $GITHUB_SHA )
+              echo "Diff between ${{ github.event.before }} and $GITHUB_SHA"
+            fi
+            echo "$DIFF"
+            # Escape newlines (replace \n with %0A)
+            echo "::set-output name=diff::$( echo "$DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
 
-  generate-matrix:
-    name: Generate matrix for smoke-tests
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      - uses: actions/checkout@v2
-      - name: Check changed files
-        id: diff
-        run: |
-          if [ $GITHUB_BASE_REF ]; then
-            # Pull Request
-            git fetch origin $GITHUB_BASE_REF --depth=1
-            export DIFF=$( git diff --name-only origin/$GITHUB_BASE_REF $GITHUB_SHA )
-            echo "Diff between origin/$GITHUB_BASE_REF and $GITHUB_SHA"
-          else
-            # Push
-            git fetch origin ${{ github.event.before }} --depth=1
-            export DIFF=$( git diff --name-only ${{ github.event.before }} $GITHUB_SHA )
-            echo "Diff between ${{ github.event.before }} and $GITHUB_SHA"
-          fi
-          echo "$DIFF"
-          # Escape newlines (replace \n with %0A)
-          echo "::set-output name=diff::$( echo "$DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
+        - name: Set matrix for smoke-tests
+          id: set-matrix
+          run: |
+            DIFF="${{ steps.diff.outputs.diff }}"
+            JSON="{\"directory\":["
 
-      - name: Set matrix for smoke-tests
-        id: set-matrix
-        run: |
-          DIFF="${{ steps.diff.outputs.diff }}"
-          JSON="{\"directory\":["
+            # Loop by lines
+            while read path; do
+              # Set $directory to substring before /
+              directory="$( echo $path | cut -d'/' -f1 -s )"
 
-          # Loop by lines
-          while read path; do
-            # Set $directory to substring before /
-            directory="$( echo $path | cut -d'/' -f1 -s )"
+              if [ "$directory" == .github ]; then
+                continue # Exclude .github directory
+              elif [ "$directory" == deploy ]; then
+                continue # Exclude deploy directory
+              elif [ "$directory" == samples ]; then
+                continue # Exclude samples directory
+              elif [ "$directory" == "" ]; then
+                continue # Exclude empty directory
+              fi
 
-            if [ "$directory" == .github ]; then
-              continue # Exclude .github directory
-            elif [ "$directory" == deploy ]; then
-              continue # Exclude deploy directory
-            elif [ "$directory" == samples ]; then
-              continue # Exclude samples directory
-            elif [ "$directory" == "" ]; then
-              continue # Exclude empty directory
+              # Add build to the matrix only if it is not already included
+              JSONline="\"$directory\","
+              if [[ "$JSON" != *"$JSONline"* ]]; then
+                JSON="$JSON$JSONline"
+              fi
+            done <<< "$DIFF"
+
+            # Remove last "," and add closing brackets
+            if [[ $JSON == *, ]]; then
+              JSON="${JSON%?}"
+            fi
+            JSON="$JSON]}"
+
+            ndir=$(echo $JSON | jq '.directory | length')
+            if [[ "$ndir" != 0 ]]; then
+            # Add different kubernetes versions for the smoke-tests
+            MATRIX_JSON=$(echo "$JSON" | jq --raw-output '.k8s += ["v1.25.2","v1.24.6","v1.23.12","v1.22.15","v1.21.14","v1.20.15","v1.19.16"]')
+            else
+            MATRIX_JSON="{}"
             fi
 
-            # Add build to the matrix only if it is not already included
-            JSONline="\"$directory\","
-            if [[ "$JSON" != *"$JSONline"* ]]; then
-              JSON="$JSON$JSONline"
+            # Set output
+            echo "::debug::matrix is ${MATRIX_JSON}"
+            echo "::set-output name=matrix::$( echo $MATRIX_JSON )"
+
+    smoke-tests:
+      runs-on: ubuntu-latest
+      name: Run Smoke Tests on "${{ matrix.directory }}" chart
+      needs: generate-matrix
+      strategy:
+        matrix: ${{fromJson(needs.generate-matrix.outputs.matrix)}}
+      if: needs.generate-matrix.outputs.matrix != '{}'
+      steps:
+        - name: Git Checkout
+          uses: actions/checkout@v3
+
+        - name: Create Kind Cluster
+          uses: helm/kind-action@v1.4.0
+          with:
+            config: .github/kind-cluster.yml
+            node-image: "kindest/node:${{ matrix.k8s }}"
+
+        - name: Install helm
+          uses: Azure/setup-helm@v1.1
+          with:
+            version: v3.5.3
+
+        - name: Deploy "${{ matrix.directory }}" requisites
+          run: |
+            kubectl create namespace ${{ env.NAMESPACE }}
+            helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
+            helm repo add bitnami https://charts.bitnami.com/bitnami
+            helm repo update
+            helm install mongo tyk-helm/simple-mongodb -n ${{ env.NAMESPACE }} --wait
+            helm install redis tyk-helm/simple-redis -n ${{ env.NAMESPACE }} --wait
+            helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_enterprise_portal" -n ${{ env.NAMESPACE }}
+
+        - name: Deploy "${{ matrix.directory }}" chart
+          run: |
+            if [ "${{ matrix.directory }}" == tyk-headless ]; then
+              helm install ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
+            elif [ "${{ matrix.directory }}" == tyk-hybrid ]; then
+              helm install --set gateway.rpc.rpcKey=${{ secrets.HYBRID_RPC_KEY }} --set gateway.rpc.apiKey=${{ secrets.HYBRID_API_KEY }} --set gateway.rpc.connString=${{ secrets.HYBRID_MDCB_HOST }} ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }} --debug
+            elif [ "${{ matrix.directory }}" == tyk-pro ]; then
+              helm install --set mdcb.license="${{ secrets.MDCB_LICENSE }}" --set dash.license="${{ secrets.DASH_LICENSE }}" ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }} --wait --debug
             fi
-          done <<< "$DIFF"
 
-          # Remove last "," and add closing brackets
-          if [[ $JSON == *, ]]; then
-            JSON="${JSON%?}"
-          fi
-          JSON="$JSON]}"
-
-          # Add different kubernetes versions for the smoke-tests
-          MATRIX_JSON=$(echo "$JSON" | jq --raw-output '.k8s += ["v1.20.2","v1.19.7","v1.18.15","v1.17.17","v1.16.15"]')
-
-          # Set output
-          echo "::debug::matrix is ${MATRIX_JSON}"
-          echo "::set-output name=matrix::$( echo $MATRIX_JSON )"
-
-  smoke-tests:
-    runs-on: ubuntu-latest
-    name: Run Smoke Tests on "${{ matrix.directory }}" chart
-    needs: generate-matrix
-    strategy:
-      matrix: ${{fromJson(needs.generate-matrix.outputs.matrix)}}
-    steps:
-      - name: Git Checkout
-        uses: actions/checkout@v2
-
-      - name: Create Kind Cluster
-        uses: engineerd/setup-kind@v0.5.0
-        with:
-          version: "v0.11.1"
-          config: .github/kind-cluster-${{ matrix.k8s }}.yml
-
-      - name: Install helm
-        uses: Azure/setup-helm@v1.1
-        with:
-          version: v3.5.3
-
-      - name: Deploy "${{ matrix.directory }}" requisites
-        run: |
-          kubectl create namespace ${{ env.NAMESPACE }}
-          helm repo add tyk-helm https://helm.tyk.io/public/helm/charts/
-          helm repo add bitnami https://charts.bitnami.com/bitnami
-          helm repo update
-          helm install mongo tyk-helm/simple-mongodb -n ${{ env.NAMESPACE }} --wait
-          helm install redis tyk-helm/simple-redis -n ${{ env.NAMESPACE }} --wait
-          helm install tyk-postgres bitnami/postgresql --set "auth.database=tyk_enterprise_portal" -n ${{ env.NAMESPACE }}
-
-      - name: Deploy "${{ matrix.directory }}" chart
-        run: |
-          if [ "${{ matrix.directory }}" == tyk-headless ]; then
-            helm install ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
-          elif [ "${{ matrix.directory }}" == tyk-hybrid ]; then
-            helm install --set gateway.rpc.rpcKey=${{ secrets.HYBRID_RPC_KEY }} --set gateway.rpc.apiKey=${{ secrets.HYBRID_API_KEY }} --set gateway.rpc.connString=${{ secrets.HYBRID_MDCB_HOST }} ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }} --debug
-          elif [ "${{ matrix.directory }}" == tyk-pro ]; then
-            helm install --set mdcb.license="${{ secrets.MDCB_LICENSE }}" --set dash.license="${{ secrets.DASH_LICENSE }}" ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }} --wait --debug
-          fi
-
-      - name: Upgrade "${{ matrix.directory }}" chart
-        run: |
-          if [ "${{ matrix.directory }}" == tyk-headless ]; then
-            helm upgrade -f ${{ env.TYK_CE }} ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
-          elif [ "${{ matrix.directory }}" == tyk-hybrid ]; then
-            helm upgrade -f ${{ env.TYK_HYBRID }} --set gateway.rpc.rpcKey=${{ secrets.HYBRID_RPC_KEY }} --set gateway.rpc.apiKey=${{ secrets.HYBRID_API_KEY }} --set gateway.rpc.connString=${{ secrets.HYBRID_MDCB_HOST }} ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
-          elif [ "${{ matrix.directory }}" == tyk-pro ]; then
-            helm upgrade -f ${{ env.TYK_PRO }} \
-              --set mdcb.license="${{ secrets.MDCB_LICENSE }}" \
-              --set dash.license="${{ secrets.DASH_LICENSE }}" \
-              --set enterprisePortal.enabled="true" \
-              --set enterprisePortal.license="${{ secrets.PORTAL_LICENSE }}" \
-              --set enterprisePortal.storage.database.connectionString="host=tyk-postgres-postgresql.${{ env.NAMESPACE }}.svc.cluster.local port=5432 user=postgres password=$(kubectl get secret -n ${{ env.NAMESPACE }} tyk-postgres-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d) database=tyk_enterprise_portal sslmode=disable" \
-              ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
-          fi
-      - name: Uninstall "${{ matrix.directory }}" chart
-        run: |
-          helm uninstall ${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
+        - name: Upgrade "${{ matrix.directory }}" chart
+          run: |
+            if [ "${{ matrix.directory }}" == tyk-headless ]; then
+              helm upgrade -f ${{ env.TYK_CE }} ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
+            elif [ "${{ matrix.directory }}" == tyk-hybrid ]; then
+              helm upgrade -f ${{ env.TYK_HYBRID }} --set gateway.rpc.rpcKey=${{ secrets.HYBRID_RPC_KEY }} --set gateway.rpc.apiKey=${{ secrets.HYBRID_API_KEY }} --set gateway.rpc.connString=${{ secrets.HYBRID_MDCB_HOST }} ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
+            elif [ "${{ matrix.directory }}" == tyk-pro ]; then
+              helm upgrade -f ${{ env.TYK_PRO }} \
+                --set mdcb.license="${{ secrets.MDCB_LICENSE }}" \
+                --set dash.license="${{ secrets.DASH_LICENSE }}" \
+                --set enterprisePortal.enabled="true" \
+                --set enterprisePortal.license="${{ secrets.PORTAL_LICENSE }}" \
+                --set enterprisePortal.storage.database.connectionString="host=tyk-postgres-postgresql.${{ env.NAMESPACE }}.svc.cluster.local port=5432 user=postgres password=$(kubectl get secret -n ${{ env.NAMESPACE }} tyk-postgres-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d) database=tyk_enterprise_portal sslmode=disable" \
+                ${{ matrix.directory }} ./${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
+            fi
+            
+        - name: Uninstall "${{ matrix.directory }}" chart
+          run: |
+            helm uninstall ${{ matrix.directory }} -n ${{ env.NAMESPACE }} --timeout ${{ env.TIMEOUT }}
