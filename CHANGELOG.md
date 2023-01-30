@@ -7,6 +7,9 @@
 **Updated:**
 - Update versions of all the components to latest.
 
+**Added**
+- Added support for persistence to headless gateway [#243](https://github.com/TykTechnologies/tyk-helm-chart/pull/243)
+
 ## [v0.13.2](https://github.com/TykTechnologies/tyk-helm-chart/tree/v0.13.2)
 [Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.13.1...v0.13.2)
 
