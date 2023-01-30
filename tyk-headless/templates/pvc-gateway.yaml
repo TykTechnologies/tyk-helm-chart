@@ -1,0 +1,26 @@
+{{- if .Values.gateway.persistence.enabled }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: gateway-{{ include "tyk-headless.fullname" . }}
+  labels:
+    app: gateway-{{ include "tyk-headless.fullname" . }}
+    chart: {{ include "tyk-headless.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  accessModes:
+  {{- range .Values.gateway.persistence.accessModes }}
+    - {{ . | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.gateway.persistence.size }}
+{{- if .Values.gateway.persistence.class }}
+{{- if (eq "-" .Values.gateway.persistence.class) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: {{ .Values.gateway.persistence.class }}
+{{- end }}
+{{- end }}
+{{- end }}
