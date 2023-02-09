@@ -114,7 +114,7 @@ mdcb:
   containerPort: 9090
   image:
     # Requires credential
-    repository: tykio/tyk-mdcb-docker
+    repository: docker.tyk.io/tyk-mdcb-docker
     tag: v2.0.4
     pullPolicy: Always
   service:
@@ -158,7 +158,7 @@ tib:
   replicaCount: 1
   containerPort: 3010
   image:
-    repository: tykio/tyk-identity-broker
+    repository: docker.tyk.io/tyk-identity-broker
     tag: v1.3.1
     pullPolicy: Always
   service:
@@ -245,7 +245,7 @@ dash:
   replicaCount: 1
   containerPort: 3000
   image:
-    repository: tykio/tyk-dashboard
+    repository: docker.tyk.io/tyk-dashboard
     tag: v4.3.1
     pullPolicy: Always
   service:
@@ -349,7 +349,7 @@ enterprisePortal:
   replicaCount: 1
   containerPort: 3001
   image:
-    repository: tykio/portal
+    repository: docker.tyk.io/portal
     tag: v1.0.0
     pullPolicy: Always
   service:
@@ -419,7 +419,7 @@ gateway:
   replicaCount: 1
   containerPort: 8080
   image:
-    repository: tykio/tyk-gateway
+    repository: docker.tyk.io/tyk-gateway
     tag: v4.3.1
     pullPolicy: Always
   service:
@@ -480,7 +480,7 @@ pump:
 
   replicaCount: 1
   image:
-    repository: tykio/tyk-pump-docker-pub
+    repository: docker.tyk.io/tyk-pump-docker-pub
     tag: v1.7.0
     pullPolicy: Always
   annotations: {}
