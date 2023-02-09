@@ -460,7 +460,7 @@ pump:
 
   replicaCount: 1
   image:
-    repository: docker.tyk.io/tyk-pump-docker-pub
+    repository: tykio/tyk-pump-docker-pub
     tag: v1.7.0
     pullPolicy: Always
   annotations: {}
