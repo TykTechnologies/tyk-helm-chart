@@ -114,7 +114,7 @@ mdcb:
   containerPort: 9090
   image:
     # Requires credential
-    repository: docker.tyk.io/tyk-mdcb-docker
+    repository: tykio/tyk-mdcb-docker
     tag: v2.0.4
     pullPolicy: Always
   service:
@@ -480,7 +480,7 @@ pump:
 
   replicaCount: 1
   image:
-    repository: tykio/tyk-pump-docker-pub
+    repository: docker.tyk.io/tyk-pump-docker-pub
     tag: v1.7.0
     pullPolicy: Always
   annotations: {}
