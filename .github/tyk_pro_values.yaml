@@ -238,7 +238,7 @@ dash:
   replicaCount: 1
   containerPort: 3000
   image:
-    repository: docker.tyk.io/tyk-dashboard
+    repository: tykio/tyk-dashboard
     tag: v4.3.1
     pullPolicy: Always
   service:
@@ -331,7 +331,7 @@ enterprisePortal:
   replicaCount: 1
   containerPort: 3001
   image:
-    repository: docker.tyk.io/portal
+    repository: tykio/portal
     tag: v1.0.0
     pullPolicy: Always
   service:
