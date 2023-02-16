@@ -98,12 +98,9 @@ spec:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
                 key: MDCBLicense
-        {{- if .Values.mdcb.extraEnvs }}
-        {{- range $env := .Values.mdcb.extraEnvs }}
-          - name: {{ $env.name }}
-            value: {{ $env.value | quote }}
-        {{- end }}
-        {{- end }}
+          {{- with .Values.mdcb.extraEnvs }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
         resources:
         {{ toYaml .Values.mdcb.resources | indent 12 }}
         command: ["/opt/tyk-sink/tyk-sink", "--c=/etc/tyk-sink/tyk_sink.conf"]

@@ -144,12 +144,9 @@ spec:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
                 key: mongoURL
           {{ end }}
-        {{- if .Values.pump.extraEnvs }}
-        {{- range $env := .Values.pump.extraEnvs }}
-          - name: {{ $env.name }}
-            value: {{ $env.value | quote }}
-        {{- end }}
-        {{- end }}
+          {{- with .Values.pump.extraEnvs }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
         command: ["/opt/tyk-pump/tyk-pump", "-c", "/etc/tyk-pump/pump.conf"]
         volumeMounts:
           - name: tyk-pump-conf

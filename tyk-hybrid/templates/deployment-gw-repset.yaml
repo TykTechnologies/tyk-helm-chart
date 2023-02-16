@@ -137,12 +137,9 @@ spec:
             value: "{{ .Values.gateway.tags }}"
             {{- end }}
         {{- end }}
-        {{- if .Values.gateway.extraEnvs }}
-        {{- range $env := .Values.gateway.extraEnvs }}
-          - name: {{ $env.name }}
-            value: {{ $env.value | quote }}
-        {{- end }}
-        {{- end }}
+          {{- with .Values.gateway.extraEnvs }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
         command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
         workingDir: /opt/tyk-gateway
         ports:

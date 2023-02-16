@@ -88,12 +88,9 @@ spec:
             value: "{{ include "tyk-pro.dash_proto" . }}://dashboard-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
           - name: TYK_IB_TYKAPISETTINGS_DASHBOARDCONFIG_PORT
             value: "{{ .Values.dash.service.port }}"
-        {{- if .Values.tib.extraEnvs }}
-        {{- range $env := .Values.tib.extraEnvs }}
-          - name: {{ $env.name }}
-            value: {{ $env.value | quote }}
-        {{- end }}
-        {{- end }}
+          {{- with .Values.tib.extraEnvs }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
         resources:
 {{ toYaml .Values.tib.resources | indent 10 }}
         ports:

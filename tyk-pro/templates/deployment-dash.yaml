@@ -163,8 +163,8 @@ spec:
           - name: TYK_DB_MONGOUSESSL
             value: "{{ default "false" .Values.mongo.useSSL }}"
           {{ end }}
-          {{- if .Values.dash.extraEnvs }}
-          {{- toYaml .Values.dash.extraEnvs| nindent 10 }}
+          {{- with .Values.dash.extraEnvs }}
+          {{- toYaml . | nindent 10 }}
           {{- end }}
         resources:
 {{ toYaml .Values.dash.resources | indent 12 }}
