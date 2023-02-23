@@ -95,7 +95,7 @@ gateway:
   replicaCount: 1
   containerPort: 8080
   image:
-    repository: tykio/tyk-gateway
+    repository: docker.tyk.io/tyk-gateway/tyk-gateway
     tag: v4.3.1
     pullPolicy: Always
   service:
