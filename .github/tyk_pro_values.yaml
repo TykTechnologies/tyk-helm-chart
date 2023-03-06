@@ -151,7 +151,7 @@ tib:
   replicaCount: 1
   containerPort: 3010
   image:
-    repository: tykio/tyk-identity-broker
+    repository: docker.tyk.io/tyk-identity-broker/tyk-identity-broker
     tag: v1.3.1
     pullPolicy: Always
   service:
@@ -399,7 +399,7 @@ gateway:
   replicaCount: 2
   containerPort: 8080
   image:
-    repository: tykio/tyk-gateway
+    repository: docker.tyk.io/tyk-gateway/tyk-gateway
     tag: v4.3.1
     pullPolicy: Always
   service:
@@ -460,7 +460,7 @@ pump:
 
   replicaCount: 1
   image:
-    repository: tykio/tyk-pump-docker-pub
+    repository: docker.tyk.io/tyk-pump/tyk-pump
     tag: v1.7.0
     pullPolicy: Always
   annotations: {}

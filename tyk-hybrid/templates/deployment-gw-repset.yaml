@@ -43,7 +43,7 @@ spec:
         checksum/secret-certs: {{ include (print $.Template.BasePath "/secret-certs.yaml") . | sha256sum }}
         {{- if .Values.gateway.mounts }}
         {{- range $secret := .Values.gateway.mounts }}
-        "checksum/secret-{{ $secret.name }}": {{ include (print "mounts/%s" $secret.filename) . | sha256sum }}
+        "checksum/secret-{{ $secret.name }}": {{ print "mounts/%s" $secret.filename | sha256sum }}
         {{- end }}
         {{- end }}
     spec:
