@@ -143,6 +143,8 @@ spec:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
                 key: mongoURL
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_MONGOUSESSL
+            value: "{{ default "false" .Values.mongo.useSSL }}"
           {{ end }}
         {{- if .Values.pump.extraEnvs }}
         {{- range $env := .Values.pump.extraEnvs }}
