@@ -160,6 +160,19 @@ gateway:
       effect: NoSchedule
   affinity: {}
   extraEnvs: []
+  ## extraVolumes A list of volumes to be added to the pod
+  ## extraVolumes:
+  ##   - name: ca-certs
+  ##     secret:
+  ##       defaultMode: 420
+  ##       secretName: ca-certs
+  extraVolumes: []
+  ## extraVolumeMounts A list of volume mounts to be added to the pod
+  ## extraVolumeMounts:
+  ##   - name: ca-certs
+  ##     mountPath: /etc/ssl/certs/ca-certs.crt
+  ##     readOnly: true
+  extraVolumeMounts: [] ## extraVolumes A list of volumes to be added to the pod
   mounts: []
 
 # If pump is enabled the Gateway will create and collect analytics data to send
@@ -195,6 +208,19 @@ pump:
   tolerations: []
   affinity: {}
   extraEnvs: []
+  ## extraVolumes A list of volumes to be added to the pod
+  ## extraVolumes:
+  ##   - name: ca-certs
+  ##     secret:
+  ##       defaultMode: 420
+  ##       secretName: ca-certs
+  extraVolumes: []
+  ## extraVolumeMounts A list of volume mounts to be added to the pod
+  ## extraVolumeMounts:
+  ##   - name: ca-certs
+  ##     mountPath: /etc/ssl/certs/ca-certs.crt
+  ##     readOnly: true
+  extraVolumeMounts: []## extraVolumes A list of volumes to be added to the pod
   mounts: []
 
 rbac: true

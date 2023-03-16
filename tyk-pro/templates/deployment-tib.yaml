@@ -113,6 +113,9 @@ spec:
             mountPath: {{ $secret.mountPath }}
           {{- end }}
           {{- end }}
+          {{- if .Values.tib.extraVolumeMounts }}
+          {{- include "tyk-pro.tplvalues.render" (dict "value" .Values.tib.extraVolumeMounts "context" $) | nindent 10 }}
+          {{- end }}
         livenessProbe:
           httpGet:
             scheme: "HTTP"
@@ -148,5 +151,8 @@ spec:
           secret:
             secretName: {{ $.Release.Name }}-tib-secret-{{ $secret.name }}
         {{- end }}
+        {{- end }}
+        {{- if .Values.tib.extraVolumes }}
+        {{- include "tyk-pro.tplvalues.render" (dict "value" .Values.tib.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
 {{- end }}

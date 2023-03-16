@@ -167,6 +167,9 @@ spec:
             mountPath: {{ $secret.mountPath }}
           {{- end }}
           {{- end }}
+          {{- if .Values.gateway.extraVolumeMounts }}
+          {{- include "tyk-pro.tplvalues.render" (dict "value" .Values.gateway.extraVolumeMounts "context" $) | nindent 10 }}
+          {{- end }}
         livenessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.gateway.tls }}S{{ end }}"
@@ -215,5 +218,8 @@ spec:
           secret:
             secretName: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
         {{- end }}
+        {{- end }}
+        {{- if .Values.mdcb.extraVolumes }}
+        {{- include "tyk-pro.tplvalues.render" (dict "value" .Values.gateway.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
 {{- end }}

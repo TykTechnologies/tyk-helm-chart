@@ -100,3 +100,11 @@ mongo
 {{- define "tyk-pro.gateway-version" -}}
 {{- printf "%s" .Values.gateway.image.tag | replace "v" "" -}}
 {{- end -}}
+
+{{- define "tyk-pro.tplvalues.render" -}}
+    {{- if typeIs "string" .value }}
+        {{- tpl .value .context }}
+    {{- else }}
+        {{- tpl (.value | toYaml) .context }}
+    {{- end }}
+{{- end -}}

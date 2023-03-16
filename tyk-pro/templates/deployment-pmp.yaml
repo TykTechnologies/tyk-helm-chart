@@ -160,6 +160,9 @@ spec:
             mountPath: {{ $secret.mountPath }}
           {{- end }}
           {{- end }}
+          {{- if .Values.pump.extraVolumeMounts }}
+          {{- include "tyk-pro.tplvalues.render" (dict "value" .Values.pump.extraVolumeMounts "context" $) | nindent 10 }}
+          {{- end }}
         resources:
 {{ toYaml .Values.pump.resources | indent 12 }}
       {{- if .Values.pump.securityContext }}
@@ -179,5 +182,8 @@ spec:
           secret:
             secretName: {{ $.Release.Name }}-pump-secret-{{ $secret.name }}
         {{- end }}
+        {{- end }}
+        {{- if .Values.pump.extraVolumes }}
+        {{- include "tyk-pro.tplvalues.render" (dict "value" .Values.pump.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
 {{- end}}
