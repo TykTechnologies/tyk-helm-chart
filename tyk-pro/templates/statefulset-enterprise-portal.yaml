@@ -135,6 +135,9 @@ spec:
           - name: enterprise-portal-pvc-{{ include "tyk-pro.fullname" . }}
             mountPath: /tmp/tyk-portal
             subPath: tyk-portal
+          - name: enterprise-portal-pvc-{{ include "tyk-pro.fullname" . }}
+            mountPath: /opt/portal/themes
+            subPath: themes
           {{- if .Values.enterprisePortal.mounts }}
           {{- range $secret := .Values.enterprisePortal.mounts }}
           - name: {{ $.Release.Name }}-enterprise-portal-secret-{{ $secret.name }}
