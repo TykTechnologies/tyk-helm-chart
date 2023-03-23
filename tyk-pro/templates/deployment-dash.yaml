@@ -164,7 +164,7 @@ spec:
             value: "{{ default "false" .Values.mongo.useSSL }}"
           {{ end }}
           {{- if .Values.dash.extraEnvs }}
-          {{- toYaml .Values.dash.extraEnvs| nindent 10 }}
+          {{- include "tyk-pro.tplvalues.render" ( dict "value" .Values.dash.extraEnvs "context" $ ) | nindent 10 }}
           {{- end }}
         resources:
 {{ toYaml .Values.dash.resources | indent 12 }}
