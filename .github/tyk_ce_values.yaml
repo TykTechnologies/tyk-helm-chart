@@ -172,7 +172,7 @@ gateway:
   ##   - name: ca-certs
   ##     mountPath: /etc/ssl/certs/ca-certs.crt
   ##     readOnly: true
-  extraVolumeMounts: [] ## extraVolumes A list of volumes to be added to the pod
+  extraVolumeMounts: []
   mounts: []
 
 # If pump is enabled the Gateway will create and collect analytics data to send
@@ -220,7 +220,7 @@ pump:
   ##   - name: ca-certs
   ##     mountPath: /etc/ssl/certs/ca-certs.crt
   ##     readOnly: true
-  extraVolumeMounts: []## extraVolumes A list of volumes to be added to the pod
+  extraVolumeMounts: []
   mounts: []
 
 rbac: true
