@@ -84,13 +84,6 @@ spec:
             value: "{{ default "false" .Values.redis.useSSL }}"
           - name: TYK_MDCB_STORAGE_REDISSSLINSECURESKIPVERIFY
             value: "true"
-          - name: TYK_MDCB_ANALYTICSCONFIG_MONGOURL
-            valueFrom:
-              secretKeyRef:
-                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
-                key: mongoURL
-          - name: TYK_MDCB_ANALYTICSCONFIG_MONGOUSESSL
-            value: "{{ default "false" .Values.mongo.useSSL }}"
           - name: TYK_MDCB_FORWARDANALYTICSTOPUMP
             value: "{{ .Values.mdcb.forwardAnalyticsToPump }}"
           - name: TYK_MDCB_LICENSE
@@ -98,6 +91,25 @@ spec:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
                 key: MDCBLicense
+          {{ if eq "postgres" (include "tyk-pro.backend" .) }}
+          - name: TYK_MDCB_ANALYTICSCONFIG_TYPE
+            value: "postgres"
+          - name: TYK_MDCB_ANALYTICSCONFIG_CONNECTIONSTRING
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end }}
+                key: pgConnectionString
+          {{ else }}
+          - name: TYK_MDCB_ANALYTICSCONFIG_TYPE
+            value: "mongo"
+          - name: TYK_MDCB_ANALYTICSCONFIG_MONGOURL
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+                key: mongoURL
+          - name: TYK_MDCB_ANALYTICSCONFIG_MONGOUSESSL
+            value: "{{ default "false" .Values.mongo.useSSL }}"
+          {{ end }}
           {{- if .Values.mdcb.extraEnvs }}
           {{- include "tyk-pro.tplvalues.render" ( dict "value" .Values.mdcb.extraEnvs "context" $ ) | nindent 10 }}
           {{- end }}
