@@ -164,7 +164,7 @@ spec:
             value: "{{ default "false" .Values.mongo.useSSL }}"
           {{ end }}
           {{- if .Values.dash.extraEnvs }}
-          {{- toYaml .Values.dash.extraEnvs| nindent 10 }}
+          {{- include "tyk-pro.tplvalues.render" ( dict "value" .Values.dash.extraEnvs "context" $ ) | nindent 10 }}
           {{- end }}
         resources:
 {{ toYaml .Values.dash.resources | indent 12 }}
@@ -180,6 +180,9 @@ spec:
           - name: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
             mountPath: {{ $secret.mountPath }}
           {{- end }}
+          {{- end }}
+          {{- if .Values.dash.extraVolumeMounts }}
+          {{- include "tyk-pro.tplvalues.render" (dict "value" .Values.dash.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
         livenessProbe:
           httpGet:
@@ -216,5 +219,8 @@ spec:
           secret:
             secretName: {{ $.Release.Name }}-dash-secret-{{ $secret.name }}
         {{- end }}
+        {{- end }}
+        {{- if .Values.dash.extraVolumes }}
+        {{- include "tyk-pro.tplvalues.render" (dict "value" .Values.dash.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
 {{- end }}

@@ -142,6 +142,19 @@ gateway:
       effect: NoSchedule
   affinity: {}
   extraEnvs: []
+  ## extraVolumes A list of volumes to be added to the pod
+  ## extraVolumes:
+  ##   - name: ca-certs
+  ##     secret:
+  ##       defaultMode: 420
+  ##       secretName: ca-certs
+  extraVolumes: []
+  ## extraVolumeMounts A list of volume mounts to be added to the pod
+  ## extraVolumeMounts:
+  ##   - name: ca-certs
+  ##     mountPath: /etc/ssl/certs/ca-certs.crt
+  ##     readOnly: true
+  extraVolumeMounts: []
   mounts: []
 
 rbac: true

@@ -5,6 +5,7 @@ output.yaml
 tyk-pro/old_tpl
 values_real.yaml
 **/.DS_Store
+**/.idea
 
 !tyk-pro/mounts/.gitkeep
 tyk-pro/mounts/*

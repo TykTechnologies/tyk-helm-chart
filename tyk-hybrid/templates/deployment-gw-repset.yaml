@@ -115,34 +115,31 @@ spec:
             value: "{{ default "false" .Values.gateway.rpc.bindToSlugs }}"
           - name: TYK_GW_SLAVEOPTIONS_SSLINSECURESKIPVERIFY
             value: "{{ .Values.gateway.rpc.sslInsecureSkipVerify }}"
-        {{- if .Values.gateway.rpc.groupId }}
+          {{- if .Values.gateway.rpc.groupId }}
           - name: TYK_GW_SLAVEOPTIONS_GROUPID
             value: "{{ .Values.gateway.rpc.groupId }}"
-        {{- end }}
-        # Enable backward compatibility to chart 0.5.1.
-        {{- if or .Values.gateway.sharding .Values.enableSharding}}
+          {{- end }}
+          # Enable backward compatibility to chart 0.5.1.
+          {{- if or .Values.gateway.sharding .Values.enableSharding}}
           - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
             {{- if .Values.gateway.sharding }}
             value: "{{ .Values.gateway.sharding.enabled }}"
             {{- else }}
             value: "{{ .Values.enableSharding }}"
             {{- end }}
-        {{- end }}
-        # Enable backward compatibility to chart 0.5.1.
-        {{- if or .Values.gateway.sharding .Values.enableSharding}}
+          {{- end }}
+          # Enable backward compatibility to chart 0.5.1.
+          {{- if or .Values.gateway.sharding .Values.enableSharding}}
           - name: TYK_GW_DBAPPCONFOPTIONS_TAGS
             {{- if .Values.gateway.sharding }}
             value: "{{ .Values.gateway.sharding.tags }}"
             {{- else }}
             value: "{{ .Values.gateway.tags }}"
             {{- end }}
-        {{- end }}
-        {{- if .Values.gateway.extraEnvs }}
-        {{- range $env := .Values.gateway.extraEnvs }}
-          - name: {{ $env.name }}
-            value: {{ $env.value | quote }}
-        {{- end }}
-        {{- end }}
+          {{- end }}
+          {{- if .Values.gateway.extraEnvs }}
+          {{- include "tyk-hybrid.tplvalues.render" ( dict "value" .Values.gateway.extraEnvs "context" $ ) | nindent 10 }}
+          {{- end }}
         command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
         workingDir: /opt/tyk-gateway
         ports:
@@ -161,6 +158,9 @@ spec:
           - name: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
             mountPath: {{ $secret.mountPath }}
           {{- end }}
+          {{- end }}
+          {{- if .Values.gateway.extraVolumeMounts }}
+          {{- include "tyk-hybrid.tplvalues.render" (dict "value" .Values.gateway.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
         livenessProbe:
           httpGet:
@@ -202,4 +202,7 @@ spec:
           secret:
             secretName: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
         {{- end }}
+        {{- end }}
+        {{- if .Values.gateway.extraVolumes }}
+        {{- include "tyk-hybrid.tplvalues.render" (dict "value" .Values.gateway.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

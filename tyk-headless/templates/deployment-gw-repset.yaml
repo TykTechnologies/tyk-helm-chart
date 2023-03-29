@@ -66,7 +66,7 @@ spec:
         workingDir: /mnt/tyk-gateway
         volumeMounts:
           - name: tyk-scratch
-            mountPath: /mnt/tyk-gateway   
+            mountPath: /mnt/tyk-gateway
       containers:
       - name: gateway-{{ .Chart.Name }}
         image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
@@ -137,12 +137,9 @@ spec:
           - name: TYK_GW_ENABLEANALYTICS
             value: "true"
             {{- end }}
-        {{- if .Values.gateway.extraEnvs }}
-        {{- range $env := .Values.gateway.extraEnvs }}
-          - name: {{ $env.name }}
-            value: {{ $env.value | quote }}
-        {{- end }}
-        {{- end }}
+          {{- if .Values.gateway.extraEnvs }}
+          {{- include "tyk-headless.tplvalues.render" ( dict "value" .Values.gateway.extraEnvs "context" $ ) | nindent 10 }}
+          {{- end }}
         command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
         workingDir: /opt/tyk-gateway
         ports:
@@ -164,6 +161,9 @@ spec:
           - name: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
             mountPath: {{ $secret.mountPath }}
           {{- end }}
+          {{- end }}
+          {{- if .Values.gateway.extraVolumeMounts }}
+          {{- include "tyk-headless.tplvalues.render" (dict "value" .Values.gateway.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
         livenessProbe:
           httpGet:
@@ -213,4 +213,7 @@ spec:
           secret:
             secretName: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
         {{- end }}
+        {{- end }}
+        {{- if .Values.gateway.extraVolumes }}
+        {{- include "tyk-headless.tplvalues.render" (dict "value" .Values.gateway.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

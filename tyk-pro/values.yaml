@@ -141,6 +141,19 @@ mdcb:
   tolerations: []
   affinity: {}
   extraEnvs: []
+  ## extraVolumes A list of volumes to be added to the pod
+  ## extraVolumes:
+  ##   - name: ca-certs
+  ##     secret:
+  ##       defaultMode: 420
+  ##       secretName: ca-certs
+  extraVolumes: []
+  ## extraVolumeMounts A list of volume mounts to be added to the pod
+  ## extraVolumeMounts:
+  ##   - name: ca-certs
+  ##     mountPath: /etc/ssl/certs/ca-certs.crt
+  ##     readOnly: true
+  extraVolumeMounts: []
   mounts: []
 
 tib:
@@ -199,6 +212,19 @@ tib:
   tolerations: []
   affinity: {}
   extraEnvs: []
+  ## extraVolumes A list of volumes to be added to the pod
+  ## extraVolumes:
+  ##   - name: ca-certs
+  ##     secret:
+  ##       defaultMode: 420
+  ##       secretName: ca-certs
+  extraVolumes: []
+  ## extraVolumeMounts A list of volume mounts to be added to the pod
+  ## extraVolumeMounts:
+  ##   - name: ca-certs
+  ##     mountPath: /etc/ssl/certs/ca-certs.crt
+  ##     readOnly: true
+  extraVolumeMounts: []
   configMap:
     # Create a configMap to store profiles json
     profiles: tyk-tib-profiles-conf
@@ -290,6 +316,19 @@ dash:
   tolerations: []
   affinity: {}
   extraEnvs: []
+  ## extraVolumes A list of volumes to be added to the pod
+  ## extraVolumes:
+  ##   - name: ca-certs
+  ##     secret:
+  ##       defaultMode: 420
+  ##       secretName: ca-certs
+  extraVolumes: []
+  ## extraVolumeMounts A list of volume mounts to be added to the pod
+  ## extraVolumeMounts:
+  ##   - name: ca-certs
+  ##     mountPath: /etc/ssl/certs/ca-certs.crt
+  ##     readOnly: true
+  extraVolumeMounts: []
   mounts: []
 
 portal:
@@ -394,6 +433,19 @@ enterprisePortal:
   tolerations: []
   affinity: {}
   extraEnvs: []
+  ## extraVolumes A list of volumes to be added to the pod
+  ## extraVolumes:
+  ##   - name: ca-certs
+  ##     secret:
+  ##       defaultMode: 420
+  ##       secretName: ca-certs
+  extraVolumes: []
+  ## extraVolumeMounts A list of volume mounts to be added to the pod
+  ## extraVolumeMounts:
+  ##   - name: ca-certs
+  ##     mountPath: /etc/ssl/certs/ca-certs.crt
+  ##     readOnly: true
+  extraVolumeMounts: []
   mounts: []
 
 gateway:
@@ -472,10 +524,23 @@ gateway:
       effect: NoSchedule
   affinity: {}
   extraEnvs: []
+  ## extraVolumes A list of volumes to be added to the pod
+  ## extraVolumes:
+  ##   - name: ca-certs
+  ##     secret:
+  ##       defaultMode: 420
+  ##       secretName: ca-certs
+  extraVolumes: []
+  ## extraVolumeMounts A list of volume mounts to be added to the pod
+  ## extraVolumeMounts:
+  ##   - name: ca-certs
+  ##     mountPath: /etc/ssl/certs/ca-certs.crt
+  ##     readOnly: true
+  extraVolumeMounts: []
   mounts: []
 
 pump:
-  # Determines whether or not the pump component should be installed.
+  # Determines whether the pump component should be installed.
   enabled: true
 
   replicaCount: 1
@@ -503,6 +568,19 @@ pump:
   tolerations: []
   affinity: {}
   extraEnvs: []
+  ## extraVolumes A list of volumes to be added to the pod
+  ## extraVolumes:
+  ##   - name: ca-certs
+  ##     secret:
+  ##       defaultMode: 420
+  ##       secretName: ca-certs
+  extraVolumes: []
+  ## extraVolumeMounts A list of volume mounts to be added to the pod
+  ## extraVolumeMounts:
+  ##   - name: ca-certs
+  ##     mountPath: /etc/ssl/certs/ca-certs.crt
+  ##     readOnly: true
+  extraVolumeMounts: []
   mounts: []
 
 rbac: true
