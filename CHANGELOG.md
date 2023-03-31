@@ -1,8 +1,11 @@
 # Changelog
 
 ## [Unreleased](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
-
 [Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.13.2...HEAD)
+
+## [v0.14.0](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
+
+[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.13.2...v0.14.0)
 
 **Added**:
 - PostgreSQL support for MDCB.
