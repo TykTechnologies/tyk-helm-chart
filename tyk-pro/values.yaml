@@ -171,7 +171,7 @@ tib:
   replicaCount: 1
   containerPort: 3010
   image:
-    repository: docker.tyk.io/tyk-identity-broker/tyk-identity-broker
+    repository: tykio/tyk-identity-broker
     tag: v1.3.2
     pullPolicy: Always
   service:
