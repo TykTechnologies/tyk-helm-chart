@@ -107,7 +107,7 @@ gateway:
   containerPort: 8080
   image:
     repository: docker.tyk.io/tyk-gateway/tyk-gateway
-    tag: v4.3.1
+    tag: v5.0.0
     pullPolicy: IfNotPresent
   service:
     type: NodePort
