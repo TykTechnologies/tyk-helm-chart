@@ -96,7 +96,7 @@ gateway:
   containerPort: 8080
   image:
     repository: tykio/tyk-gateway
-    tag: v4.3.1
+    tag: v5.0.0
     pullPolicy: Always
   service:
     type: NodePort
