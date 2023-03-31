@@ -4,8 +4,18 @@
 
 [Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.13.2...HEAD)
 
+**Added**:
+- PostgreSQL support for MDCB.
+- Add new fields to values.yaml files to allow defining extra `volume` and `volumeMounts`. [#246](https://github.com/TykTechnologies/tyk-helm-chart/issues/246)
+
 **Updated:**
 - Update versions of all the components to latest.
+- Updated image repository of charts to `docker.tyk.io`.
+
+**Fixed:**
+- Typo in bootstrap job name in tyk-pro chart.
+- Failures happening while mounting files into components. [#256](https://github.com/TykTechnologies/tyk-helm-chart/issues/256)
+- Missing `volumeMount` in Enterprise Portal's StatefulSet.
 
 ## [v0.13.2](https://github.com/TykTechnologies/tyk-helm-chart/tree/v0.13.2)
 [Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.13.1...v0.13.2)
