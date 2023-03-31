@@ -216,7 +216,7 @@ spec:
             secretName: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
         {{- end }}
         {{- end }}
-        {{- if .Values.mdcb.extraVolumes }}
+        {{- if .Values.gateway.extraVolumes }}
         {{- include "tyk-pro.tplvalues.render" (dict "value" .Values.gateway.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
 {{- end }}
