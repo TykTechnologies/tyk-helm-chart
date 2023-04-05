@@ -15,3 +15,5 @@ tyk-hybrid/mounts/*
 
 !tyk-headless/mounts/.gitkeep
 tyk-headless/mounts/*
+
+.vscode
