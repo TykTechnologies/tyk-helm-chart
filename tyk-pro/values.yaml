@@ -389,6 +389,7 @@ enterprisePortal:
   containerPort: 3001
   image:
     repository: tykio/portal
+  # Enterprise portal < v1.2 is not supported
     tag: v1.2.0
     pullPolicy: Always
   service:
