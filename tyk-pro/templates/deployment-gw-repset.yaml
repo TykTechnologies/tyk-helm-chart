@@ -105,15 +105,15 @@ spec:
             value: "{{ default "0" .Values.redis.storage.database }}"
           - name: TYK_GW_STORAGE_USESSL
             value: "{{ default "false" .Values.redis.useSSL }}"
-        # Enable backward compatibility to chart 0.8.1.
-        {{- if or .Values.gateway.sharding .Values.enableSharding}}
+          # Enable backward compatibility to chart 0.8.1.
+          {{- if or .Values.gateway.sharding .Values.enableSharding}}
           - name: TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED
             {{- if .Values.gateway.sharding }}
             value: "{{ .Values.gateway.sharding.enabled }}"
             {{- else }}
             value: "{{ .Values.enableSharding }}"
             {{- end }}
-        {{- end }}
+          {{- end }}
           - name: TYK_GW_DBAPPCONFOPTIONS_CONNECTIONSTRING
             value: "{{ include "tyk-pro.dash_proto" . }}://dashboard-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.dash.service.port }}"
           - name: TYK_GW_POLICIES_POLICYCONNECTIONSTRING
@@ -128,23 +128,20 @@ spec:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
                 key: APISecret
-        # Enable backward compatibility to chart 0.8.1.
-        {{- if or .Values.gateway.sharding .Values.enableSharding}}
+          # Enable backward compatibility to chart 0.8.1.
+          {{- if or .Values.gateway.sharding .Values.enableSharding}}
           - name: TYK_GW_DBAPPCONFOPTIONS_TAGS
             {{- if .Values.gateway.sharding }}
             value: "{{ .Values.gateway.sharding.tags }}"
             {{- else }}
             value: "{{ .Values.gateway.tags }}"
             {{- end }}
-        {{- end }}
+          {{- end }}
           - name: TYK_GW_HTTPSERVEROPTIONS_USESSL
             value: "{{ .Values.gateway.tls }}"
-        {{- if .Values.gateway.extraEnvs }}
-        {{- range $env := .Values.gateway.extraEnvs }}
-          - name: {{ $env.name }}
-            value: {{ $env.value | quote }}
-        {{- end }}
-        {{- end }}
+          {{- if .Values.gateway.extraEnvs }}
+          {{- include "tyk-pro.tplvalues.render" ( dict "value" .Values.gateway.extraEnvs "context" $ ) | nindent 10 }}
+          {{- end }}
         command: ["/opt/tyk-gateway/tyk", "--conf=/etc/tyk-gateway/tyk.conf"]
         workingDir: /opt/tyk-gateway
         ports:
@@ -166,6 +163,9 @@ spec:
           - name: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
             mountPath: {{ $secret.mountPath }}
           {{- end }}
+          {{- end }}
+          {{- if .Values.gateway.extraVolumeMounts }}
+          {{- include "tyk-pro.tplvalues.render" (dict "value" .Values.gateway.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
         livenessProbe:
           httpGet:
@@ -215,5 +215,8 @@ spec:
           secret:
             secretName: {{ $.Release.Name }}-gateway-secret-{{ $secret.name }}
         {{- end }}
+        {{- end }}
+        {{- if .Values.gateway.extraVolumes }}
+        {{- include "tyk-pro.tplvalues.render" (dict "value" .Values.gateway.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
 {{- end }}

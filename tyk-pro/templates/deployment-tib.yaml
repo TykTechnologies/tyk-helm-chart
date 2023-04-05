@@ -88,12 +88,9 @@ spec:
             value: "{{ include "tyk-pro.dash_proto" . }}://dashboard-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}"
           - name: TYK_IB_TYKAPISETTINGS_DASHBOARDCONFIG_PORT
             value: "{{ .Values.dash.service.port }}"
-        {{- if .Values.tib.extraEnvs }}
-        {{- range $env := .Values.tib.extraEnvs }}
-          - name: {{ $env.name }}
-            value: {{ $env.value | quote }}
-        {{- end }}
-        {{- end }}
+          {{- if .Values.tib.extraEnvs }}
+          {{- include "tyk-pro.tplvalues.render" ( dict "value" .Values.tib.extraEnvs "context" $ ) | nindent 10 }}
+          {{- end }}
         resources:
 {{ toYaml .Values.tib.resources | indent 10 }}
         ports:
@@ -112,6 +109,9 @@ spec:
           - name: {{ $.Release.Name }}-tib-secret-{{ $secret.name }}
             mountPath: {{ $secret.mountPath }}
           {{- end }}
+          {{- end }}
+          {{- if .Values.tib.extraVolumeMounts }}
+          {{- include "tyk-pro.tplvalues.render" (dict "value" .Values.tib.extraVolumeMounts "context" $) | nindent 10 }}
           {{- end }}
         livenessProbe:
           httpGet:
@@ -148,5 +148,8 @@ spec:
           secret:
             secretName: {{ $.Release.Name }}-tib-secret-{{ $secret.name }}
         {{- end }}
+        {{- end }}
+        {{- if .Values.tib.extraVolumes }}
+        {{- include "tyk-pro.tplvalues.render" (dict "value" .Values.tib.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
 {{- end }}
