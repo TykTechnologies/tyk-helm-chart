@@ -14,6 +14,7 @@
 **Updated:**
 - Update versions of all the components to latest.
 - Updated image repository of charts to `docker.tyk.io`.
+- Updated version of enterprise portal to v1.2.0
 
 **Fixed:**
 - Typo in bootstrap job name in tyk-pro chart.
