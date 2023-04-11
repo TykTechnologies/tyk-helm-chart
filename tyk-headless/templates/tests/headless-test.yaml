@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "tyk-headless.fullname" . }}-test-tyk-headless"
+  labels:
+    chart: {{ include "tyk-headless.chart" . }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  restartPolicy: Never
+  containers:
+    - name: health-check-container
+      image: alpine:3.17
+      command:
+        - /bin/sh
+        - -c
+        - /tests/headless-test.sh
+      volumeMounts:
+        - mountPath: "/tests"
+          name: test-tyk-headless
+      env:
+        - name: TYK_GW_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end}}
+              key: APISecret
+  volumes:
+    - name: test-tyk-headless
+      configMap:
+        name: test-tyk-headless-map
+        defaultMode: 0777
