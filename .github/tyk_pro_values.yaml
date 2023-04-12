@@ -371,7 +371,7 @@ enterprisePortal:
   containerPort: 3001
   image:
     repository: tykio/portal
-    tag: v1.0.0
+    tag: v1.2.0
     pullPolicy: Always
   service:
     type: NodePort
