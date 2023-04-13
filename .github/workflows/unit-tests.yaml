@@ -19,4 +19,4 @@ jobs:
         run: helm plugin install https://github.com/quintush/helm-unittest
 
       - name: Run unit tests for tyk-headless
-        run: helm unittest ./tyk-headless -3
+        run: helm unittest ./tyk-headless
