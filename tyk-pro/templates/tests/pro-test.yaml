@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "tyk-pro.fullname" . }}-test-tyk-pro"
+  labels:
+    chart: {{ include "tyk-pro.chart" . }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  restartPolicy: Never
+  containers:
+    - name: health-check-container
+      image: alpine:3.17
+      command:
+        - /bin/sh
+        - -c
+        - /tests/pro-tests.sh
+      volumeMounts:
+        - mountPath: "/tests"
+          name: test-tyk-pro
+      env:
+        # Dashboard
+        - name: TYK_DASHBOARD_SVC
+          value: dashboard-svc-{{ include "tyk-pro.fullname" . }}
+        - name: TYK_DB_LISTENPORT
+          value: "{{ .Values.dash.containerPort }}"
+        - name: TYK_DASHBOARD_PROTO
+          value: {{ include "tyk-pro.dash_proto" . }}
+        # Gateway
+        - name: TYK_GATEWAY_PROTO
+          value: {{ include "tyk-pro.gwproto" . }}
+        - name: TYK_GATEWAY_SVC
+          value: gateway-svc-{{ include "tyk-pro.fullname" . }}
+        - name: TYK_GW_LISTENPORT
+          value: "{{ .Values.gateway.containerPort }}"
+
+        - name: TYK_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: TYK_AUTH
+          value: {{ .Values.secrets.AdminSecret | quote }}
+        - name: TYK_ORG_NAME
+          value: {{ .Values.dash.org.name | quote }}
+
+        - name: TYK_GW_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-pro.fullname" . }} {{ end}}
+              key: APISecret
+  volumes:
+    - name: test-tyk-pro
+      configMap:
+        name: test-tyk-pro
+        defaultMode: 0777
