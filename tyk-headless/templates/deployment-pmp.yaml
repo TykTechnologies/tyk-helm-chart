@@ -123,6 +123,9 @@ spec:
               secretKeyRef:
                 name: {{ if .Values.secrets.useSecretName }} {{ .Values.secrets.useSecretName }} {{ else }} secrets-{{ include "tyk-headless.fullname" . }} {{ end }}
                 key: mongoURL
+
+          - name: TYK_PMP_UPTIMEPUMPCONFIG_MONGOUSESSL
+            value: "{{ default "false" .Values.mongo.useSSL }}"
           {{ end }}
 
           - name: TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS
