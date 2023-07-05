@@ -84,7 +84,7 @@ spec:
           - name: PROVIDER_NAME
             value: "tyk"
           - name: TYK_URL
-            value: "http{{ if .Values.dash.tls }}s{{ end }}://dashboard-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}.svc:{{ .Values.dash.service.port }}"
+            value: "http{{ if .Values.dash.tls }}s{{ end }}://dashboard-svc-{{ .Release.Name }}.{{ .Release.Namespace }}.svc:{{ .Values.dash.service.port }}"
           - name: TYK_AUTH
             valueFrom:
               secretKeyRef:
