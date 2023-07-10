@@ -149,7 +149,7 @@ spec:
             scheme: "HTTP{{ if .Values.enterprisePortal.tls }}S{{ end }}"
             path: /
             port: {{ .Values.enterprisePortal.containerPort }}
-          initialDelaySeconds: 60
+          initialDelaySeconds: {{ default 60 .Values.enterprisePortal.livenessProbe.initialDelaySeconds}}
           periodSeconds: 2
           timeoutSeconds: 3
           failureThreshold: 2
@@ -158,7 +158,7 @@ spec:
             scheme: "HTTP{{ if .Values.enterprisePortal.tls }}S{{ end }}"
             path: /
             port: {{ .Values.enterprisePortal.containerPort }}
-          initialDelaySeconds: 60
+          initialDelaySeconds: {{ default 60 .Values.enterprisePortal.readinessProbe.initialDelaySeconds}}
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3

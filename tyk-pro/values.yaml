@@ -373,6 +373,15 @@ enterprisePortal:
   adminUser:
     email: default@example.com
     password: topsecretpassword
+
+  # Configure liveness probe fields of enterprise portal
+  livenessProbe:
+    initialDelaySeconds: 60
+
+  # Configure readiness probe fields of enterprise portal
+  readinessProbe:
+    initialDelaySeconds: 60
+
   storage:
     database:
       type: postgres
