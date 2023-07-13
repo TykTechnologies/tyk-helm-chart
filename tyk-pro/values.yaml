@@ -20,7 +20,7 @@ bootstrap: true
 
 # Settings related to k8s that are ran when installing the tyk stack
 jobs:
-  bootstrapJobName: bootsrap-post-install
+  bootstrapJobName: bootstrap-post-install
 
 
 # These are your Tyk stack secrets will directly map to the following
@@ -360,7 +360,7 @@ enterprisePortal:
   # Determines whether or not the enterprise portal component should be installed.
   enabled: false
 
-  # Eenterprise Portal will only bootstrap if the tyk-enterprise-portal-conf secret
+  # Enterprise Portal will only bootstrap if the tyk-enterprise-portal-conf secret
   # is present. The secret is created during the dashboard bootstraping and
   # be turned on and off using the dash.enterprisePortalSecret bool.
   bootstrap: true
@@ -373,6 +373,15 @@ enterprisePortal:
   adminUser:
     email: default@example.com
     password: topsecretpassword
+
+  # Configure liveness probe fields of enterprise portal
+  livenessProbe:
+    initialDelaySeconds: 60
+
+  # Configure readiness probe fields of enterprise portal
+  readinessProbe:
+    initialDelaySeconds: 60
+
   storage:
     database:
       type: postgres

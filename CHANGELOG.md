@@ -1,7 +1,11 @@
 # Changelog
 
 ## [Unreleased](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
-[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.13.2...HEAD)
+[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.14.0...HEAD)
+
+**Updated**:
+- Default initialDelaySeconds of liveness and readiness probe of enterprise portal is changed to 60s.
+- InitialDelaySeconds of liveness and readiness probe of enterprise portal can be configured from values file.
 
 ## [v0.14.0](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
 

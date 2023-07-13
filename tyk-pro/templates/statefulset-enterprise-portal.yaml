@@ -84,7 +84,7 @@ spec:
           - name: PROVIDER_NAME
             value: "tyk"
           - name: TYK_URL
-            value: "http{{ if .Values.dash.tls }}s{{ end }}://dashboard-svc-{{ .Release.Name }}.{{ .Release.Namespace }}.svc:{{ .Values.dash.service.port }}"
+            value: "http{{ if .Values.dash.tls }}s{{ end }}://dashboard-svc-{{ include "tyk-pro.fullname" . }}.{{ .Release.Namespace }}.svc:{{ .Values.dash.service.port }}"
           - name: TYK_AUTH
             valueFrom:
               secretKeyRef:
@@ -154,7 +154,7 @@ spec:
             scheme: "HTTP{{ if .Values.enterprisePortal.tls }}S{{ end }}"
             path: /
             port: {{ .Values.enterprisePortal.containerPort }}
-          initialDelaySeconds: 5
+          initialDelaySeconds: {{ default 60 .Values.enterprisePortal.livenessProbe.initialDelaySeconds}}
           periodSeconds: 2
           timeoutSeconds: 3
           failureThreshold: 2
@@ -163,7 +163,7 @@ spec:
             scheme: "HTTP{{ if .Values.enterprisePortal.tls }}S{{ end }}"
             path: /
             port: {{ .Values.enterprisePortal.containerPort }}
-          initialDelaySeconds: 1
+          initialDelaySeconds: {{ default 60 .Values.enterprisePortal.readinessProbe.initialDelaySeconds}}
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
