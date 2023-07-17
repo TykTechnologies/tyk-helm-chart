@@ -138,6 +138,11 @@ spec:
           - name: enterprise-portal-pvc-{{ include "tyk-pro.fullname" . }}
             mountPath: /opt/portal/themes
             subPath: themes
+          {{- if eq .Values.enterprisePortal.storage.database.type "sqlite3" }}
+          - name: enterprise-portal-pvc-{{ include "tyk-pro.fullname" . }}
+            mountPath: /opt/portal/db
+            subPath: db
+          {{- end }}
           {{- if .Values.enterprisePortal.mounts }}
           {{- range $secret := .Values.enterprisePortal.mounts }}
           - name: {{ $.Release.Name }}-enterprise-portal-secret-{{ $secret.name }}
