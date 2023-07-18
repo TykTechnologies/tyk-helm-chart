@@ -1,14 +1,29 @@
 # Changelog
 
 ## [Unreleased](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
-[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.14.0...HEAD)
+[Full unreleased Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.14.1...HEAD)
+
+## [v0.14.1](https://github.com/TykTechnologies/tyk-helm-chart/tree/v0.14.1)
+[Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.14.0...v0.14.1)
+
+**Added**:
+
+- Added a SQLite persistent volume to enable enterprise portal to be installed or configured with SQLite.
+
+**Fixed**:
+
+- Fixed dashboard service name in enterprise portal statefulset so that enterprise portal can connect correctly to Tyk Dashboard.
+
+- Fixed typo of bootstrapJobName from bootsrap-post-install to bootstrap-post-install
+
+- Fixed enterprise portal secret name in pre-delete hook so that the enterprise portal secret could be successfully deleted by helm uninstall
 
 **Updated**:
 - Default initialDelaySeconds of liveness and readiness probe of enterprise portal is changed to 60s.
 - InitialDelaySeconds of liveness and readiness probe of enterprise portal can be configured from values file.
 
-## [v0.14.0](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
 
+## [v0.14.0](https://github.com/TykTechnologies/tyk-helm-chart/tree/v0.14.0)
 [Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.13.2...v0.14.0)
 
 **Added**:
