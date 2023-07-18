@@ -54,7 +54,10 @@ helm install mongo tyk-helm/simple-mongodb -n tyk
 ```
 
 ## TLS
-You can turn on the tls option under the gateway section in the values.yaml files which will make the gateways listen on port 443 and load up a dummy certificate. You can set your own default certificate by replacing the files in the certs/ folder.
+You can turn on the tls option under the gateway section in the values.yaml files which will make the gateways listen on port 443 and load up a dummy certificate. It is recommended that you set your own default certificate by replacing the files in the certs/ folder. 
+
+> **Warning**
+> The default certificate should not be used in production environments
 
 ## Kubernetes Ingress
 NB: tyk-k8s has been deprecated. For reference, old documentation may be found here: [Tyk K8s](https://github.com/TykTechnologies/tyk-k8s)
