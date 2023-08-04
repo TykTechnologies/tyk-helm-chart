@@ -1,4 +1,9 @@
 ## Tyk OSS Gateway
+
+> [!WARNING]  
+> `tyk-headless` will be deprecated soon. Please use our new Helm Chart for Tyk open source at [tyk-oss](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-oss) instead.
+> We recommend all users to migrate to the new Helm Chart. Please review the [Configuration](https://tyk.io/docs/tyk-oss/ce-helm-chart-new/#configuration) section of the new helm chart and cross-check with your existing configurations while planning for migration.
+
 This chart deploys the open source Tyk Gateway and Pump.
 
 ---
