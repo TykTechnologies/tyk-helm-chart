@@ -4,7 +4,7 @@ Tyk provides 3 different helm charts in this repo. Please visit the respective p
 - [Tyk Hybrid](https://github.com/TykTechnologies/tyk-helm-chart/tree/master/tyk-hybrid)
 > [!WARNING]  
 > `tyk-hybrid` will be deprecated soon. Please use our new Helm Chart for Tyk Hybrid Data Plane at [tyk-mdcb-data-plane](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-mdcb-data-plane) instead.
-> We recommend all users to migrate to the new Helm Chart. Please review the [Configuration](https://tyk.io/docs/tyk-oss/ce-helm-chart-new/#configuration) section of the new helm chart and cross-check with your existing configurations while planning for migration.
+> We recommend all users to migrate to the new Helm Chart. Please review the [Configuration](https://tyk.io/docs/tyk-cloud/environments-deployments/hybrid-gateways-helm/#configuration) section of the new helm chart and cross-check with your existing configurations while planning for migration.
 
 - [Tyk Headless](https://github.com/TykTechnologies/tyk-helm-chart/tree/master/tyk-headless)
 > [!WARNING]  
