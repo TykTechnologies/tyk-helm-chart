@@ -1,4 +1,10 @@
 ## Tyk Hybrid
+
+> [!WARNING]  
+> `tyk-hybrid` will be deprecated soon. Please use our new Helm Chart for Tyk Hybrid Data Plane at [tyk-mdcb-data-plane](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-mdcb-data-plane) instead.
+> We recommend all users to migrate to the new Helm Chart. Please review the [Configuration](https://tyk.io/docs/tyk-cloud/environments-deployments/hybrid-gateways-helm/#configuration) section of the new helm chart and cross-check with your existing configurations while planning for migration.
+
+
 Provides a Tyk Installation for Hybrid Gateways connected to Tyk Cloud or MDCB Hybrid Gateways
 
 [Installation](https://tyk.io/docs/apim/open-source/installation/) || [Documentation](https://tyk.io/docs) || [Community Forum](https://community.tyk.io/) || [Releases](https://hub.docker.com/r/tykio/tyk-gateway/tags?page=1&ordering=last_updated)

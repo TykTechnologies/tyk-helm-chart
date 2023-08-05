@@ -2,7 +2,14 @@
 Tyk provides 3 different helm charts in this repo. Please visit the respective pages for each chart to learn how to install the chart and find out all the information relevant to that chart.  
 - [Tyk Pro](https://github.com/TykTechnologies/tyk-helm-chart/tree/master/tyk-pro)
 - [Tyk Hybrid](https://github.com/TykTechnologies/tyk-helm-chart/tree/master/tyk-hybrid)
+> [!WARNING]  
+> `tyk-hybrid` will be deprecated soon. Please use our new Helm Chart for Tyk Hybrid Data Plane at [tyk-mdcb-data-plane](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-mdcb-data-plane) instead.
+> We recommend all users to migrate to the new Helm Chart. Please review the [Configuration](https://tyk.io/docs/tyk-cloud/environments-deployments/hybrid-gateways-helm/#configuration) section of the new helm chart and cross-check with your existing configurations while planning for migration.
+
 - [Tyk Headless](https://github.com/TykTechnologies/tyk-helm-chart/tree/master/tyk-headless)
+> [!WARNING]  
+> `tyk-headless` will be deprecated soon. Please use our new Helm Chart for Tyk open source at [tyk-oss](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-oss) instead.
+> We recommend all users to migrate to the new Helm Chart. Please review the [Configuration](https://tyk.io/docs/tyk-oss/ce-helm-chart-new/#configuration) section of the new helm chart and cross-check with your existing configurations while planning for migration.
 
 ## Redis and MongoDB or PostgreSQL
 - Redis is required for all of the Tyk installations it must be installed in the cluster or reachable from inside K8s.
