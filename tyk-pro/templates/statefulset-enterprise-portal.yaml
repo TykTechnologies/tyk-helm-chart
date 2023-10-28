@@ -95,6 +95,8 @@ spec:
               secretKeyRef:
                 name: tyk-enterprise-portal-conf
                 key: TYK_ORG
+          - name: TMPDIR
+            value: /tmp/tyk-portal
         {{- if .Values.enterprisePortal.extraEnvs }}
         {{- range $env := .Values.enterprisePortal.extraEnvs }}
           - name: {{ $env.name }}
