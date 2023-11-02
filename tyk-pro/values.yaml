@@ -20,7 +20,15 @@ bootstrap: true
 
 # Settings related to k8s that are ran when installing the tyk stack
 jobs:
-  bootstrapJobName: bootstrap-post-install
+  bootstrapPostInstallJob:
+    name: bootstrap-post-install
+    image:
+      repository: tykio/tyk-k8s-bootstrap-post
+      tag: v1.5.1
+  bootstrapPreDeleteJob:
+    image:
+      repository: tykio/tyk-k8s-bootstrap-pre-delete
+      tag: v1.5.1
 
 
 # These are your Tyk stack secrets will directly map to the following

@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name:  {{ .Values.jobs.bootstrapJobName }}
+  name:  {{ .Values.jobs.bootstrapPostInstallJob.name }}
   labels:
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
     app.kubernetes.io/instance: {{ .Release.Name | quote }}
@@ -28,7 +28,7 @@ spec:
       serviceAccountName: k8s-bootstrap-role
       containers:
         - name: bootstrap-tyk-post-install
-          image: tykio/tyk-k8s-bootstrap-post:latest
+          image: "{{ .Values.jobs.bootstrapPostInstallJob.image.repository }}:{{ .Values.jobs.bootstrapPostInstallJob.image.tag }}"
           command: [ './app/bin/bootstrap-app-post' ]
           imagePullPolicy: IfNotPresent
           env:
