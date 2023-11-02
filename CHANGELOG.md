@@ -3,6 +3,9 @@
 ## [Unreleased](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
 [Full unreleased Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.14.1...HEAD)
 
+**Updated**
+- Make bootstrap job image and tag configurable
+
 ## [v0.14.1](https://github.com/TykTechnologies/tyk-helm-chart/tree/v0.14.1)
 [Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.14.0...v0.14.1)
 
