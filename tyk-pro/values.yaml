@@ -407,7 +407,7 @@ enterprisePortal:
   image:
     repository: tykio/portal
   # Enterprise portal < v1.2 is not supported
-    tag: v1.2.0
+    tag: v1.8.0
     pullPolicy: Always
   service:
     type: NodePort
