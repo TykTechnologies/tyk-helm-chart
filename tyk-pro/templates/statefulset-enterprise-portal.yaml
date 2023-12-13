@@ -152,7 +152,7 @@ spec:
         livenessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.enterprisePortal.tls }}S{{ end }}"
-            path: /
+            path: /live
             port: {{ .Values.enterprisePortal.containerPort }}
           initialDelaySeconds: {{ default 60 .Values.enterprisePortal.livenessProbe.initialDelaySeconds}}
           periodSeconds: 2
@@ -161,7 +161,7 @@ spec:
         readinessProbe:
           httpGet:
             scheme: "HTTP{{ if .Values.enterprisePortal.tls }}S{{ end }}"
-            path: /
+            path: /ready
             port: {{ .Values.enterprisePortal.containerPort }}
           initialDelaySeconds: {{ default 60 .Values.enterprisePortal.readinessProbe.initialDelaySeconds}}
           periodSeconds: 10
