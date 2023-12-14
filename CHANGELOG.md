@@ -5,6 +5,8 @@
 
 **Updated**
 - Make bootstrap job image and tag configurable
+- Fixed enterprise portal probes
+- Update enterprise portal tag version to v1.8.1
 
 ## [v0.14.1](https://github.com/TykTechnologies/tyk-helm-chart/tree/v0.14.1)
 [Full Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.14.0...v0.14.1)
