@@ -123,7 +123,7 @@ mdcb:
   image:
     # Requires credential
     repository: tykio/tyk-mdcb-docker
-    tag: v2.1.1
+    tag: v2.4.1
     pullPolicy: Always
   service:
     type: LoadBalancer
@@ -280,7 +280,7 @@ dash:
   containerPort: 3000
   image:
     repository: tykio/tyk-dashboard
-    tag: v5.0.0
+    tag: v5.2.4
     pullPolicy: Always
   service:
     type: NodePort
@@ -407,7 +407,7 @@ enterprisePortal:
   image:
     repository: tykio/portal
   # Enterprise portal < v1.2 is not supported
-    tag: v1.2.0
+    tag: v1.8.1
     pullPolicy: Always
   service:
     type: NodePort
@@ -490,7 +490,7 @@ gateway:
   containerPort: 8080
   image:
     repository: tykio/tyk-gateway
-    tag: v5.0.0
+    tag: v5.2.4
     pullPolicy: Always
   service:
     type: NodePort
@@ -564,7 +564,7 @@ pump:
   replicaCount: 1
   image:
     repository: docker.tyk.io/tyk-pump/tyk-pump
-    tag: v1.7.0
+    tag: v1.8.3
     pullPolicy: Always
   annotations: {}
   resources: {}
