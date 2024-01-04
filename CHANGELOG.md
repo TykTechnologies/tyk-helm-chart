@@ -5,6 +5,7 @@
 
 **Updated**
 - Make bootstrap job image and tag configurable
+- Fixed enterprise portal probes
 - Update components version to latest
 
 ## [v0.14.1](https://github.com/TykTechnologies/tyk-helm-chart/tree/v0.14.1)
