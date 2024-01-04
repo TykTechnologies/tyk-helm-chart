@@ -3,8 +3,12 @@
 ## [Unreleased](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
 [Full unreleased Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.14.1...HEAD)
 
+## [v0.14.2](https://github.com/TykTechnologies/tyk-helm-chart/tree/v0.14.2)
+[v0.14.2](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.14.1...v0.14.2)
+
 **Updated**
 - Make bootstrap job image and tag configurable
+- Fixed enterprise portal probes
 - Update components version to latest
 
 ## [v0.14.1](https://github.com/TykTechnologies/tyk-helm-chart/tree/v0.14.1)
