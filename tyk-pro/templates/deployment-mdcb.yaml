@@ -164,9 +164,11 @@ spec:
             items:
               - key: tyk_sink.conf
                 path: tyk_sink.conf
+        {{ if .Values.mdcb.tls}}
         - name: {{ .Release.Name }}-default-cert
           secret:
             secretName: {{ .Release.Name }}-default-cert
+        {{- end }}
         {{- if .Values.mdcb.mounts }}
         {{- range $secret := .Values.mdcb.mounts }}
         - name: {{ $.Release.Name }}-mdcb-secret-{{ $secret.name }}
