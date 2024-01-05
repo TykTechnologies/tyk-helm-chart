@@ -1,7 +1,11 @@
 # Changelog
 
 ## [Unreleased](https://github.com/TykTechnologies/tyk-helm-chart/tree/HEAD)
-[Full unreleased Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.14.1...HEAD)
+[Full unreleased Changelog](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.14.3...HEAD)
+
+## [v0.14.3](https://github.com/TykTechnologies/tyk-helm-chart/tree/v0.14.3)
+[v0.14.3](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.14.2...v0.14.3)
+- Fixed a bug regarding mounting default certs
 
 ## [v0.14.2](https://github.com/TykTechnologies/tyk-helm-chart/tree/v0.14.2)
 [v0.14.2](https://github.com/TykTechnologies/tyk-helm-chart/compare/v0.14.1...v0.14.2)
