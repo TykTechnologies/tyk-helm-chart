@@ -1,6 +1,6 @@
 {{- if and .Values.tib.enabled .Values.tib.ingress.enabled -}}
 {{- $fullName := include "tyk-pro.fullname" . -}}
-{{- $svcPort := .Values.dash.service.port -}}
+{{- $svcPort := .Values.tib.service.port -}}
 {{- if and .Values.tib.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.tib.ingress.annotations "kubernetes.io/ingress.class") }}
   {{- $_ := set .Values.tib.ingress.annotations "kubernetes.io/ingress.class" .Values.tib.ingress.className}}
