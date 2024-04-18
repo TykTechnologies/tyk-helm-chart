@@ -3,6 +3,7 @@ name: tyk-hybrid
 version: 0.14.3
 icon: https://tyk.io/wp-content/uploads/2021/07/tyk_logo_no_bg.png
 home: https://tyk.io/
+deprecated: true
 sources:
   - https://github.com/TykTechnologies/tyk-helm-chart
   - https://tyk.io/
