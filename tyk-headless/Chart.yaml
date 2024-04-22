@@ -3,6 +3,7 @@ name: tyk-headless
 version: 0.14.3
 icon: https://tyk.io/wp-content/uploads/2021/07/tyk_logo_no_bg.png
 home: https://tyk.io/
+deprecated: true
 sources:
   - https://github.com/TykTechnologies/tyk-helm-chart
   - https://tyk.io/
@@ -20,3 +21,6 @@ description: |-
   Tyk Gateway is a fully open source Enterprise API Gateway, supporting REST, GraphQL, TCP and gRPC protocols.
   Tyk Gateway is provided ‘Batteries-included’, with no feature lockout. It enables organisations and businesses around
   the world to protect, secure, and process APIs and well as review and audit the consumed apis.
+annotations:
+  artifacthub.io/recommendations: |
+    - url: https://artifacthub.io/packages/helm/tyk-helm/tyk-oss
