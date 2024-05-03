@@ -1,4 +1,8 @@
 ## Tyk Self-managed
+> [!WARNING]  
+> `tyk-pro` has been deprecated. Please use our new Helm Chart for Tyk Stack at [tyk-stack](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-stack) or Tyk Control Plane at [tyk-control-plane](https://github.com/TykTechnologies/tyk-charts/tree/main/tyk-control-plane) instead.
+> We recommend all users to migrate to the new Helm Chart. Please review the [Configuration](https://tyk.io/docs/product-stack/tyk-charts/tyk-stack-chart/#configuration) section of the new helm chart and cross-check with your existing configurations while planning for migration.
+
 This chart provides a full Tyk API Management platform including Tyk Manager (Tyk dashboard), Tyk Gateway (OSS), Tyk pump
 and MDCB (Multi Data-centre Bridge).
 
